@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'eLocal_app',
+    'bootstrap3',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -54,6 +55,22 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'eLocal_proj.urls'
 
 WSGI_APPLICATION = 'eLocal_proj.wsgi.application'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 
 # Database

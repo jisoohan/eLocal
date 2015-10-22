@@ -3,6 +3,7 @@ Setting up Postgres on Mac:
 psql -d postgres
     CREATE ROLE elocal LOGIN;
     ALTER ROLE elocal PASSWORD 'elocal123';
+    ALTER ROLE elocal CREATEDB;
     CREATE DATABASE elocal OWNER elocal;
     \q
 
@@ -13,5 +14,6 @@ Setting up Postgres on Linux:
 sudo -u postgres psql
     CREATE ROLE elocal LOGIN;
     ALTER ROLE elocal PASSWORD 'elocal123';
+    ALTER ROLE elocal CREATEDB;
     CREATE DATABASE elocal OWNER elocal;
     \q

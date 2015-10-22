@@ -5,5 +5,5 @@ from eLocal_app import views
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^home/', views.homepage),
+    url(r'^', views.homepage),
 ]

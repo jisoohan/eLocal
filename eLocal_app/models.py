@@ -24,7 +24,7 @@ class Item(models.Model):
         pass
     
     # Associates this item with a corresponding store and price
-    def addToStore(self, name, storeId, price):
+    def addToStore(self, storeId, price):
         pass
     
 
@@ -63,16 +63,16 @@ class OpenHours(models.Model):
 # Tracks item-store-price associations
 class Inventory(models.Model):
     store = models.ForeignKey(Store)
-    item = models.ForeignKey(Item)
+    item  = models.ForeignKey(Item)
     # Using DecimalField instead of FloatField here to enforce precision of prices (i.e. $123.45)
     price = models.DecimalField(decimal_places=2, max_digits=8)
     
-    # Get a list of stores that carry the specified item
+    # Get a list of items that the specified store has
     @staticmethod
     def getItemsForStore(storeId):
         pass
     
-    # Get a list of items that the specified store carries
+    # Get a list of stores that have the specified item
     @staticmethod
     def getStoresForItem(itemId):
         pass

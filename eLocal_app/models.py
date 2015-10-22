@@ -4,13 +4,13 @@ from time import time
 
 # Adapted from https://stackoverflow.com/questions/8128143/any-existing-solution-to-implement-opening-hours-in-django
 WEEKDAYS = [
-  (0, _("Sunday")),
-  (1, _("Monday")),
-  (2, _("Tuesday")),
-  (3, _("Wednesday")),
-  (4, _("Thursday")),
-  (5, _("Friday")),
-  (6, _("Saturday"))
+  (0, "Sunday"),
+  (1, "Monday"),
+  (2, "Tuesday"),
+  (3, "Wednesday"),
+  (4, "Thursday"),
+  (5, "Friday"),
+  (6, "Saturday")
 ]
 
 
@@ -25,7 +25,7 @@ class Store(models.Model):
     latitude  = models.FloatField()
     longitude = models.FloatField()
     # Hours can be accessed using <store>.openhours_set
-    items     = models.ManyToManyField(Item, though='Inventory')
+    items     = models.ManyToManyField(Item, through='Inventory')
 
 
 # Adapted from https://stackoverflow.com/questions/8128143/any-existing-solution-to-implement-opening-hours-in-django
@@ -42,6 +42,6 @@ class Inventory(models.Model):
     store = models.ForeignKey(Store)
     item = models.ForeignKey(Item)
     # Using DecimalField instead of FloatField here to enforce precision of prices (i.e. $123.45)
-    price = models.DecimalField()
+    price = models.DecimalField(decimal_places=2, max_digits=8)
 
 

@@ -21,7 +21,7 @@ class Item(models.Model):
     # Get a list of items whose names match the query string
     @staticmethod
     def getItems(name):
-        pass
+        return list(Item.objects.filter(name__icontains=name))
     
     # Associates this item with a corresponding store and price
     def addToStore(self, storeId, price):
@@ -38,12 +38,16 @@ class Store(models.Model):
     
     @staticmethod
     def addStore(name, address, latitude, longitude, hours):
-        pass
+        # TODO: Validate fields
+        store = Store(name=name, address=address, latitude=latitude, longitude=longitude)
+        store.save()
+        # TODO: Parse and save open hours
+        return store
     
     # Get a list of stores whose names match the query string
     @staticmethod
     def getStores(name):
-        pass
+        return list(Store.objects.filter(name__icontains=name))
     
     # Associates this store with a corresponding item and price
     def addItem(self, itemId, price):
@@ -70,10 +74,18 @@ class Inventory(models.Model):
     # Get a list of items that the specified store has
     @staticmethod
     def getItemsForStore(storeId):
-        pass
+        try:
+            store = Store.objects.get(id=storeId)
+            return store.items.all()
+        except Store.DoesNotExist as e:
+            raise e
     
     # Get a list of stores that have the specified item
     @staticmethod
     def getStoresForItem(itemId):
-        pass
+        try:
+            item = Item.objects.get(id=itemId)
+            return item.store_set.all()
+        except Item.DoesNotExist as e:
+            raise e
 

@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'eLocal_app',
     'widget_tweaks',
+    'bootstrap3',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -63,9 +64,9 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
         },
@@ -83,6 +84,13 @@ DATABASES = {
 #        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #    }
 }
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
+    },
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/

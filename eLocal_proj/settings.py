@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'eLocal_app',
+    'widget_tweaks',
 )
 
 MIDDLEWARE_CLASSES = (

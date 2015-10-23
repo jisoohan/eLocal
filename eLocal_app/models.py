@@ -18,6 +18,12 @@ class Item(models.Model):
     name = models.CharField(max_length=128)
     # Stores can be accessed using <item>.store_set
     
+    @staticmethod
+    def create(name):
+        item = Item(name=name)
+        item.save()
+        return item
+    
     # Get a list of items whose names match the query string
     @staticmethod
     def getItems(name):
@@ -27,7 +33,7 @@ class Item(models.Model):
     def addToStore(self, storeId, price):
         try:
             store = Store.objects.get(id=storeId)
-            inv = Inventory(store=store, item=self, price=Decimal(price))
+            inv = Inventory.create(store, self, Decimal(price))
             return inv
         except Store.DoesNotExist as e:
             raise e
@@ -42,7 +48,7 @@ class Store(models.Model):
     items     = models.ManyToManyField(Item, through='Inventory')
     
     @staticmethod
-    def addStore(name, address, latitude, longitude):
+    def create(name, address, latitude, longitude):
         # TODO: Validate fields
         store = Store(name=name, address=address, latitude=latitude, longitude=longitude)
         store.save()
@@ -64,19 +70,15 @@ class Store(models.Model):
                 day.to_hour = endTime
                 day.is_open = isOpen
                 day.save()
-                return
-        new_day = OpenHours(store=self,
-                            weekday=dayOfWeek,
-                            is_open=isOpen,
-                            from_hour=startTime,
-                            to_hour=endTime)
-        new_day.save()
+                return day
+        new_day = OpenHours.create(self, dayOfWeek, startTime, endTime, isOpen)
+        return new_day
     
     # Associates this store with a corresponding item and price
     def addItem(self, itemId, price):
         try:
             item = Item.objects.get(id=itemId)
-            inv = Inventory(store=self, item=item, price=Decimal(price))
+            inv = Inventory.create(self, item, Decimal(price))
             return inv
         except Item.DoesNotExist as e:
             raise e
@@ -90,6 +92,16 @@ class OpenHours(models.Model):
     is_open   = models.BooleanField()
     from_hour = models.TimeField()
     to_hour   = models.TimeField()
+    
+    @staticmethod
+    def create(store, weekday, from_hour, to_hour, is_open):
+        new_day = OpenHours(store=store,
+                            weekday=weekday,
+                            is_open=is_open,
+                            from_hour=from_hour,
+                            to_hour=to_hour)
+        new_day.save()
+        return new_day
 
 
 # Tracks item-store-price associations
@@ -98,6 +110,12 @@ class Inventory(models.Model):
     item  = models.ForeignKey(Item)
     # Using DecimalField instead of FloatField here to enforce precision of prices (i.e. $123.45)
     price = models.DecimalField(decimal_places=2, max_digits=8)
+    
+    @staticmethod
+    def create(store, item, price):
+        inv = Inventory(store=store, item=item, price=price)
+        inv.save()
+        return inv
     
     # Get a list of items that the specified store has
     @staticmethod

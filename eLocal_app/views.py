@@ -15,3 +15,15 @@ def homepage(request):
 
 def productpage(request):
     return render(request, 'eLocal_app/productpage.html')
+ 
+
+def shoppingPage(request):
+    return render(request, 'eLocal_app/shoppingPage.html')
+
+
+def storeSearchPage(request):
+    return render(request, 'eLocal_app/storeSearchPage.html')
+
+
+def addItemPage(request):
+    return render(request, 'eLocal_app/addItemPage.html')

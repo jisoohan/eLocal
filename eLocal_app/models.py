@@ -12,7 +12,7 @@ WEEKDAYS = [
   (5, "Friday"),
   (6, "Saturday")
 ]
-
+ 
 
 class Item(models.Model):
     name = models.CharField(max_length=128)

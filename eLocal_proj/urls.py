@@ -5,9 +5,8 @@ from eLocal_app import views
 
 urlpatterns = [
     #url(r'^admin/', include(admin.site.urls)),
-    url(r'^products', views.productpage),
+    url(r'^products', views.productSearchPage),
     url(r'^shopping', views.shoppingPage),
-    url(r'^store', views.storeSearchPage), #improve later to take into account store ID
-    url(r'^add', views.addItemPage),
-    url(r'^', views.homepage),
+    url(r'^stores', views.storeSearchPage), #improve later to take into account store ID
+    url(r'^', views.homePage),
 ]

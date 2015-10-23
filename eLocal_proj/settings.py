@@ -39,10 +39,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'eLocal_app',
-    'widget_tweaks', 
-    'bootstrap3',
+    'widget_tweaks',
 )
- 
+
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

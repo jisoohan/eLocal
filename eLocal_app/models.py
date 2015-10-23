@@ -69,8 +69,7 @@ class Store(models.Model):
                             weekday=dayOfWeek,
                             is_open=isOpen,
                             from_hour=startTime,
-                            to_hour=endTime,
-                            is_open=isOpen)
+                            to_hour=endTime)
         new_day.save()
     
     # Associates this store with a corresponding item and price

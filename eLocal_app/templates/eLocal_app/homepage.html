@@ -27,11 +27,18 @@
             <h1 class="cover-heading">eLocal</h1>
             <p class="lead">Shop smart.</p>
             <form role="form" class="form-inline" method="post" action="{% url 'eLocal_app.views.homepage' %}">
-                <div class="form-group">
-                    <label for="{{ form.zip_code.id_for_label }}">Zipcode: </label>
-                    {% render_field form.zip_code class="form-control" type="zipcode" id="zipcode" %}
-                </div>
-                <button type="submit" class="btn btn-default">Shop!</button>
+              {% if form.zip_code.errors %}
+                <ol>
+                  {% for error in form.zip_code.errors %}
+                    <strong>{{ error|escape }}</strong>
+                  {% endfor %}
+                </ol>
+              {% endif %}
+              <div class="form-group">
+                <label for="{{ form.zip_code.id_for_label }}" class="control-label">Zipcode: </label>
+                {% render_field form.zip_code class="form-control" type="text" %}
+              </div>
+              <button type="submit" class="btn btn-default">Shop!</button>
             </form>
           </div>
 

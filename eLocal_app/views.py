@@ -25,6 +25,3 @@ def storeSearchPage(request):
 
 def shoppingPage(request):
     return render(request, 'eLocal_app/shoppingPage.html')
-
-def addItemPage(request):
-    return render(request, 'eLocal_app/addItemPage.html')

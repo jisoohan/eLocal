@@ -51,7 +51,14 @@
       </div>
     </nav>
 
-    <h1>Search for Products!</h1>
+    <h1>Products!</h1>
+    <div class="product-search">
+      <form method="get" action="{% url 'eLocal_app.views.productpage' %}">
+        <input type="text" class="item-input" name="item" />
+        <input type="submit" value="Search" class="submit-input"/>
+      </form>
+    </div>
+    
 
     <!-- Bootstrap core JavaScript
     ================================================== -->

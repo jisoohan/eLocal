@@ -11,7 +11,7 @@
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
-    <link rel="stylesheet" type="text/css" href="{% static 'eLocal_app/productpage.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'eLocal_app/storeSearchPage.css' %}">
   </head>
 
   <body>
@@ -51,7 +51,13 @@
       </div>
     </nav>
 
-    <h1>Search for Stores!</h1>
+    <h1>Stores!</h1>
+    <div class="store-search">
+      <form method="get" action="{% url 'eLocal_app.views.storeSearchPage' %}">
+        <input type="text" class="store-input" name="store" />
+        <input type="submit" value="Search" class="submit-input"/>
+      </form>
+    </div>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->

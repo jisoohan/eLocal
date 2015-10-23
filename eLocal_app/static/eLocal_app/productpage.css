@@ -9,3 +9,16 @@ h1{
 	color: white;
 	text-align: center;
 }
+
+.product-search{
+	display: block;
+	width: 100%;
+	text-align: center;
+	padding-top: 10px;
+}
+
+form{
+	display: inline-block;
+	margin: auto;
+	font-family: chalkboard;
+}

@@ -11,7 +11,7 @@
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
-    <link rel="stylesheet" type="text/css" href="{% static 'eLocal_app/productpage.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'eLocal_app/addItemPage.css' %}">
   </head>
 
   <body>
@@ -52,6 +52,15 @@
     </nav>
 
     <h1>Add Item!</h1>
+
+    <div class="add-Item">
+      <form method="post" action="{% url 'eLocal_app.views.productpage' %}">
+        <input type="text" placeholder="Name: " class="name-input" name="name" />
+        <input type="text" placeholder="Price: " class="price-input" name="price" />
+        <input type="text" placeholder="Store: " class="store-input" name="store" />
+        <input type="submit" value="Post" class="add-input"/>
+      </form>
+    </div>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->

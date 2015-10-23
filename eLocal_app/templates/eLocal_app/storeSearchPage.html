@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -30,12 +31,12 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li><a href="{% url 'eLocal_app.views.homepage' %}">Home</a></li>
+            <li><a href="{% url 'eLocal_app.views.homePage' %}">Home</a></li>
             <li><a href="{% url 'eLocal_app.views.shoppingPage' %}">Shopping Cart</a></li>
             <li class="active" class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Search by<span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a href="{% url 'eLocal_app.views.productpage' %}">Item</a></li>
+                <li><a href="{% url 'eLocal_app.views.productSearchPage' %}">Item</a></li>
                 <li><a href="{% url 'eLocal_app.views.storeSearchPage' %}">Store</a></li>
               </ul>
             </li>
@@ -51,12 +52,18 @@
       </div>
     </nav>
 
-    <h1>Stores!</h1>
-    <div class="store-search">
-      <form method="get" action="{% url 'eLocal_app.views.storeSearchPage' %}">
-        <input type="text" class="store-input" name="store" />
-        <input type="submit" value="Search" class="submit-input"/>
-      </form>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title text-center">Store Search</h3>
+      </div>
+      <div class="panel-body text-center">
+        <form form="form" class="form-inline" method="get" action="{% url 'eLocal_app.views.storeSearchPage' %}">
+          <div class="form-group">
+            {% render_field form.name class="form-control" type="text" %}
+          </div>
+          <button type="submit" class="btn btn-default">Search</button>
+        </form>
+      </div>
     </div>
 
     <!-- Bootstrap core JavaScript

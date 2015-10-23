@@ -1,5 +1,5 @@
 from django import forms
+from django.core.validators import RegexValidator
 
 class ZipcodeForm(forms.Form):
-    zip_code = forms.IntegerField(label="Zipcode", max_value=100000, min_value=10000)
-
+    zip_code = forms.CharField(validators=[RegexValidator('^[0-9]{5}(?:-[0-9]{4})?$', message='Enter a valid zipcode.')])

@@ -124,6 +124,14 @@
       </div>
     </div>
 
+    <div class="col-sm-4">
+      <ul class="list-group">
+        {% for store in stores %}
+          <li class="list-group-item">{{store.name}}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

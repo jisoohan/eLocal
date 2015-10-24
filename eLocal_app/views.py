@@ -19,14 +19,16 @@ def productSearchPage(request):
         searchForm = ProductSearchForm()
         addProductForm = ProductAddForm()
         addStoreForm = StoreAddForm()
-    return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm})
+        products = Item.objects.all()
+    return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': products})
 
 def storeSearchPage(request):
     if request.method == 'GET':
         searchForm = StoreSearchForm()
         addProductForm = ProductAddForm()
         addStoreForm = StoreAddForm()
-    return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm})
+        stores = Store.objects.all()
+    return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': stores})
 
 def shoppingPage(request):
     if request.method == 'GET':

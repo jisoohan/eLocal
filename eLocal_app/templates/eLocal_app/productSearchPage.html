@@ -123,6 +123,14 @@
       </div>
     </div>
 
+    <div class="col-sm-4">
+      <ul class="list-group">
+        {% for product in products %}
+          <li class="list-group-item">{{product.name}}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
 
 
     <!-- Bootstrap core JavaScript

@@ -25,7 +25,7 @@ def storeSearchPage(request):
         searchForm = StoreSearchForm()
         addProductForm = ProductAddForm()
         addStoreForm = StoreAddForm()
-    return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm})
+    return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm})
 
 def shoppingPage(request):
     if request.method == 'GET':

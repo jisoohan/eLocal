@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 
-from .forms import ZipcodeForm, ProductSearchForm, StoreSearchForm
+from .forms import ZipcodeForm, ProductSearchForm, StoreSearchForm, ProductAddForm, StoreAddForm
 
 # Create your views here.
 def homePage(request):
@@ -15,13 +15,30 @@ def homePage(request):
 
 def productSearchPage(request):
     if request.method == 'GET':
-        form = ProductSearchForm()
-    return render(request, 'eLocal_app/productSearchPage.html', {'form': form})
+        searchForm = ProductSearchForm()
+        addProductForm = ProductAddForm()
+        addStoreForm = StoreAddForm()
+    return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm})
 
 def storeSearchPage(request):
     if request.method == 'GET':
-        form = StoreSearchForm()
-    return render(request, 'eLocal_app/storeSearchPage.html', {'form': form})
+        searchForm = StoreSearchForm()
+        addProductForm = ProductAddForm()
+        addStoreForm = StoreAddForm()
+    return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm})
 
 def shoppingPage(request):
-    return render(request, 'eLocal_app/shoppingPage.html')
+    if request.method == 'GET':
+        addProductForm = ProductAddForm()
+        addStoreForm = StoreAddForm()
+    return render(request, 'eLocal_app/shoppingPage.html', {'addProductForm': addProductForm, 'addStoreForm': addStoreForm})
+
+def addProduct(request):
+    if request.method == 'GET':
+        form = ProductAddForm(request.GET)
+        if form.is_valid():
+            name = form.cleaned_data['']
+    else:
+        form = ProductAddForm()
+    return render(request, 'eLocal_app/productSearchPage.html', {'form': form})
+

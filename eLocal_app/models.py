@@ -12,17 +12,17 @@ WEEKDAYS = [
   (5, "Friday"),
   (6, "Saturday")
 ]
- 
+
 
 class Item(models.Model):
     name = models.CharField(max_length=128)
     # Stores can be accessed using <item>.store_set
-    
+
     # Get a list of items whose names match the query string
     @staticmethod
     def getItems(name):
         return list(Item.objects.filter(name__icontains=name))
-    
+
     # Associates this item with a corresponding store and price
     def addToStore(self, storeId, price):
         try:
@@ -31,7 +31,7 @@ class Item(models.Model):
             return inv
         except Store.DoesNotExist as e:
             raise e
-    
+
 
 class Store(models.Model):
     name      = models.CharField(max_length=128)
@@ -40,19 +40,19 @@ class Store(models.Model):
     longitude = models.FloatField()
     # Hours can be accessed using <store>.openhours_set
     items     = models.ManyToManyField(Item, through='Inventory')
-    
+
     @staticmethod
     def addStore(name, address, latitude, longitude):
         # TODO: Validate fields
         store = Store(name=name, address=address, latitude=latitude, longitude=longitude)
         store.save()
         return store
-    
+
     # Get a list of stores whose names match the query string
     @staticmethod
     def getStores(name):
         return list(Store.objects.filter(name__icontains=name))
-    
+
     def setOpenHours(self, dayOfWeek, startTime, endTime, isOpen):
         # TODO: Validate fields
         if startTime > endTime:
@@ -71,7 +71,7 @@ class Store(models.Model):
                             from_hour=startTime,
                             to_hour=endTime)
         new_day.save()
-    
+
     # Associates this store with a corresponding item and price
     def addItem(self, itemId, price):
         try:
@@ -80,7 +80,7 @@ class Store(models.Model):
             return inv
         except Item.DoesNotExist as e:
             raise e
-    
+
 
 # Adapted from https://stackoverflow.com/questions/8128143/any-existing-solution-to-implement-opening-hours-in-django
 class OpenHours(models.Model):
@@ -98,7 +98,7 @@ class Inventory(models.Model):
     item  = models.ForeignKey(Item)
     # Using DecimalField instead of FloatField here to enforce precision of prices (i.e. $123.45)
     price = models.DecimalField(decimal_places=2, max_digits=8)
-    
+
     # Get a list of items that the specified store has
     @staticmethod
     def getItemsForStore(storeId):
@@ -107,7 +107,7 @@ class Inventory(models.Model):
             return store.items.all()
         except Store.DoesNotExist as e:
             raise e
-    
+
     # Get a list of stores that have the specified item
     @staticmethod
     def getStoresForItem(itemId):

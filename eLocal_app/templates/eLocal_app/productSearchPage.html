@@ -75,6 +75,7 @@
             <h4 class="modal-title text-center">Add Store</h4>
           </div>
           <div class="modal-body">
+<<<<<<< HEAD
             <form form="form" class="form-horizontal text-center" method="get" action="{% url 'eLocal_app.views.productSearchPage' %}">
               <div class="form-group">
                 <label for="{{ addStoreForm.store_name.id_for_label }}" class="control-label">Name</label>
@@ -87,6 +88,12 @@
                 {% render_field addStoreForm.longitude class="form-control" type="text" %}
               </div>
             </form>
+=======
+            <input type="text" placeholder="Name" class="name-input" name="item" />
+            <input type="text" placeholder="Price" class="price-input" name="price" />
+            <input type="text" placeholder="Store" class="store-input" name="store" />
+
+>>>>>>> e2b502a374ac4c0ca745ac7da6180ebaa359f990
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

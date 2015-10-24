@@ -243,7 +243,7 @@ def validateFloatOpenSet(num, minimum, maximum):
     return True
 
 def validateFloatClosedSet(num, minimum, maximum):
-    if not isinstance(price, float) and not isinstance(price, int):
+    if not isinstance(num, float) and not isinstance(num, int):
         return False
     if num <= minimum or num >= maximum:
         return False

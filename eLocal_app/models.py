@@ -198,7 +198,7 @@ class Inventory(models.Model):
         errors = []
         if not isinstance(store, Store):
             errors.append("Invalid store object")
-        if not isintance(item, Item):
+        if not isinstance(item, Item):
             errors.append("Invalid item object")
         if not validateFloatOpenSet(price, 0, 1e6):
             errors.append("Price must be nonzero and less than $1,000,000")
@@ -226,7 +226,14 @@ class Inventory(models.Model):
             return item.store_set.all()
         except Item.DoesNotExist as e:
             raise e
-
+    
+    @staticmethod
+    def getPrice(storeId, itemId):
+        try:
+            return float(Inventory.objects.get(store__id__exact=storeId, item__id__exact=itemId).price)
+        except Inventory.DoesNotExist as e:
+            raise e
+    
 
 def validateStringLen(string, min_len, max_len):
     if not isinstance(string, str):
@@ -236,7 +243,7 @@ def validateStringLen(string, min_len, max_len):
     return True
 
 def validateFloatOpenSet(num, minimum, maximum):
-    if not isinstance(price, float) and not isinstance(price, int):
+    if not isinstance(num, float) and not isinstance(num, int):
         return False
     if num < minimum or num > maximum:
         return False

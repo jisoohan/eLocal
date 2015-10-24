@@ -45,7 +45,7 @@ class ItemTest(TestCase):
     def testSearchItem(self):
         item1 = Item.create("Test item 1")
         item2 = Item.create("Another thing")
-        item3 = Item.create("Third item")
+        item3 = Item.create("Third itEm")
         search_1 = Item.getItems("Test item 1")
         self.assertEqual(len(search_1), 1, "Item search with full string should return one item")
         self.assertEqual(item1.id, search_1[0].id, "Item search returned irrelevant item")
@@ -93,7 +93,7 @@ class StoreTest(TestCase):
     def testSearchStore(self):
         store1 = Store.create("Test store 1", "Fake address", 2.7182818, -3.1415926)
         store2 = Store.create("Another shop", "Fake address", 2.7182818, -3.1415926)
-        store3 = Store.create("Third store", "Fake address", 2.7182818, -3.1415926)
+        store3 = Store.create("Third stOre", "Fake address", 2.7182818, -3.1415926)
         search_1 = Store.getStores("Test store 1")
         self.assertEqual(len(search_1), 1, "Store search with full string should return one store")
         self.assertEqual(store1.id, search_1[0].id, "Store search returned irrelevant store")
@@ -132,4 +132,21 @@ class StoreTest(TestCase):
             Store.create("Test store", "Test address", "5", "3")
 
 
+class ModelFunctionalTest(TestCase):
+    def setUp(self):
+        Inventory.objects.all().delete()
+        Item.objects.all().delete()
+        Store.objects.all().delete()
+    
+    def tearDown(self):
+        Inventory.objects.all().delete()
+        Item.objects.all().delete()
+        Store.objects.all().delete()
 
+    def testAddInventory(self):
+        item = Item.create("Test item")
+        store = Store.create("Test store", "Test address", 2.7182818, -3.1415926)
+        inventory = Inventory.create(store, item, 12345.67)
+        self.assertEqual(1, len(Inventory.getStoresForItem(item.id)), "Item should remember the store that it is added to")
+        self.assertEqual(1, len(Inventory.getItemsForStore(store.id)), "Store should remember the item that it has")
+        self.assertEqual(12345.67, Inventory.getPrice(store.id, item.id), "Inventory should remember a store's price for an item")

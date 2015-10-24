@@ -126,9 +126,11 @@
 
     <div class="col-sm-4">
       <ul class="list-group">
-        {% for store in stores %}
-          <li class="list-group-item">{{store.name}}</li>
-        {% endfor %}
+        {% if stores %}
+          {% for store in stores %}
+            <li class="list-group-item">{{store.name}}</li>
+          {% endfor %}
+        {% endif %}
       </ul>
     </div>
 

@@ -10,8 +10,20 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-import dj_database_url
 import psycopg2
+import urllib.parse
+
+urllib.parse.uses_netloc.append("postgres")
+url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
+
+conn = psycopg2.connect(
+    database=url.path[1:],
+    user=url.username,
+    password=url.password,
+    host=url.hostname,
+    port=url.port
+)
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -77,14 +89,7 @@ TEMPLATES = [
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
 }
-
-if 'DATABASE_URL' in os.environ:
-    DATABASES['default'] = dj_database_url.config()
 
 
 TEMPLATES = [
@@ -110,5 +115,11 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
-
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 STATIC_URL = '/static/'
+
+import dj_database_url
+if 'DATABASE_URL' in os.environ:
+    DATABASES['default'] = dj_database_url.config()

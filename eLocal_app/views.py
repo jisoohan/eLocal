@@ -54,8 +54,10 @@ def addProduct(request):
             product_name = form.cleaned_data['product_name']
             price = float(form.cleaned_data['price'])
             store_name = form.cleaned_data['store_name']
-            item = Item.create(product_name)
             store_list = Store.getStores(store_name)
+            if len(store_list) == 0:
+                return HttpResponseRedirect('/products')
+            item = Item.create(product_name)
             item.addToStore(store_list[0].id, price)
         return HttpResponseRedirect('/products')
 

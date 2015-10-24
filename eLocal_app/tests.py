@@ -146,7 +146,7 @@ class ModelFunctionalTest(TestCase):
     def testAddInventory(self):
         item = Item.create("Test item")
         store = Store.create("Test store", "Test address", 2.7182818, -3.1415926)
-        inventory = Inventory.create(store, item, 12345.67)
+        inventory = store.addItem(item.id, 12345.67)
         self.assertEqual(1, len(Inventory.getStoresForItem(item.id)), "Item should remember the store that it is added to")
         self.assertEqual(1, len(Inventory.getItemsForStore(store.id)), "Store should remember the item that it has")
         self.assertEqual(12345.67, Inventory.getPrice(store.id, item.id), "Inventory should remember a store's price for an item")

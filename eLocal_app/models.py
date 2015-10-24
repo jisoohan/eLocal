@@ -137,7 +137,7 @@ class Store(models.Model):
         # Validate fields
         errors = []
         item = None
-        if not validatePrice(price):
+        if not validateFloatOpenSet(price, 0, 1e6):
             errors.append("Price must be nonzero and less than $1,000,000")
         try:
             item = Item.objects.get(id=itemId)

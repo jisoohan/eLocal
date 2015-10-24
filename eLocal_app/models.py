@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from time import time
+from decimal import *
 
 # Adapted from https://stackoverflow.com/questions/8128143/any-existing-solution-to-implement-opening-hours-in-django
 WEEKDAYS = [
@@ -59,7 +60,7 @@ class Item(models.Model):
         if len(errors) > 0:
             raise ValidationError(errors)
 
-        inv = Inventory.create(store, self, Decimal(price))
+        inv = Inventory.create(store, self, price)
         return inv
 
 
@@ -145,7 +146,7 @@ class Store(models.Model):
         if len(errors) > 0:
             raise ValidationError(errors)
 
-        inv = Inventory.create(self, item, Decimal(price))
+        inv = Inventory.create(self, item, price)
         return inv
 
 
@@ -226,14 +227,14 @@ class Inventory(models.Model):
             return item.store_set.all()
         except Item.DoesNotExist as e:
             raise e
-    
+
     @staticmethod
     def getPrice(storeId, itemId):
         try:
             return float(Inventory.objects.get(store__id__exact=storeId, item__id__exact=itemId).price)
         except Inventory.DoesNotExist as e:
             raise e
-    
+
 
 def validateStringLen(string, min_len, max_len):
     if not isinstance(string, str):

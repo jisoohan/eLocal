@@ -76,7 +76,7 @@
             <h4 class="modal-title text-center">Add Store</h4>
           </div>
           <div class="modal-body">
-            <form form="form" class="form-horizontal text-center" method="get" action="{% url 'eLocal_app.views.productSearchPage' %}">
+            <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.addStore' %}">
               <div class="form-group">
                 <label for="{{ addStoreForm.store_name.id_for_label }}" class="control-label">Name</label>
                 {% render_field addStoreForm.store_name class="form-control" type="text" %}
@@ -87,11 +87,12 @@
                 <label for="{{ addStoreForm.longitude.id_for_label }}" class="control-label">Longitude</label>
                 {% render_field addStoreForm.longitude class="form-control" type="text" %}
               </div>
-            </form>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-default">Search</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -104,7 +105,7 @@
             <h4 class="modal-title text-center">Add Product</h4>
           </div>
           <div class="modal-body">
-            <form form="form" class="form-horizontal text-center" method="get" action="{% url 'eLocal_app.views.addProduct' %}">
+            <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.addProduct' %}">
               <div class="form-group">
                 <label for="{{ addProductForm.product_name.id_for_label }}" class="control-label">Name</label>
                 {% render_field addProductForm.product_name class="form-control" type="text" %}
@@ -113,12 +114,12 @@
                 <label for="{{ addProductForm.store_name.id_for_label }}" class="control-label">Store Name</label>
                 {% render_field addProductForm.store_name class="form-control" type="text" %}
               </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-default">Search</button>
+              </div>
             </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-default">Search</button>
-          </div>
         </div>
       </div>
     </div>

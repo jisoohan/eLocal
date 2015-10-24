@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 
 from .forms import ZipcodeForm, ProductSearchForm, StoreSearchForm, ProductAddForm, StoreAddForm
+from .models import Store, Item, Inventory
 
 # Create your views here.
 def homePage(request):
@@ -33,12 +34,26 @@ def shoppingPage(request):
         addStoreForm = StoreAddForm()
     return render(request, 'eLocal_app/shoppingPage.html', {'addProductForm': addProductForm, 'addStoreForm': addStoreForm})
 
-def addProduct(request):
-    if request.method == 'GET':
-        form = ProductAddForm(request.GET)
+def addStore(request):
+    if request.method == 'POST':
+        form = StoreAddForm(request.POST)
         if form.is_valid():
-            name = form.cleaned_data['']
-    else:
-        form = ProductAddForm()
-    return render(request, 'eLocal_app/productSearchPage.html', {'form': form})
+            store_name = form.cleaned_data['store_name']
+            address = form.cleaned_data['address']
+            latitude = form.cleaned_data['latitude']
+            longitude = form.cleaned_data['longitude']
+            Store.create(store_name, address, latitude, longitude)
+        return HttpResponseRedirect('/stores')
+
+def addProduct(request):
+    if request.method == 'POST':
+        form = ProductAddForm(request.POST)
+        if form.is_valid():
+            product_name = form.cleaned_data['product_name']
+            price = float(form.cleaned_data['price'])
+            store_name = form.cleaned_data['store_name']
+            item = Item.create(product_name)
+            store_list = Store.getStores(store_name)
+            item.addToStore(store_list[0].id, price)
+        return HttpResponseRedirect('/products')
 

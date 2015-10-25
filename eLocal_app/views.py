@@ -23,12 +23,8 @@ def productSearchPage(request):
         results = []
         for product in products:
             stores = Inventory.getStoresForItem(product.id)
-            if len(stores) == 0:
-                price = 0
-                store_name = 'nothing'
-            else:
-                price = Inventory.getPrice(stores[0].id, product.id)
-                store_name = stores[0].name
+            price = Inventory.getPrice(stores[0].id, product.id)
+            store_name = stores[0].name
             results.append({'product_name': product.name, 'price': price, 'store_name': store_name})
     return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results})
 
@@ -38,7 +34,17 @@ def storeSearchPage(request):
         addProductForm = ProductAddForm()
         addStoreForm = StoreAddForm()
         stores = Store.objects.all()
-    return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': stores})
+        results = []
+        for store in stores:
+            result = {'store_name': store.name}
+            products = Inventory.getItemsForStore(store.id)
+            product_list = []
+            for product in products:
+                price = Inventory.getPrice(store.id, product.id)
+                product_list.append((product.name, price))
+            result['product_list'] = product_list
+            results.append(result)
+    return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': results})
 
 def shoppingPage(request):
     if request.method == 'GET':

@@ -35,16 +35,24 @@
           {% if stores %}
             {% for store in stores %}
               <a herf="#store{{forloop.counter}}" data-toggle="modal" data-target="#store{{forloop.counter}}" class="list-group-item">
-                <h4 class="list-group-item-heading">{{store.name}}</h4>
+                <h4 class="list-group-item-heading">{{store.store_name}}</h4>
               </a>
               <div id="store{{forloop.counter}}" class="modal fade" role="dialog">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
                       <button type="button" class="close" data-dismiss="modal">&times;</button>
-                      <h4 class="modal-title text-center">{{store.name}}</h4>
+                      <h4 class="modal-title text-center">{{store.store_name}}</h4>
                     </div>
                     <div class="modal-body">
+                      <h5>Products</h5>
+                      <ul>
+                        {% if store.product_list %}
+                          {% for product in store.product_list %}
+                            <li>{{product.0}} ${{product.1}}</li>
+                          {% endfor %}
+                        {% endif %}
+                      </ul>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

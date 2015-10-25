@@ -1,5 +1,6 @@
-{% load staticfiles %}
+{% extends "eLocal_app/navbar.html" %}
 {% load widget_tweaks %}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -11,129 +12,20 @@
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-
-    <link rel="stylesheet" type="text/css" href="{% static 'eLocal_app/productSearchPage.css' %}">
   </head>
 
   <body>
-
-    <!-- Fixed navbar -->
-    <nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand">eLocal</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li><a href="{% url 'eLocal_app.views.homePage' %}">Home</a></li>
-            <li><a href="{% url 'eLocal_app.views.shoppingPage' %}">Shopping Cart</a></li>
-            <li class="active" class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Search by<span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="{% url 'eLocal_app.views.productSearchPage' %}">Product</a></li>
-                <li><a href="{% url 'eLocal_app.views.storeSearchPage' %}">Store</a></li>
-              </ul>
-            </li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Add by<span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#addProduct" id="product-add" data-toggle="modal" data-target="#addProduct">Product</a></li>
-                <li><a href="#addStore" data-toggle="modal" data-target="#addStore">Store</a></li>
-              </ul>
-            </li>
-          </ul>
-        </div>
+    {% block content %}
+      <div class="col-sm-4">
+        <ul class="list-group">
+          {% if products %}
+            {% for product in products %}
+              <li class="list-group-item">{{product.name}}</li>
+            {% endfor %}
+          {% endif %}
+        </ul>
       </div>
-    </nav>
-
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title text-center">Product Search</h3>
-      </div>
-      <div class="panel-body text-center">
-        <form form="form" class="form-inline" method="get" action="{% url 'eLocal_app.views.productSearchPage' %}">
-          <div class="form-group">
-            <label for="{{ searchForm.name.id_for_label }}" class="control-label">Name: </label>
-            {% render_field searchForm.name class="form-control" type="text" %}
-          </div>
-          <button type="submit" class="btn btn-default">Search</button>
-        </form>
-      </div>
-    </div>
-
-    <div id="addStore" class="modal fade" role="dialog">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title text-center">Add Store</h4>
-          </div>
-          <div class="modal-body">
-            <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.addStore' %}">
-              <div class="form-group">
-                <label for="{{ addStoreForm.store_name.id_for_label }}" class="control-label">Name</label>
-                {% render_field addStoreForm.store_name class="form-control" type="text" %}
-                <label for="{{ addStoreForm.address.id_for_label }}" class="control-label">Address</label>
-                {% render_field addStoreForm.address class="form-control" type="text" %}
-                <label for="{{ addStoreForm.latitude.id_for_label }}" class="control-label">Latitude</label>
-                {% render_field addStoreForm.latitude class="form-control" type="text" %}
-                <label for="{{ addStoreForm.longitude.id_for_label }}" class="control-label">Longitude</label>
-                {% render_field addStoreForm.longitude class="form-control" type="text" %}
-              </div>
-          </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-              <button type="submit" class="btn btn-default">Add</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <div id="addProduct" class="modal fade" role="dialog">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title text-center">Add Product</h4>
-          </div>
-          <div class="modal-body">
-            <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.addProduct' %}">
-              <div class="form-group">
-                <label for="{{ addProductForm.product_name.id_for_label }}" class="control-label">Name</label>
-                {% render_field addProductForm.product_name class="form-control" type="text" %}
-                <label for="{{ addProductForm.price.id_for_label }}" class="control-label">Price</label>
-                {% render_field addProductForm.price class="form-control" type="text" %}
-                <label for="{{ addProductForm.store_name.id_for_label }}" class="control-label">Store Name</label>
-                {% render_field addProductForm.store_name class="form-control" type="text" %}
-              </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-default">Add</button>
-              </div>
-            </form>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-sm-4">
-      <ul class="list-group">
-        {% if products %}
-          {% for product in products %}
-            <li class="list-group-item">{{product.name}}</li>
-          {% endfor %}
-        {% endif %}
-      </ul>
-    </div>
-
-
+    {% endblock %}
 
     <!-- Bootstrap core JavaScript
     ================================================== -->

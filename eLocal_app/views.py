@@ -20,7 +20,17 @@ def productSearchPage(request):
         addProductForm = ProductAddForm()
         addStoreForm = StoreAddForm()
         products = Item.objects.all()
-    return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': products})
+        results = []
+        for product in products:
+            stores = Inventory.getStoresForItem(product.id)
+            if len(stores) == 0:
+                price = 0
+                store_name = 'nothing'
+            else:
+                price = Inventory.getPrice(stores[0].id, product.id)
+                store_name = stores[0].name
+            results.append({'product_name': product.name, 'price': price, 'store_name': store_name})
+    return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results})
 
 def storeSearchPage(request):
     if request.method == 'GET':

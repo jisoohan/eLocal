@@ -34,10 +34,10 @@
         <ul class="list-group">
           {% if products %}
             {% for product in products %}
-              <a herf="#product" data-toggle="modal" data-target="#product" class="list-group-item">
+              <a herf="#product{{forloop.counter}}" data-toggle="modal" data-target="#product{{forloop.counter}}" class="list-group-item">
                 <h4 class="list-group-item-heading">{{product.product_name}}</h4>
               </a>
-              <div id="product" class="modal fade" role="dialog">
+              <div id="product{{forloop.counter}}" class="modal fade" role="dialog">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">

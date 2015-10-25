@@ -1,4 +1,4 @@
-{% extends "eLocal_app/navbar.html" %}
+{% extends "eLocal_app/base.html" %}
 {% load widget_tweaks %}
 
 <!DOCTYPE html>
@@ -16,6 +16,20 @@
 
   <body>
     {% block content %}
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title text-center">Store Search</h3>
+        </div>
+        <div class="panel-body text-center">
+          <form form="form" class="form-inline" method="get" action="{% url 'eLocal_app.views.storeSearchPage' %}">
+            <div class="form-group">
+              <label for="{{ searchForm.name.id_for_label }}" class="control-label">Name: </label>
+              {% render_field searchForm.name class="form-control" type="text" %}
+            </div>
+            <button type="submit" class="btn btn-default">Search</button>
+          </form>
+        </div>
+      </div>
       <div class="col-sm-4">
         <ul class="list-group">
           {% if stores %}

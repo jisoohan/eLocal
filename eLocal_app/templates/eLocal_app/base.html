@@ -10,9 +10,10 @@
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="{% static 'eLocal_app/navbar.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'eLocal_app/base.css' %}">
   </head>
       <!-- Fixed navbar -->
+  <body>
     <nav class="navbar navbar-default navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
@@ -47,21 +48,6 @@
       </div>
     </nav>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title text-center">Product Search</h3>
-      </div>
-      <div class="panel-body text-center">
-        <form form="form" class="form-inline" method="get" action="{% url 'eLocal_app.views.productSearchPage' %}">
-          <div class="form-group">
-            <label for="{{ searchForm.name.id_for_label }}" class="control-label">Name: </label>
-            {% render_field searchForm.name class="form-control" type="text" %}
-          </div>
-          <button type="submit" class="btn btn-default">Search</button>
-        </form>
-      </div>
-    </div>
-
     <div id="addStore" class="modal fade" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -81,12 +67,12 @@
                 <label for="{{ addStoreForm.longitude.id_for_label }}" class="control-label">Longitude</label>
                 {% render_field addStoreForm.longitude class="form-control" type="text" %}
               </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-default">Add</button>
+              </div>
+            </form>
           </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-              <button type="submit" class="btn btn-default">Add</button>
-            </div>
-          </form>
         </div>
       </div>
     </div>
@@ -108,12 +94,12 @@
                 <label for="{{ addProductForm.store_name.id_for_label }}" class="control-label">Store Name</label>
                 {% render_field addProductForm.store_name class="form-control" type="text" %}
               </div>
-              </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 <button type="submit" class="btn btn-default">Add</button>
               </div>
             </form>
+          </div>
         </div>
       </div>
     </div>
@@ -126,4 +112,5 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  </body>
 </html>

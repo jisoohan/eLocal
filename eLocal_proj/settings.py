@@ -24,8 +24,6 @@ SECRET_KEY = '94u!nia66buf!wfcfmb-93tg@@d7h7o=t70lwq&6mbf&3hgx6l'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
-
 ALLOWED_HOSTS = []
 
 
@@ -58,14 +56,13 @@ WSGI_APPLICATION = 'eLocal_proj.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'd96iocm5fsitfn',
-        'USER': 'dxyqecmwszokaa',
-        'PASSWORD': '0vAibn-sA4f69zf-eehe1Vz2rh',
-        'HOST': 'ec2-107-21-219-142.compute-1.amazonaws.com', # Or something like this
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+if 'DATABASE_URL' in os.environ:
+    DATABASES['default'] = dj_database_url.config()
 
 TEMPLATES = [
     {
@@ -79,6 +76,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'debug': True,
         },
     },
 ]

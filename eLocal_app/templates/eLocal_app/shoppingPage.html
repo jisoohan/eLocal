@@ -16,6 +16,14 @@
 
   <body>
     {% block content %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-danger text-center">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <strong>{{ message|escape }}</strong>
+          </div>
+        {% endfor %}
+      {% endif %}
       <h1>Shopping Cart</h1>
     {% endblock %}
 

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .forms import ZipcodeForm, ProductSearchForm, StoreSearchForm, ProductAddForm, StoreAddForm
 from .models import Store, Item, Inventory
+from .utils import ElocalUtils
 
 def homePage(request):
     if request.method == 'GET':
@@ -17,13 +18,7 @@ def productSearchPage(request):
         searchForm = ProductSearchForm()
         addProductForm = ProductAddForm()
         addStoreForm = StoreAddForm()
-        products = Item.objects.all()
-        results = []
-        for product in products:
-            stores = Inventory.getStoresForItem(product.id)
-            price = Inventory.getPrice(stores[0].id, product.id)
-            store_name = stores[0].name
-            results.append({'product_name': product.name, 'price': price, 'store_name': store_name})
+        results = ElocalUtils.getAllProducts()
     return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results})
 
 def storeSearchPage(request):
@@ -32,16 +27,7 @@ def storeSearchPage(request):
         addProductForm = ProductAddForm()
         addStoreForm = StoreAddForm()
         stores = Store.objects.all()
-        results = []
-        for store in stores:
-            result = {'store_name': store.name}
-            products = Inventory.getItemsForStore(store.id)
-            product_list = []
-            for product in products:
-                price = Inventory.getPrice(store.id, product.id)
-                product_list.append((product.name, price))
-            result['product_list'] = product_list
-            results.append(result)
+        results = ElocalUtils.getAllStores()
     return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': results})
 
 def shoppingPage(request):
@@ -80,19 +66,16 @@ def searchProduct(request):
         searchForm = ProductSearchForm(request.GET)
         addProductForm = ProductAddForm()
         addStoreForm = StoreAddForm()
+        results = []
         if searchForm.is_valid():
             name = searchForm.cleaned_data['name']
-            products = Item.getItems(name)
-            results = []
-            for product in products:
-                stores = Inventory.getStoresForItem(product.id)
-                price = Inventory.getPrice(stores[0].id, product.id)
-                store_name = stores[0].name
-                results.append({'product_name': product.name, 'price': price, 'store_name': store_name})
-            searchForm = ProductSearchForm()
-            return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results})
+            results = ElocalUtils.parseSearchProduct(name)
+            if len(results) == 0:
+                searchForm.add_error('name', 'No matching products.')
+                results = ElocalUtils.getAllProducts()
         else:
-            return HttpResponseRedirect('/products')
+            results = ElocalUtils.getAllProducts()
+        return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results})
 
 def searchStore(request):
     if request.method == 'GET':
@@ -101,17 +84,10 @@ def searchStore(request):
         addStoreForm = StoreAddForm()
         if searchForm.is_valid():
             name = searchForm.cleaned_data['name']
-            stores = Store.getStores(name)
-            results = []
-            for store in stores:
-                result = {'store_name': store.name}
-                products = Inventory.getItemsForStore(store.id)
-                product_list = []
-                for product in products:
-                    price = Inventory.getPrice(store.id, product.id)
-                    product_list.append((product.name, price))
-                result['product_list'] = product_list
-                results.append(result)
-            return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': results})
+            results = ElocalUtils.parseSearchStore(name)
+            if len(results) == 0:
+                searchForm.add_error('name', 'No matching stores.')
+                results = ElocalUtils.getAllStores()
         else:
-            return HttpResponseRedirect('/stores')
+            results = ElocalUtils.getAllStores()
+        return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': results})

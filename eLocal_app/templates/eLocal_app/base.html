@@ -58,14 +58,28 @@
           <div class="modal-body">
             <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.addStore' %}">
               <div class="form-group">
-                <label for="{{ addStoreForm.store_name.id_for_label }}" class="control-label">Name</label>
-                {% render_field addStoreForm.store_name class="form-control" type="text" %}
-                <label for="{{ addStoreForm.address.id_for_label }}" class="control-label">Address</label>
-                {% render_field addStoreForm.address class="form-control" type="text" %}
-                <label for="{{ addStoreForm.latitude.id_for_label }}" class="control-label">Latitude</label>
-                {% render_field addStoreForm.latitude class="form-control" type="text" %}
-                <label for="{{ addStoreForm.longitude.id_for_label }}" class="control-label">Longitude</label>
-                {% render_field addStoreForm.longitude class="form-control" type="text" %}
+                <label for="{{ addStoreForm.store_name.id_for_label }}" class="control-label col-sm-3">Store Name</label>
+                <div class="col-sm-9">
+                  {% render_field addStoreForm.store_name class="form-control" type="text" %}
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="{{ addStoreForm.address.id_for_label }}" class="control-label col-sm-3">Address</label>
+                <div class="col-sm-9">
+                  {% render_field addStoreForm.address class="form-control" type="text" %}
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="{{ addStoreForm.latitude.id_for_label }}" class="control-label col-sm-3">Latitude</label>
+                <div class="col-sm-9">
+                  {% render_field addStoreForm.latitude class="form-control" type="text" %}
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="{{ addStoreForm.longitude.id_for_label }}" class="control-label col-sm-3">Longitude</label>
+                <div class="col-sm-9">
+                  {% render_field addStoreForm.longitude class="form-control" type="text" %}
+                </div>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -87,12 +101,22 @@
           <div class="modal-body">
             <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.addProduct' %}">
               <div class="form-group">
-                <label for="{{ addProductForm.product_name.id_for_label }}" class="control-label">Name</label>
-                {% render_field addProductForm.product_name class="form-control" type="text" %}
-                <label for="{{ addProductForm.price.id_for_label }}" class="control-label">Price</label>
-                {% render_field addProductForm.price class="form-control" type="text" %}
-                <label for="{{ addProductForm.store_name.id_for_label }}" class="control-label">Store Name</label>
-                {% render_field addProductForm.store_name class="form-control" type="text" %}
+                <label for="{{ addProductForm.product_name.id_for_label }}" class="control-label col-sm-3">Product Name</label>
+                <div class="col-sm-9">
+                  {% render_field addProductForm.product_name class="form-control" type="text" %}
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="{{ addProductForm.price.id_for_label }}" class="control-label col-sm-3">Price</label>
+                <div class="col-sm-9">
+                  {% render_field addProductForm.price class="form-control" type="text" %}
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="{{ addProductForm.store_name.id_for_label }}" class="control-label col-sm-3">Store Name</label>
+                <div class="col-sm-9">
+                  {% render_field addProductForm.store_name class="form-control" type="text" %}
+                </div>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

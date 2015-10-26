@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .forms import ZipcodeForm, ProductSearchForm, StoreSearchForm, ProductAddForm, StoreAddForm
@@ -56,6 +57,7 @@ def addProduct(request):
             store_name = form.cleaned_data['store_name']
             store_list = Store.getStores(store_name)
             if len(store_list) == 0:
+                messages.error(request, 'Store must exist.')
                 return HttpResponseRedirect('/products')
             item = Item.create(product_name)
             item.addToStore(store_list[0].id, price)

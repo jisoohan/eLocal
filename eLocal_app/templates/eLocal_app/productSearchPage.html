@@ -16,6 +16,13 @@
 
   <body>
     {% block content %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="panel panel-default text-center">
+            <strong><h4>{{ message|escape }}<h4></strong>
+          </div>
+        {% endfor %}
+      {% endif %}
       <div class="panel panel-default">
         <div class="panel-heading">
           <h2 class="panel-title text-center">Product Search</h2>

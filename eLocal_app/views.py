@@ -1,10 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-
 from .forms import ZipcodeForm, ProductSearchForm, StoreSearchForm, ProductAddForm, StoreAddForm
 from .models import Store, Item, Inventory
 
-# Create your views here.
 def homePage(request):
     if request.method == 'GET':
         form = ZipcodeForm()
@@ -95,3 +93,25 @@ def searchProduct(request):
             return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results})
         else:
             return HttpResponseRedirect('/products')
+
+def searchStore(request):
+    if request.method == 'GET':
+        searchForm = StoreSearchForm(request.GET)
+        addProductForm = ProductAddForm()
+        addStoreForm = StoreAddForm()
+        if searchForm.is_valid():
+            name = searchForm.cleaned_data['name']
+            stores = Store.getStores(name)
+            results = []
+            for store in stores:
+                result = {'store_name': store.name}
+                products = Inventory.getItemsForStore(store.id)
+                product_list = []
+                for product in products:
+                    price = Inventory.getPrice(store.id, product.id)
+                    product_list.append((product.name, price))
+                result['product_list'] = product_list
+                results.append(result)
+            return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': results})
+        else:
+            return HttpResponseRedirect('/stores')

@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^addstore', views.addStore),
     url(r'^products', views.productSearchPage),
     url(r'^searchproduct', views.searchProduct),
+    url(r'^searchstore', views.searchStore),
     url(r'^shopping', views.shoppingPage),
     url(r'^stores', views.storeSearchPage), #improve later to take into account store ID
     url(r'^', views.homePage),

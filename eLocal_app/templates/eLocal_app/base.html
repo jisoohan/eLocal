@@ -56,29 +56,29 @@
             <h3 class="modal-title text-center">Add Store</h3>
           </div>
           <div class="modal-body">
-            <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.addStore' %}">
+            <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.addStore' %}" id="storeForm">
               <div class="form-group">
                 <label for="{{ addStoreForm.store_name.id_for_label }}" class="control-label col-sm-3">Store Name</label>
                 <div class="col-sm-9">
-                  {% render_field addStoreForm.store_name class="form-control" type="text" %}
+                  {% render_field addStoreForm.store_name class="form-control" type="text" id="storeName" %}
                 </div>
               </div>
               <div class="form-group">
                 <label for="{{ addStoreForm.address.id_for_label }}" class="control-label col-sm-3">Address</label>
                 <div class="col-sm-9">
-                  {% render_field addStoreForm.address class="form-control" type="text" %}
+                  {% render_field addStoreForm.address class="form-control" type="text" id="address" %}
                 </div>
               </div>
               <div class="form-group">
                 <label for="{{ addStoreForm.latitude.id_for_label }}" class="control-label col-sm-3">Latitude</label>
                 <div class="col-sm-9">
-                  {% render_field addStoreForm.latitude class="form-control" type="text" %}
+                  {% render_field addStoreForm.latitude class="form-control" type="text" id="latitude" %}
                 </div>
               </div>
               <div class="form-group">
                 <label for="{{ addStoreForm.longitude.id_for_label }}" class="control-label col-sm-3">Longitude</label>
                 <div class="col-sm-9">
-                  {% render_field addStoreForm.longitude class="form-control" type="text" %}
+                  {% render_field addStoreForm.longitude class="form-control" type="text" id="longitude" %}
                 </div>
               </div>
               <div class="modal-footer">
@@ -99,23 +99,23 @@
             <h3 class="modal-title text-center">Add Product</h3>
           </div>
           <div class="modal-body">
-            <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.addProduct' %}">
+            <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.addProduct' %}" id="productForm">
               <div class="form-group">
                 <label for="{{ addProductForm.product_name.id_for_label }}" class="control-label col-sm-3">Product Name</label>
                 <div class="col-sm-9">
-                  {% render_field addProductForm.product_name class="form-control" type="text" %}
+                  {% render_field addProductForm.product_name class="form-control" type="text" id="productName" %}
                 </div>
               </div>
               <div class="form-group">
                 <label for="{{ addProductForm.price.id_for_label }}" class="control-label col-sm-3">Price</label>
                 <div class="col-sm-9">
-                  {% render_field addProductForm.price class="form-control" type="text" %}
+                  {% render_field addProductForm.price class="form-control" type="text" id="productPrice" %}
                 </div>
               </div>
               <div class="form-group">
                 <label for="{{ addProductForm.store_name.id_for_label }}" class="control-label col-sm-3">Store Name</label>
                 <div class="col-sm-9">
-                  {% render_field addProductForm.store_name class="form-control" type="text" %}
+                  {% render_field addProductForm.store_name class="form-control" type="text" id="storeNameproduct" %}
                 </div>
               </div>
               <div class="modal-footer">
@@ -134,6 +134,73 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script type="text/javascript">
+      $('#productForm').on('submit', function(e) {
+        var productName = $('#productName');
+        var productPrice = $('#productPrice');
+        var storeName = $('#storeNameproduct');
+        if (!productName.val()) {
+          productName.closest('.form-group').removeClass('has-success').addClass('has-error');
+        } else {
+          productName.closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+        if (!productPrice.val()) {
+          productPrice.closest('.form-group').removeClass('has-success').addClass('has-error');
+        } else {
+          productPrice.closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+        if (!storeName.val()) {
+          storeName.closest('.form-group').removeClass('has-success').addClass('has-error');
+        } else {
+          storeName.closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+        if (!productName.val() || !productPrice.val() || !storeName.val()) {
+          e.preventDefault();
+        }
+        $('.modal').on('hidden.bs.modal', function() {
+          $(this).find('form')[0].reset();
+          productName.closest('.form-group').removeClass('has-error').removeClass('has-success');
+          productPrice.closest('.form-group').removeClass('has-error').removeClass('has-success');
+          storeName.closest('.form-group').removeClass('has-error').removeClass('has-success');
+        });
+      });
+      $('#storeForm').on('submit', function(e) {
+        var storeName = $('#storeName');
+        var address = $('#address');
+        var latitude = $('#latitude');
+        var longitude = $('#longitude');
+        if (!storeName.val()) {
+          storeName.closest('.form-group').removeClass('has-success').addClass('has-error');
+        } else {
+          storeName.closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+        if (!address.val()) {
+          address.closest('.form-group').removeClass('has-success').addClass('has-error');
+        } else {
+          address.closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+        if (!latitude.val()) {
+          latitude.closest('.form-group').removeClass('has-success').addClass('has-error');
+        } else {
+          latitude.closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+        if (!longitude.val()) {
+          longitude.closest('.form-group').removeClass('has-success').addClass('has-error');
+        } else {
+          longitude.closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+        if (!storeName.val() || !address.val() || !latitude.val() || !longitude.val()) {
+          e.preventDefault();
+        }
+        $('.modal').on('hidden.bs.modal', function() {
+          $(this).find('form')[0].reset();
+          storeName.closest('.form-group').removeClass('has-error').removeClass('has-success');
+          address.closest('.form-group').removeClass('has-error').removeClass('has-success');
+          latitude.closest('.form-group').removeClass('has-error').removeClass('has-success');
+          longitude.closest('.form-group').removeClass('has-error').removeClass('has-success');
+        });
+      });
+    </script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   </body>

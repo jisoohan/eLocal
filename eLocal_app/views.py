@@ -77,3 +77,21 @@ def addProduct(request):
             item.addToStore(store_list[0].id, price)
         return HttpResponseRedirect('/products')
 
+def searchProduct(request):
+    if request.method == 'GET':
+        searchForm = ProductSearchForm(request.GET)
+        addProductForm = ProductAddForm()
+        addStoreForm = StoreAddForm()
+        if searchForm.is_valid():
+            name = searchForm.cleaned_data['name']
+            products = Item.getItems(name)
+            results = []
+            for product in products:
+                stores = Inventory.getStoresForItem(product.id)
+                price = Inventory.getPrice(stores[0].id, product.id)
+                store_name = stores[0].name
+                results.append({'product_name': product.name, 'price': price, 'store_name': store_name})
+            searchForm = ProductSearchForm()
+            return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results})
+        else:
+            return HttpResponseRedirect('/products')

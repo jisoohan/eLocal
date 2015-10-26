@@ -21,7 +21,7 @@
           <h3 class="panel-title text-center">Product Search</h3>
         </div>
         <div class="panel-body text-center">
-          <form form="form" class="form-inline" method="get" action="{% url 'eLocal_app.views.productSearchPage' %}">
+          <form form="form" class="form-inline" method="get" action="{% url 'eLocal_app.views.searchProduct' %}">
             <div class="form-group">
               <label for="{{ searchForm.name.id_for_label }}" class="control-label">Name: </label>
               {% render_field searchForm.name class="form-control" type="text" %}

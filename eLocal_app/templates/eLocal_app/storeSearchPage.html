@@ -16,26 +16,20 @@
 
   <body>
     {% block content %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-danger text-center">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <strong>{{ message|escape }}</strong>
+          </div>
+        {% endfor %}
+      {% endif %}
       <div class="panel panel-default">
         <div class="panel-heading">
           <h2 class="panel-title text-center">Store Search</h2>
         </div>
         <div class="panel-body text-center">
           <form form="form" class="form-inline" method="get" action="{% url 'eLocal_app.views.searchStore' %}">
-            {% if searchForm.errors %}
-              {% for field in searchForm %}
-                {% for error in field.errors %}
-                  <div class="alert alert-error">
-                    <strong>{{ error|escape }}</strong>
-                  </div>
-                {% endfor %}
-              {% endfor %}
-              {% for error in searchForm.non_field_errors %}
-                <div class="alert alert-error">
-                  <strong>{{ error|escape }}</strong>
-                </div>
-              {% endfor %}
-            {% endif %}
             <div class="form-group">
               <label for="{{ searchForm.name.id_for_label }}" class="control-label">Name: </label>
               {% render_field searchForm.name class="form-control" type="text" %}

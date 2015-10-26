@@ -73,9 +73,10 @@ def searchProduct(request):
             name = searchForm.cleaned_data['name']
             results = ElocalUtils.parseSearchProduct(name)
             if len(results) == 0:
-                searchForm.add_error('name', 'No matching products.')
+                messages.error(request, 'No matching products.')
                 results = ElocalUtils.getAllProducts()
         else:
+            messages.error(request, 'Must input a product.')
             results = ElocalUtils.getAllProducts()
         return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results})
 
@@ -88,8 +89,9 @@ def searchStore(request):
             name = searchForm.cleaned_data['name']
             results = ElocalUtils.parseSearchStore(name)
             if len(results) == 0:
-                searchForm.add_error('name', 'No matching stores.')
+                messages.error(request, 'No matching stores.')
                 results = ElocalUtils.getAllStores()
         else:
+            messages.error(request, 'Must input a store.')
             results = ElocalUtils.getAllStores()
         return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': results})

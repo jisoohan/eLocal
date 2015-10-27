@@ -1,6 +1,15 @@
 from .models import Inventory, Item, Store
 
 class ElocalUtils:
+
+    @staticmethod
+    def getStoreChoices():
+        stores = Store.objects.all()
+        results = []
+        for store in stores:
+            results.append((store.name, store.name))
+        return results
+
     @staticmethod
     def getAllStores():
         stores = Store.objects.all()

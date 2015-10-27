@@ -54,8 +54,24 @@
                       <h3 class="modal-title text-center">{{product.product_name}}</h3>
                     </div>
                     <div class="modal-body">
-                      <h4>Price: ${{product.price}}</h4>
-                      <h4>Store: {{product.store_name}}</h4>
+                      <table class="table table-condensed">
+                        <thead>
+                          <tr>
+                            <th>Store Name</th>
+                            <th>Price</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% if product.store_list %}
+                            {% for store in product.store_list %}
+                              <tr>
+                                <td>{{store.0}}</td>
+                                <td>${{store.1}}</td>
+                              </tr>
+                            {% endfor %}
+                          {% endif %}
+                        </tbody>
+                      </table>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

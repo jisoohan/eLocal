@@ -36,10 +36,14 @@ class ElocalUtils:
         products = Item.objects.all()
         results = []
         for product in products:
+            result = {'product_name': product.name}
             stores = Inventory.getStoresForItem(product.id)
-            price = Inventory.getPrice(stores[0].id, product.id)
-            store_name = stores[0].name
-            results.append({'product_name': product.name, 'price': price, 'store_name': store_name})
+            store_list = []
+            for store in stores:
+                price = Inventory.getPrice(store.id, product.id)
+                store_list.append((store.name, price))
+            result['store_list'] = store_list
+            results.append(result)
         return results
 
     @staticmethod
@@ -47,8 +51,12 @@ class ElocalUtils:
         products = Item.getItems(name)
         results = []
         for product in products:
+            result = {'product_name': product.name}
             stores = Inventory.getStoresForItem(product.id)
-            price = Inventory.getPrice(stores[0].id, product.id)
-            store_name = stores[0].name
-            results.append({'product_name': product.name, 'price': price, 'store_name': store_name})
+            store_list = []
+            for store in stores:
+                price = Inventory.getPrice(store.id, product.id)
+                store_list.append((store.name, price))
+            result['store_list'] = store_list
+            results.append(result)
         return results

@@ -59,7 +59,10 @@ def addProduct(request):
             if len(store_list) == 0:
                 messages.error(request, 'Store must exist.')
                 return HttpResponseRedirect('/products')
-            item = Item.create(product_name)
+            if Item.objects.filter(name=product_name).exists():
+                item = Item.objects.get(name=product_name)
+            else:
+                item = Item.create(product_name)
             item.addToStore(store_list[0].id, price)
         return HttpResponseRedirect('/products')
 

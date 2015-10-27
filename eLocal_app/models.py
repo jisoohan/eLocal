@@ -16,7 +16,7 @@ WEEKDAYS = [
 
 
 class Item(models.Model):
-    name = models.CharField(max_length=128)
+    name = models.CharField(max_length=128, unique=True)
     # Stores can be accessed using <item>.store_set
 
     @staticmethod

@@ -39,7 +39,7 @@
           </form>
         </div>
       </div>
-      <div class="col-sm-4">
+      <div class="col-sm-4 col-sm-offset-4 text-center">
         <ul class="list-group">
           {% if stores %}
             {% for store in stores %}
@@ -57,13 +57,24 @@
                       <h4>Address</h4>
                       <address>{{store.address}}</address>
                       <h4>Products</h4>
-                      <ul>
-                        {% if store.product_list %}
-                          {% for product in store.product_list %}
-                            <li>{{product.0}} ${{product.1}}</li>
-                          {% endfor %}
-                        {% endif %}
-                      </ul>
+                      <table class="table table-condensed">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Price</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% if store.product_list %}
+                            {% for product in store.product_list %}
+                              <tr>
+                                <td>{{product.0}}</td>
+                                <td>${{product.1}}</td>
+                              </tr>
+                            {% endfor %}
+                          {% endif %}
+                        </tbody>
+                      </table>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

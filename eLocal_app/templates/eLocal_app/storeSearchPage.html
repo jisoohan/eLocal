@@ -43,7 +43,7 @@
         <ul class="list-group">
           {% if stores %}
             {% for store in stores %}
-              <a herf="#store{{forloop.counter}}" data-toggle="modal" data-target="#store{{forloop.counter}}" class="list-group-item">
+              <a href="#store{{forloop.counter}}" data-toggle="modal" data-target="#store{{forloop.counter}}" class="list-group-item">
                 <h4 class="list-group-item-heading">{{store.store_name}}</h4>
               </a>
               <div id="store{{forloop.counter}}" class="modal fade" role="dialog">

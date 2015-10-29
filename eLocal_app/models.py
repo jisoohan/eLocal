@@ -51,7 +51,7 @@ class Item(models.Model):
         # Validate fields
         errors = []
         store = None
-        if not validateFloatOpenSet(price, 0, 1e6):
+        if not validateNumOpenSet(price, 0, 1e6):
             errors.append("Price must be nonzero and less than $1,000,000")
         try:
             store = Store.objects.get(id=storeId)
@@ -80,9 +80,9 @@ class Store(models.Model):
             errors.append("Name must be a non-empty string 1 to 128 characters long")
         if not validateStringLen(address, 1, 256):
             errors.append("Address must be a non-empty string 1 to 128 characters long")
-        if not validateFloatClosedSet(latitude, -90, 90):
+        if not validateNumClosedSet(latitude, -90, 90):
             errors.append("Latitude must be a number between -90 and 90")
-        if not validateFloatClosedSet(longitude, -180, 180):
+        if not validateNumClosedSet(longitude, -180, 180):
             errors.append("Longitude must be a number between -180 and 180")
         if len(errors) > 0:
             raise ValidationError(errors)
@@ -137,7 +137,7 @@ class Store(models.Model):
         # Validate fields
         errors = []
         item = None
-        if not validateFloatOpenSet(price, 0, 1e6):
+        if not validateNumOpenSet(price, 0, 1e6):
             errors.append("Price must be nonzero and less than $1,000,000")
         try:
             item = Item.objects.get(id=itemId)
@@ -201,7 +201,7 @@ class Inventory(models.Model):
             errors.append("Invalid store object")
         if not isinstance(item, Item):
             errors.append("Invalid item object")
-        if not validateFloatOpenSet(price, 0, 1e6):
+        if not validateNumOpenSet(price, 0, 1e6):
             errors.append("Price must be nonzero and less than $1,000,000")
         if len(errors) > 0:
             raise ValidationError(errors)
@@ -243,15 +243,15 @@ def validateStringLen(string, min_len, max_len):
         return False
     return True
 
-def validateFloatOpenSet(num, minimum, maximum):
-    if not isinstance(num, float) and not isinstance(num, int):
+def validateNumOpenSet(num, minimum, maximum):
+    if not isinstance(num, Decimal) and not isinstance(num, float) and not isinstance(num, int):
         return False
     if num < minimum or num > maximum:
         return False
     return True
 
-def validateFloatClosedSet(num, minimum, maximum):
-    if not isinstance(num, float) and not isinstance(num, int):
+def validateNumClosedSet(num, minimum, maximum):
+    if not isinstance(num, Decimal) and not not isinstance(num, float) and not isinstance(num, int):
         return False
     if num <= minimum or num >= maximum:
         return False

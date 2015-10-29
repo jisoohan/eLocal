@@ -16,12 +16,11 @@ def homePage(request):
 
 def productSearchPage(request):
     if request.method == 'GET':
-        days = [('sun', 'Sunday'), ('mon', 'Monday'), ('tues', 'Tuesday'), ('wed', 'Wednesday'), ('thur', 'Thursday')]
         searchForm = ProductSearchForm()
         addProductForm = ProductAddForm()
         addStoreForm = StoreAddForm()
         results = ElocalUtils.getAllProducts()
-    return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results, 'days': days})
+    return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results})
 
 def storeSearchPage(request):
     if request.method == 'GET':
@@ -43,10 +42,18 @@ def addStore(request):
         form = StoreAddForm(request.POST)
         if form.is_valid():
             store_name = form.cleaned_data['store_name']
-            address = form.cleaned_data['address']
-            latitude = form.cleaned_data['latitude']
-            longitude = form.cleaned_data['longitude']
-            Store.create(store_name, address, latitude, longitude)
+            address = ''
+            if form.cleaned_data['street_number']:
+                address = form.cleaned_data['street_number'] + ' ' + form.cleaned_data['street_address']
+            else:
+                address = form.cleaned_data['street_address']
+            city = form.cleaned_data['city']
+            state = form.cleaned_data['state']
+            zip_code = form.cleaned_data['zip_code']
+            country = form.cleaned_data['country']
+            has_card = form.cleaned_data['has_card']
+            if not Store.objects.filter(name=store_name, address=address, city=city, state=state, country=country).exists():
+                Store.create(store_name, address, city, state, zip_code, country, has_card)
         return HttpResponseRedirect('/stores')
 
 def addProduct(request):

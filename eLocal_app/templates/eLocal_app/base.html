@@ -62,32 +62,32 @@
                 <div class="col-sm-10">{% render_field addStoreForm.store_name class="form-control col-sm-10" type="text" id="storeName" %}</div>
               </div>
               <div class="form-group">
-                  <label for="autocomplete" class="control-label col-sm-2">Search Address</label>
+                <label for="autocomplete" class="control-label col-sm-2">Search Address</label>
                 <div class="col-sm-10"><input id="autocomplete" class="form-control" placeholder="Enter store address" type="text" autocomplete="off"></input></div>
               </div>
               <div class="form-group">
-                <label for="{{ addStoreForm.street_number.id_for_label }}" class="control-label col-sm-2">Address</label>
+                <label class="control-label col-sm-2">Address</label>
                 <div class="col-sm-2">{% render_field addStoreForm.street_number class="form-control" type="text" id="street_number" disabled="true" %}</div>
                 <div class="col-sm-8">{% render_field addStoreForm.street_address class="form-control" type="text" id="route" disabled="true" %}</div>
               </div>
               <div class="form-group">
-                <label for="{{ addStoreForm.city.id_for_label }}" class="control-label col-sm-2">City</label>
+                <label for="locality" class="control-label col-sm-2">City</label>
                 <div class="col-sm-10">{% render_field addStoreForm.city class="form-control" type="text" id="locality" disabled="true" %}</div>
               </div>
               <div class="form-group">
-                <label for="{{ addStoreForm.state.id_for_label }}" class="control-label col-sm-2">State</label>
+                <label for="administrative_area_level_1" class="control-label col-sm-2">State</label>
                 <div class="col-sm-10">{% render_field addStoreForm.state class="form-control" type="text" id="administrative_area_level_1" disabled="true" %}</div>
               </div>
               <div class="form-group">
-                <label for="{{ addStoreForm.zip_code.id_for_label }}" class="control-label col-sm-2">Zipcode</label>
+                <label for="postal_code" class="control-label col-sm-2">Zipcode</label>
                 <div class="col-sm-10">{% render_field addStoreForm.zip_code class="form-control" type="text" id="postal_code" disabled="true" %}</div>
               </div>
               <div class="form-group">
-                <label for="{{ addStoreForm.country.id_for_label }}" class="control-label col-sm-2">Country</label>
+                <label for="country" class="control-label col-sm-2">Country</label>
                 <div class="col-sm-10">{% render_field addStoreForm.country class="form-control" type="text" id="country" disabled="true" %}</div>
               </div>
               <div class="form-group">
-                <label for="{{ addStoreForm.has_card.id_for_label }}" class="control-label col-sm-2">Membership Card</label>
+                <label for="has_card" class="control-label col-sm-2">Membership Card</label>
                 <div class="col-sm-1">{% render_field addStoreForm.has_card class="form-control" id="has_card"%}</div>
               </div>
               <div class="form-group">
@@ -223,7 +223,7 @@
 
           for (var component in componentForm) {
             document.getElementById(component).value = '';
-            //document.getElementById(component).disabled = false;
+            document.getElementById(component).disabled = false;
           }
 
           // Get each component of the address from the place details

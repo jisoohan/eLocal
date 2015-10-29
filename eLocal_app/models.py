@@ -43,7 +43,7 @@ class Item(models.Model):
         # Validate fields
         errors = []
         store = None
-        if not validateFloatOpenSet(price, 0, 1e6):
+        if not validateNumOpenSet(price, 0, 1e6):
             errors.append("Price must be nonzero and less than $1,000,000")
         try:
             store = Store.objects.get(id=storeId)
@@ -109,7 +109,7 @@ class Store(models.Model):
         # Validate fields
         errors = []
         item = None
-        if not validateFloatOpenSet(price, 0, 1e6):
+        if not validateNumOpenSet(price, 0, 1e6):
             errors.append("Price must be nonzero and less than $1,000,000")
         try:
             item = Item.objects.get(id=itemId)
@@ -162,7 +162,7 @@ class Inventory(models.Model):
             errors.append("Invalid store object")
         if not isinstance(item, Item):
             errors.append("Invalid item object")
-        if not validateFloatOpenSet(price, 0, 1e6):
+        if not validateNumOpenSet(price, 0, 1e6):
             errors.append("Price must be nonzero and less than $1,000,000")
         if len(errors) > 0:
             raise ValidationError(errors)
@@ -203,8 +203,8 @@ def validateStringLen(string, min_len, max_len):
         return False
     return True
 
-def validateFloatOpenSet(num, minimum, maximum):
-    if not isinstance(num, float) and not isinstance(num, int):
+def validateNumOpenSet(num, minimum, maximum):
+    if not isinstance(num, Decimal) and not isinstance(num, float) and not isinstance(num, int):
         return False
     if num < minimum or num > maximum:
         return False

@@ -21,7 +21,7 @@ class ProductAddForm(forms.Form):
 
 class StoreAddForm(forms.Form):
     store_name = forms.CharField(max_length=128)
-    street_number = forms.CharField(max_length=10, required=False)
+    street_number = forms.CharField(max_length=10)
     street_address = forms.CharField(max_length=256)
     city = forms.CharField(max_length=128)
     state = forms.CharField(max_length=2)

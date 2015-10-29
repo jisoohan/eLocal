@@ -42,11 +42,7 @@ def addStore(request):
         form = StoreAddForm(request.POST)
         if form.is_valid():
             store_name = form.cleaned_data['store_name']
-            address = ''
-            if form.cleaned_data['street_number']:
-                address = form.cleaned_data['street_number'] + ' ' + form.cleaned_data['street_address']
-            else:
-                address = form.cleaned_data['street_address']
+            address = form.cleaned_data['street_number'] + ' ' + form.cleaned_data['street_address']
             city = form.cleaned_data['city']
             state = form.cleaned_data['state']
             zip_code = form.cleaned_data['zip_code']

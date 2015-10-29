@@ -27,6 +27,7 @@ h1 {
   display: inline-block;
   text-align: left;
   vertical-align: middle;
+  width: 800px;
 }
 
 .pac-container {

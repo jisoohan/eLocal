@@ -1,74 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator
 from time import time
 from decimal import *
-
-# Adapted from https://stackoverflow.com/questions/8128143/any-existing-solution-to-implement-opening-hours-in-django
-WEEKDAYS = (
-  (0, "Sunday"),
-  (1, "Monday"),
-  (2, "Tuesday"),
-  (3, "Wednesday"),
-  (4, "Thursday"),
-  (5, "Friday"),
-  (6, "Saturday"),
-)
-
-STATES = (
-    (0, "AL"),
-    (1, "AK"),
-    (2, "AZ"),
-    (3, "AR"),
-    (4, "CA"),
-    (5, "CO"),
-    (6, "CT"),
-    (7, "DE"),
-    (8, "FL"),
-    (9, "GA"),
-    (10, "HI"),
-    (11, "ID"),
-    (12, "IL"),
-    (13, "IN"),
-    (14, "IA"),
-    (15, "KS"),
-    (16, "KY"),
-    (17, "LA"),
-    (18, "ME"),
-    (19, "MD"),
-    (20, "MA"),
-    (21, "MI"),
-    (22, "MN"),
-    (23, "MS"),
-    (24, "MO"),
-    (25, "MT"),
-    (26, "NE"),
-    (27, "NV"),
-    (28, "NH"),
-    (29, "NJ"),
-    (30, "NM"),
-    (31, "NY"),
-    (32, "NC"),
-    (33, "ND"),
-    (34, "OH"),
-    (35, "OK"),
-    (36, "OR"),
-    (37, "PA"),
-    (38, "RI"),
-    (39, "SC"),
-    (40, "SD"),
-    (41, "TN"),
-    (42, "TX"),
-    (43, "UT"),
-    (44, "VT"),
-    (45, "VA"),
-    (46, "WA"),
-    (47, "WV"),
-    (48, "WI"),
-    (49, "WY"),
-    (50, "DC"),
-)
-
 
 class Item(models.Model):
     name = models.CharField(max_length=128)
@@ -131,7 +64,7 @@ class Store(models.Model):
     zip_code = models.CharField(max_length=10)
     country = models.CharField(max_length=128)
     has_card = models.BooleanField()
-    # Hours can be accessed using <store>.openhours_set
+    # Hours can be accessed using <store>.openhour_set
     items = models.ManyToManyField(Item, through='Inventory')
 
     @staticmethod
@@ -171,34 +104,6 @@ class Store(models.Model):
         name = name.strip()
         return list(Store.objects.filter(name__icontains=name))
 
-    def setOpenHours(self, dayOfWeek, startTime, endTime, isOpen=True):
-        # Validate fields
-        # TODO: use OpenHours's validation
-        errors = []
-        if not validateWeekday(dayOfWeek):
-            errors.append("Day of week must be between 0 and 6 inclusive")
-        if not isinstance(startTime, time):
-            errors.append("Opening time must be a valid time object")
-        if not isinstance(endTime, time):
-            errors.append("Closing time must be a valid time object")
-        if not isinstance(isOpen, bool):
-            errors.append("isOpen flag must be true or false")
-        if startTime > endTime and isOpen:
-            errors.append("Closing time must be after opening time")
-        if len(errors) > 0:
-            raise ValidationError(errors)
-
-        days = self.openhours_set.all()
-        for day in days:
-            if day.weekday == dayOfWeek:
-                day.from_hour = startTime
-                day.to_hour = endTime
-                day.is_open = isOpen
-                day.save()
-                return day
-        new_day = OpenHours.create(self, dayOfWeek, startTime, endTime, isOpen)
-        return new_day
-
     # Associates this store with a corresponding item and price
     def addItem(self, itemId, price):
         # Validate fields
@@ -216,42 +121,31 @@ class Store(models.Model):
         inv = Inventory.create(self, item, price)
         return inv
 
-
-# Adapted from https://stackoverflow.com/questions/8128143/any-existing-solution-to-implement-opening-hours-in-django
-class OpenHours(models.Model):
+class OpenHour(models.Model):
     # Each OpenHours object belongs to one store, but each store has multiple OpenHours
-    store     = models.ForeignKey(Store)
-    weekday   = models.IntegerField(choices=WEEKDAYS)
-    is_open   = models.BooleanField()
-    from_hour = models.TimeField()
-    to_hour   = models.TimeField()
+    store = models.ForeignKey(Store)
+    day = models.CharField(max_length=9)
+    open_time = models.TimeField()
+    close_time = models.TimeField()
+    closed = models.BooleanField()
 
     @staticmethod
-    def create(store, weekday, from_hour, to_hour, is_open):
+    def create(store, day, open_time, close_time, closed):
         # Validate fields
         errors = []
         if not isinstance(store, Store):
             errors.append("Invalid store object")
-        if not validateWeekday(weekday):
-            errors.append("Day of week must be between 0 and 6 inclusive")
-        if not isinstance(from_hour, time):
-            errors.append("Opening time must be a valid time object")
-        if not isinstance(to_hour, time):
-            errors.append("Closing time must be a valid time object")
-        if not isinstance(is_open, bool):
-            errors.append("isOpen flag must be true or false")
-        if from_hour >= to_hour and is_open:
-            errors.append("Closing time must be after opening time")
+        if not validateStringLen(day, 1, 9):
+            errors.append("Day must be valid")
+        if not closed:
+            if not validateHours(open_time, close_time):
+                errors.append("Hours must be valid")
         if len(errors) > 0:
             raise ValidationError(errors)
 
-        new_day = OpenHours(store=store,
-                            weekday=weekday,
-                            is_open=is_open,
-                            from_hour=from_hour,
-                            to_hour=to_hour)
-        new_day.save()
-        return new_day
+        open_hour = OpenHour(store=store, day=day, open_time=open_time, close_time=close_time, closed=closed)
+        open_hour.save()
+        return open_hour
 
 
 # Tracks item-store-price associations
@@ -302,7 +196,6 @@ class Inventory(models.Model):
         except Inventory.DoesNotExist as e:
             raise e
 
-
 def validateStringLen(string, min_len, max_len):
     if not isinstance(string, str):
         return False
@@ -317,11 +210,9 @@ def validateFloatOpenSet(num, minimum, maximum):
         return False
     return True
 
-def validateWeekday(day):
-    if not isinstance(day, int):
-        return False
-    for weekday, _ in WEEKDAYS:
-        if day == weekday:
-            return True
+def validateHours(open_time, close_time):
+    if open_time == close_time:
+        return True
+    if close_time > open_time:
+        return True
     return False
-

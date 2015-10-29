@@ -16,11 +16,12 @@ def homePage(request):
 
 def productSearchPage(request):
     if request.method == 'GET':
+        days = [('sun', 'Sunday'), ('mon', 'Monday'), ('tues', 'Tuesday'), ('wed', 'Wednesday'), ('thur', 'Thursday')]
         searchForm = ProductSearchForm()
         addProductForm = ProductAddForm()
         addStoreForm = StoreAddForm()
         results = ElocalUtils.getAllProducts()
-    return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results})
+    return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results, 'days': days})
 
 def storeSearchPage(request):
     if request.method == 'GET':

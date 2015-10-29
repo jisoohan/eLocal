@@ -20,6 +20,11 @@ class ProductAddForm(forms.Form):
 
 class StoreAddForm(forms.Form):
     store_name = forms.CharField(max_length=128)
-    address = forms.CharField(max_length=256)
-    latitude = forms.FloatField()
-    longitude = forms.FloatField()
+    street_number = forms.CharField(max_length=10, required=False)
+    street_address = forms.CharField(max_length=256)
+    city = forms.CharField(max_length=128)
+    state = forms.CharField(max_length=2)
+    zip_code = forms.CharField(max_length=10)
+    country = forms.CharField(max_length=128)
+    has_card = forms.BooleanField()
+

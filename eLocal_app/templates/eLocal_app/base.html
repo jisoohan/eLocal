@@ -56,7 +56,7 @@
             <h3 class="modal-title text-center">Add Store</h3>
           </div>
           <div class="modal-body">
-            <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.addStore' %}" id="storeForm">
+            <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.addStore' %}" id="storeForm" autocomplete="off">
               <div class="form-group">
                 <label for="{{ addStoreForm.store_name.id_for_label }}" class="control-label col-sm-3">Store Name</label>
                 <div class="col-sm-9">
@@ -64,21 +64,48 @@
                 </div>
               </div>
               <div class="form-group">
-                <label for="{{ addStoreForm.address.id_for_label }}" class="control-label col-sm-3">Address</label>
+                  <label for="autocomplete" class="control-label col-sm-3">Search Address</label>
                 <div class="col-sm-9">
-                  {% render_field addStoreForm.address class="form-control" type="text" id="address" %}
+                  <input id="autocomplete" class="form-control" placeholder="Enter store address" type="text" autocomplete="off"></input>
                 </div>
               </div>
               <div class="form-group">
-                <label for="{{ addStoreForm.latitude.id_for_label }}" class="control-label col-sm-3">Latitude</label>
-                <div class="col-sm-9">
-                  {% render_field addStoreForm.latitude class="form-control" type="text" id="latitude" %}
+                <label for="{{ addStoreForm.street_number.id_for_label }}" class="control-label col-sm-3">Address</label>
+                <div class="col-sm-2">
+                  {% render_field addStoreForm.street_number class="form-control" type="text" id="street_number" disabled="true" %}
+                </div>
+                <div class="col-sm-7">
+                  {% render_field addStoreForm.street_address class="form-control" type="text" id="route" disabled="true" %}
                 </div>
               </div>
               <div class="form-group">
-                <label for="{{ addStoreForm.longitude.id_for_label }}" class="control-label col-sm-3">Longitude</label>
+                <label for="{{ addStoreForm.city.id_for_label }}" class="control-label col-sm-3">City</label>
                 <div class="col-sm-9">
-                  {% render_field addStoreForm.longitude class="form-control" type="text" id="longitude" %}
+                  {% render_field addStoreForm.city class="form-control" type="text" id="locality" disabled="true" %}
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="{{ addStoreForm.state.id_for_label }}" class="control-label col-sm-3">State</label>
+                <div class="col-sm-9">
+                  {% render_field addStoreForm.state class="form-control" type="text" id="administrative_area_level_1" disabled="true" %}
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="{{ addStoreForm.zip_code.id_for_label }}" class="control-label col-sm-3">Zipcode</label>
+                <div class="col-sm-9">
+                  {% render_field addStoreForm.zip_code class="form-control" type="text" id="postal_code" disabled="true" %}
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="{{ addStoreForm.country.id_for_label }}" class="control-label col-sm-3">Country</label>
+                <div class="col-sm-9">
+                  {% render_field addStoreForm.country class="form-control" type="text" id="country" disabled="true" %}
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="{{ addStoreForm.has_card.id_for_label }}" class="control-label col-sm-3">Membership Card</label>
+                <div class="col-sm-9">
+                  {% render_field addStoreForm.has_card class="form-control" id="has_card"%}
                 </div>
               </div>
               <div class="modal-footer">
@@ -135,72 +162,38 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script type="text/javascript">
-      $('#productForm').on('submit', function(e) {
-        var productName = $('#productName');
-        var productPrice = $('#productPrice');
-        var storeName = $('#storeNameproduct');
-        if (!productName.val()) {
-          productName.closest('.form-group').removeClass('has-success').addClass('has-error');
-        } else {
-          productName.closest('.form-group').removeClass('has-error').addClass('has-success');
-        }
-        if (!productPrice.val()) {
-          productPrice.closest('.form-group').removeClass('has-success').addClass('has-error');
-        } else {
-          productPrice.closest('.form-group').removeClass('has-error').addClass('has-success');
-        }
-        if (!storeName.val()) {
-          storeName.closest('.form-group').removeClass('has-success').addClass('has-error');
-        } else {
-          storeName.closest('.form-group').removeClass('has-error').addClass('has-success');
-        }
-        if (!productName.val() || !productPrice.val() || !storeName.val()) {
-          e.preventDefault();
-        }
-        $('.modal').on('hidden.bs.modal', function() {
-          $(this).find('form')[0].reset();
-          productName.closest('.form-group').removeClass('has-error').removeClass('has-success');
-          productPrice.closest('.form-group').removeClass('has-error').removeClass('has-success');
-          storeName.closest('.form-group').removeClass('has-error').removeClass('has-success');
-        });
-      });
-      $('#storeForm').on('submit', function(e) {
-        var storeName = $('#storeName');
-        var address = $('#address');
-        var latitude = $('#latitude');
-        var longitude = $('#longitude');
-        if (!storeName.val()) {
-          storeName.closest('.form-group').removeClass('has-success').addClass('has-error');
-        } else {
-          storeName.closest('.form-group').removeClass('has-error').addClass('has-success');
-        }
-        if (!address.val()) {
-          address.closest('.form-group').removeClass('has-success').addClass('has-error');
-        } else {
-          address.closest('.form-group').removeClass('has-error').addClass('has-success');
-        }
-        if (!latitude.val()) {
-          latitude.closest('.form-group').removeClass('has-success').addClass('has-error');
-        } else {
-          latitude.closest('.form-group').removeClass('has-error').addClass('has-success');
-        }
-        if (!longitude.val()) {
-          longitude.closest('.form-group').removeClass('has-success').addClass('has-error');
-        } else {
-          longitude.closest('.form-group').removeClass('has-error').addClass('has-success');
-        }
-        if (!storeName.val() || !address.val() || !latitude.val() || !longitude.val()) {
-          e.preventDefault();
-        }
-        $('.modal').on('hidden.bs.modal', function() {
-          $(this).find('form')[0].reset();
-          storeName.closest('.form-group').removeClass('has-error').removeClass('has-success');
-          address.closest('.form-group').removeClass('has-error').removeClass('has-success');
-          latitude.closest('.form-group').removeClass('has-error').removeClass('has-success');
-          longitude.closest('.form-group').removeClass('has-error').removeClass('has-success');
+      $("#addStore").on("click", function() {
+        var autocomplete = new google.maps.places.Autocomplete(document.getElementById('autocomplete'));
+        google.maps.event.addListener(autocomplete, "place_changed", function() {
+          var componentForm = {
+            street_number: 'short_name',
+            route: 'long_name',
+            locality: 'long_name',
+            administrative_area_level_1: 'short_name',
+            country: 'long_name',
+            postal_code: 'short_name'
+          };
+          // Get the place details from the autocomplete object.
+          var place = autocomplete.getPlace();
+
+          for (var component in componentForm) {
+            document.getElementById(component).value = '';
+            //document.getElementById(component).disabled = false;
+          }
+
+          // Get each component of the address from the place details
+          // and fill the corresponding field on the form.
+          for (var i = 0; i < place.address_components.length; i++) {
+            var addressType = place.address_components[i].types[0];
+            if (componentForm[addressType]) {
+              var val = place.address_components[i][componentForm[addressType]];
+              document.getElementById(addressType).value = val;
+            }
+          }
         });
       });
     </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBuEhmVjHKmjRSodKx3dYUqbyCFquSDMWc&libraries=places&sensor=false" async defer></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   </body>

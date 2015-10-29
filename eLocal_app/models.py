@@ -1,20 +1,21 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from time import time
 from decimal import *
 
 # Adapted from https://stackoverflow.com/questions/8128143/any-existing-solution-to-implement-opening-hours-in-django
-WEEKDAYS = [
+WEEKDAYS = (
   (0, "Sunday"),
   (1, "Monday"),
   (2, "Tuesday"),
   (3, "Wednesday"),
   (4, "Thursday"),
   (5, "Friday"),
-  (6, "Saturday")
-]
+  (6, "Saturday"),
+)
 
-STATES = [
+STATES = (
     (0, "AL"),
     (1, "AK"),
     (2, "AZ"),
@@ -65,8 +66,8 @@ STATES = [
     (47, "WV"),
     (48, "WI"),
     (49, "WY"),
-    (50, "DC")
-]
+    (50, "DC"),
+)
 
 
 class Item(models.Model):
@@ -75,16 +76,19 @@ class Item(models.Model):
     # Stores can be accessed using <item>.store_set
 
     @staticmethod
-    def create(name):
+    def create(name, description):
         # Validate field
         errors = []
         if not validateStringLen(name, 1, 128):
             errors.append("Item name must be a non-empty string 1 to 128 characters long")
+        if not validateStringLen(description, 1, 1024):
+            errors.append("Item description must be a non-empty string 1 to 1024 characters long")
         if len(errors) > 0:
             raise ValidationError(errors)
 
         name = name.strip()
-        item = Item(name=name)
+        description = description.strip()
+        item = Item(name=name, description=description)
         item.save()
         return item
 
@@ -120,28 +124,37 @@ class Item(models.Model):
 
 
 class Store(models.Model):
-    name      = models.CharField(max_length=128)
-    address   = models.CharField(max_length=256)
-    state     = models.IntegerField(choices=STATES)
+    name = models.CharField(max_length=128)
+    address = models.CharField(max_length=256)
+    city = models.CharField(max_length=128)
+    state = models.CharField(max_length=2)
+    zip_code = models.CharField(max_length=10)
+    country = models.CharField(max_length=128)
+    has_card = models.BooleanField()
     # Hours can be accessed using <store>.openhours_set
-    items     = models.ManyToManyField(Item, through='Inventory')
+    items = models.ManyToManyField(Item, through='Inventory')
 
     @staticmethod
-    def create(name, address, latitude, longitude):
+    def create(name, address, city, state, zip_code, country, has_card):
         # Validate fields
         errors = []
         if not validateStringLen(name, 1, 128):
             errors.append("Name must be a non-empty string 1 to 128 characters long")
         if not validateStringLen(address, 1, 256):
             errors.append("Address must be a non-empty string 1 to 128 characters long")
-        if not validateFloatClosedSet(latitude, -90, 90):
-            errors.append("Latitude must be a number between -90 and 90")
-        if not validateFloatClosedSet(longitude, -180, 180):
-            errors.append("Longitude must be a number between -180 and 180")
+        if not validateStringLen(city, 1, 128):
+            errors.append("City must be a non-empty string 1 to 128 characters long")
+        if not validateStringLen(state, 1, 2):
+            errors.append("State must be a non-empty string 2 characters long")
+        if not validateStringLen(zip_code, 1, 10):
+            errors.append("Zipcode must be a non-empty string 1 to 10 characters long")
+        if not validateStringLen(country, 1, 128):
+            errors.append("Country must be a non-empty string 1 to 128 characters long")
+
         if len(errors) > 0:
             raise ValidationError(errors)
 
-        store = Store(name=name, address=address, latitude=latitude, longitude=longitude)
+        store = Store(name=name, address=address, city=city, state=state, zip_code=zip_code, country=country, has_card=has_card)
         store.save()
         return store
 
@@ -304,17 +317,11 @@ def validateFloatOpenSet(num, minimum, maximum):
         return False
     return True
 
-def validateFloatClosedSet(num, minimum, maximum):
-    if not isinstance(num, float) and not isinstance(num, int):
-        return False
-    if num <= minimum or num >= maximum:
-        return False
-    return True
-
 def validateWeekday(day):
-    if not isinstance(weekday, int):
+    if not isinstance(day, int):
         return False
     for weekday, _ in WEEKDAYS:
         if day == weekday:
             return True
     return False
+

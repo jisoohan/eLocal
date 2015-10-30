@@ -65,21 +65,21 @@
               </div>
               <div class="form-group">
                 <label for="street_number" class="control-label col-xs-2">Street #</label>
-                <div class="col-xs-2">{% render_field addStoreForm.street_number class="form-control" type="text" id="street_number" disabled="true" %}</div>
+                <div class="col-xs-2">{% render_field addStoreForm.street_number class="form-control" type="text" id="street_number" %}</div>
                 <label for="route" class="control-label col-xs-1">Address</label>
-                <div class="col-xs-6 col-xs-offset-1">{% render_field addStoreForm.street_address class="form-control" type="text" id="route" disabled="true" %}</div>
+                <div class="col-xs-6 col-xs-offset-1">{% render_field addStoreForm.street_address class="form-control" type="text" id="route" %}</div>
               </div>
               <div class="form-group">
                 <label for="locality" class="control-label col-xs-2">City</label>
-                <div class="col-xs-3">{% render_field addStoreForm.city class="form-control" type="text" id="locality" disabled="true" %}</div>
+                <div class="col-xs-3">{% render_field addStoreForm.city class="form-control" type="text" id="locality" %}</div>
                 <label for="administrative_area_level_1" class="control-label col-xs-1">State</label>
-                <div class="col-xs-2">{% render_field addStoreForm.state class="form-control" type="text" id="administrative_area_level_1" disabled="true" %}</div>
+                <div class="col-xs-2">{% render_field addStoreForm.state class="form-control" type="text" id="administrative_area_level_1" %}</div>
                 <label for="postal_code" class="control-label col-xs-1">Zipcode</label>
-                <div class="col-xs-2 col-xs-offset-1">{% render_field addStoreForm.zip_code class="form-control" type="text" id="postal_code" disabled="true" %}</div>
+                <div class="col-xs-2 col-xs-offset-1">{% render_field addStoreForm.zip_code class="form-control" type="text" id="postal_code" %}</div>
               </div>
               <div class="form-group">
                 <label for="country" class="control-label col-xs-2">Country</label>
-                <div class="col-xs-10">{% render_field addStoreForm.country class="form-control" type="text" id="country" disabled="true" %}</div>
+                <div class="col-xs-10">{% render_field addStoreForm.country class="form-control" type="text" id="country" %}</div>
               </div>
               <div class="form-group">
                 <label for="has_card" class="control-label col-xs-2">Membership Card</label>
@@ -112,7 +112,7 @@
               <div class="form-group">
                 <label for="{{ addProductForm.description.id_for_label }}" class="control-label col-xs-3">Description</label>
                 <div class="col-xs-9">
-                  {% render_field addProductForm.description class="form-control" type="text" id="productName" %}
+                  {% render_field addProductForm.description class="form-control" type="text" id="description" %}
                 </div>
               </div>
               <div class="form-group">
@@ -144,18 +144,19 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script type="text/javascript">
+      $(document).on("hidden.bs.modal", "#addStore", function() {
+        $("#storeForm").append("<button class='btn' type='reset' id='storeReset'>Reset</button>");
+        $("button#storeReset").click();
+        $("button#storeReset").remove();
+        $("#street_number").attr("disabled", "true");
+        $('#street_address').attr("disabled", "true");
+        $("#route").attr("disabled", "true");
+        $("#locality").attr("disabled", "true");
+        $("#administrative_area_level_1").attr("disabled", "true");
+        $("#country").attr("disabled", "true");
+        $("#postal_code").attr("disabled", "true");
+      });
       $("#addStore").on("click", function() {
-        $("#addStore").on("hidden.bs.modal", function() {
-          $("#storeForm").append("<button class='btn' type='reset' id='storeReset'>Reset</button>");
-          $("button#storeReset").click();
-          $("button#storeReset").remove();
-          $("#street_number").attr("disabled", "true");
-          $("#route").attr("disabled", "true");
-          $("#locality").attr("disabled", "true");
-          $("#administrative_area_level_1").attr("disabled", "true");
-          $("#country").attr("disabled", "true");
-          $("#postal_code").attr("disabled", "true");
-        });
         var autocomplete = new google.maps.places.Autocomplete(document.getElementById('autocomplete'));
         google.maps.event.addListener(autocomplete, "place_changed", function() {
           var componentForm = {
@@ -171,7 +172,6 @@
 
           for (var component in componentForm) {
             document.getElementById(component).value = '';
-            document.getElementById(component).disabled = false;
           }
 
           // Get each component of the address from the place details
@@ -183,6 +183,75 @@
               document.getElementById(addressType).value = val;
             }
           }
+        });
+      });
+      $('#storeForm').on('submit', function(e) {
+        var storeName = $('#storeName');
+        var street_number = $('#street_number');
+        var street_address = $('#route');
+        var locality = $('#locality');
+        var administrative_area_level_1 = $('#administrative_area_level_1');
+        var postal_code = $('#postal_code');
+        var country = $('#country');
+        if (!storeName.val()) {
+          e.preventDefault();
+          storeName.closest('.form-group').removeClass('has-success').addClass('has-error');
+        } else {
+          storeName.closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+        if (!street_number.val() || !street_address.val()) {
+          e.preventDefault();
+          street_number.closest('.form-group').removeClass('has-success').addClass('has-error');
+        } else {
+          street_number.closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+        if (!locality.val() || !administrative_area_level_1.val() || !postal_code.val()) {
+          e.preventDefault();
+          locality.closest('.form-group').removeClass('has-success').addClass('has-error');
+        } else {
+          locality.closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+        if (!country.val()) {
+          e.preventDefault();
+          country.closest('.form-group').removeClass('has-success').addClass('has-error');
+        } else {
+          country.closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+        $('.modal').on('hidden.bs.modal', function() {
+          $(this).find('form')[0].reset();
+          storeName.closest('.form-group').removeClass('has-error').removeClass('has-success');
+          street_number.closest('.form-group').removeClass('has-error').removeClass('has-success');
+          locality.closest('.form-group').removeClass('has-error').removeClass('has-success');
+          country.closest('.form-group').removeClass('has-error').removeClass('has-success');
+        });
+      });
+      $('#productForm').on('submit', function(e) {
+        var productName = $('#productName');
+        var description = $('#description');
+        var productPrice = $('#productPrice');
+        if (!productName.val()) {
+          e.preventDefault();
+          productName.closest('.form-group').removeClass('has-success').addClass('has-error');
+        } else {
+          productName.closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+        if (!description.val()) {
+          e.preventDefault();
+          description.closest('.form-group').removeClass('has-success').addClass('has-error');
+        } else {
+          description.closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+        if (!productPrice.val()) {
+          e.preventDefault();
+          productPrice.closest('.form-group').removeClass('has-success').addClass('has-error');
+        } else {
+          productPrice.closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+        $('.modal').on('hidden.bs.modal', function() {
+          $(this).find('form')[0].reset();
+          productName.closest('.form-group').removeClass('has-error').removeClass('has-success');
+          description.closest('.form-group').removeClass('has-error').removeClass('has-success');
+          productPrice.closest('.form-group').removeClass('has-error').removeClass('has-success');
         });
       });
     </script>

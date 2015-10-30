@@ -1,6 +1,7 @@
 from django.contrib import messages
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.shortcuts import render, render_to_response
+from django.http import HttpResponseRedirect, HttpResponse
+from django.template import RequestContext, loader
 from .forms import ZipcodeForm, ProductSearchForm, StoreSearchForm, ProductAddForm, StoreAddForm
 from .models import Store, Item, Inventory
 from .utils import ElocalUtils
@@ -11,7 +12,15 @@ def homePage(request):
     else:
         form = ZipcodeForm(request.POST)
         if form.is_valid():
-            return HttpResponseRedirect('/products')
+            zip_code = form.cleaned_data['zip_code']
+            searchForm = StoreSearchForm()
+            addProductForm = ProductAddForm()
+            addStoreForm = StoreAddForm()
+            stores = Store.objects.filter(zip_code=zip_code)
+            results = ElocalUtils.parseStoresInfo(stores)
+            response = render_to_response('eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': results, 'zip_code': zip_code}, RequestContext(request))
+            response.set_cookie('zip_code', zip_code)
+            return response
     return render(request, 'eLocal_app/homePage.html', {'form': form})
 
 def productSearchPage(request):
@@ -19,23 +28,35 @@ def productSearchPage(request):
         searchForm = ProductSearchForm()
         addProductForm = ProductAddForm()
         addStoreForm = StoreAddForm()
-        results = ElocalUtils.getAllProducts()
-    return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results})
+        zip_code = request.COOKIES.get('zip_code', None)
+        if zip_code != None:
+            stores = Store.objects.filter(zip_code=zip_code)
+            results = ElocalUtils.parseProductsInfo(stores)
+        else:
+            results = ElocalUtils.getAllProducts()
+        response = render_to_response('eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results, 'zip_code': zip_code}, RequestContext(request))
+        return response
 
 def storeSearchPage(request):
     if request.method == 'GET':
         searchForm = StoreSearchForm()
         addProductForm = ProductAddForm()
         addStoreForm = StoreAddForm()
-        stores = Store.objects.all()
-        results = ElocalUtils.getAllStores()
-    return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': results})
+        zip_code = request.COOKIES.get('zip_code', None)
+        if zip_code != None:
+            stores = Store.objects.filter(zip_code=zip_code)
+            results = ElocalUtils.parseStoresInfo(stores)
+        else :
+            results = ElocalUtils.getAllStores()
+        response = render_to_response('eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': results, 'zip_code': zip_code}, RequestContext(request))
+        return response
 
 def shoppingPage(request):
     if request.method == 'GET':
         addProductForm = ProductAddForm()
         addStoreForm = StoreAddForm()
-    return render(request, 'eLocal_app/shoppingPage.html', {'addProductForm': addProductForm, 'addStoreForm': addStoreForm})
+        zip_code = request.COOKIES.get('zip_code', None)
+    return render(request, 'eLocal_app/shoppingPage.html', {'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'zip_code': zip_code})
 
 def addStore(request):
     if request.method == 'POST':
@@ -73,30 +94,38 @@ def searchProduct(request):
         searchForm = ProductSearchForm(request.GET)
         addProductForm = ProductAddForm()
         addStoreForm = StoreAddForm()
-        results = []
+        zip_code = request.COOKIES.get('zip_code', None)
+        if zip_code != None:
+            stores = Store.objects.filter(zip_code=zip_code)
+            results = ElocalUtils.parseProductsInfo(stores)
+        else:
+            results = ElocalUtils.getAllProducts()
         if searchForm.is_valid():
             name = searchForm.cleaned_data['name']
-            results = ElocalUtils.parseSearchProduct(name)
+            results = ElocalUtils.searchProduct(name, zip_code)
             if len(results) == 0:
                 messages.error(request, 'No matching products.')
-                results = ElocalUtils.getAllProducts()
         else:
             messages.error(request, 'Must input a product.')
-            results = ElocalUtils.getAllProducts()
-        return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results})
+        response = render_to_response('eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results, 'zip_code': zip_code}, RequestContext(request))
+        return response
 
 def searchStore(request):
     if request.method == 'GET':
         searchForm = StoreSearchForm(request.GET)
         addProductForm = ProductAddForm()
         addStoreForm = StoreAddForm()
+        zip_code = request.COOKIES.get('zip_code', None)
+        if zip_code != None:
+            results = Store.objects.filter(zip_code=zip_code)
+        else:
+            results = ElocalUtils.getAllStores()
         if searchForm.is_valid():
             name = searchForm.cleaned_data['name']
-            results = ElocalUtils.parseSearchStore(name)
+            results = ElocalUtils.searchStore(name, zip_code)
             if len(results) == 0:
                 messages.error(request, 'No matching stores.')
-                results = ElocalUtils.getAllStores()
         else:
             messages.error(request, 'Must input a store.')
-            results = ElocalUtils.getAllStores()
-        return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': results})
+        response = render_to_response('eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': results, 'zip_code': zip_code}, RequestContext(request))
+        return response

@@ -57,8 +57,5 @@ docs/_build/
 # PyBuilder
 target/
 
-# Django-specific files
-migrations/
-
 venv
 *.sqlite3

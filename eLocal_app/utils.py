@@ -15,7 +15,7 @@ class ElocalUtils:
         stores = Store.objects.all()
         results = []
         for store in stores:
-            result = {'store_name': store.name, 'address': store.address}
+            result = {'name': store.name, 'address': store.address, 'city': store.city, 'state': store.state, 'zip_code': store.zip_code, 'country': store.country, 'has_card': store.has_card}
             products = Inventory.getItemsForStore(store.id)
             product_list = []
             for product in products:

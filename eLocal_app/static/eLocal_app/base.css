@@ -10,26 +10,13 @@ h1 {
     text-align: center;
 }
 
-.modal {
-  text-align: center;
-}
-
-@media screen and (min-width: 768px) {
-  .modal:before {
-    display: inline-block;
-    vertical-align: middle;
-    content: " ";
-    height: 75%;
-  }
-}
-
-.modal-dialog {
-  display: inline-block;
-  text-align: left;
-  vertical-align: middle;
-  width: 800px;
-}
-
 .pac-container {
   z-index: 1050;
+}
+
+/* scroll fixes */
+.modal-open .modal {
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+  overflow-y: scroll;
 }

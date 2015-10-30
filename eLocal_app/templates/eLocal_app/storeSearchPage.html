@@ -44,18 +44,27 @@
           {% if stores %}
             {% for store in stores %}
               <a href="#store{{forloop.counter}}" data-toggle="modal" data-target="#store{{forloop.counter}}" class="list-group-item">
-                <h4 class="list-group-item-heading">{{store.store_name}}</h4>
+                <h4 class="list-group-item-heading">{{store.name}}</h4>
               </a>
               <div id="store{{forloop.counter}}" class="modal fade" role="dialog">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
                       <button type="button" class="close" data-dismiss="modal">&times;</button>
-                      <h3 class="modal-title text-center">{{store.store_name}}</h3>
+                      <h3 class="modal-title text-center">{{store.name}}</h3>
                     </div>
                     <div class="modal-body">
                       <h4>Address</h4>
-                      <address>{{store.address}}</address>
+                      <address>
+                        {{store.address}}<br/>
+                        {{store.city}}, {{store.state}} {{store.zip_code}}, {{store.country}}
+                      </address>
+                      <h4>Membership Card</h4>
+                      {% if store.has_card %}
+                        <p>Yes!</p>
+                      {% else %}
+                        <P>No!</P>
+                      {% endif %}
                       <h4>Products</h4>
                       <table class="table table-condensed">
                         <thead>

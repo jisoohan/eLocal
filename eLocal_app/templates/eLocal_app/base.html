@@ -48,114 +48,46 @@
       </div>
     </nav>
 
-    <div id="addStore" class="modal fade" role="dialog">
+    <div id="addStore" class="modal modal-vcenter fade" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h3 class="modal-title text-center">Add Store</h3>
           </div>
           <div class="modal-body">
             <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.addStore' %}" id="storeForm" autocomplete="off">
               <div class="form-group">
-                <label for="{{ addStoreForm.store_name.id_for_label }}" class="control-label col-sm-2">Store Name</label>
-                <div class="col-sm-10">{% render_field addStoreForm.store_name class="form-control col-sm-10" type="text" id="storeName" %}</div>
+                <div class="col-xs-12"><input id="autocomplete" class="form-control" placeholder="Enter store address" type="text" autocomplete="off"></input></div>
               </div>
               <div class="form-group">
-                <label for="autocomplete" class="control-label col-sm-2">Search Address</label>
-                <div class="col-sm-10"><input id="autocomplete" class="form-control" placeholder="Enter store address" type="text" autocomplete="off"></input></div>
+                <label for="storeName" class="control-label col-xs-2">Name</label>
+                <div class="col-xs-10">{% render_field addStoreForm.store_name class="form-control" type="text" id="storeName" %}</div>
               </div>
               <div class="form-group">
-                <label class="control-label col-sm-2">Address</label>
-                <div class="col-sm-2">{% render_field addStoreForm.street_number class="form-control" type="text" id="street_number" disabled="true" %}</div>
-                <div class="col-sm-8">{% render_field addStoreForm.street_address class="form-control" type="text" id="route" disabled="true" %}</div>
+                <label for="street_number" class="control-label col-xs-2">Street #</label>
+                <div class="col-xs-2">{% render_field addStoreForm.street_number class="form-control" type="text" id="street_number" disabled="true" %}</div>
+                <label for="route" class="control-label col-xs-1">Address</label>
+                <div class="col-xs-6 col-xs-offset-1">{% render_field addStoreForm.street_address class="form-control" type="text" id="route" disabled="true" %}</div>
               </div>
               <div class="form-group">
-                <label for="locality" class="control-label col-sm-2">City</label>
-                <div class="col-sm-10">{% render_field addStoreForm.city class="form-control" type="text" id="locality" disabled="true" %}</div>
+                <label for="locality" class="control-label col-xs-2">City</label>
+                <div class="col-xs-3">{% render_field addStoreForm.city class="form-control" type="text" id="locality" disabled="true" %}</div>
+                <label for="administrative_area_level_1" class="control-label col-xs-1">State</label>
+                <div class="col-xs-2">{% render_field addStoreForm.state class="form-control" type="text" id="administrative_area_level_1" disabled="true" %}</div>
+                <label for="postal_code" class="control-label col-xs-1">Zipcode</label>
+                <div class="col-xs-2 col-xs-offset-1">{% render_field addStoreForm.zip_code class="form-control" type="text" id="postal_code" disabled="true" %}</div>
               </div>
               <div class="form-group">
-                <label for="administrative_area_level_1" class="control-label col-sm-2">State</label>
-                <div class="col-sm-10">{% render_field addStoreForm.state class="form-control" type="text" id="administrative_area_level_1" disabled="true" %}</div>
+                <label for="country" class="control-label col-xs-2">Country</label>
+                <div class="col-xs-10">{% render_field addStoreForm.country class="form-control" type="text" id="country" disabled="true" %}</div>
               </div>
               <div class="form-group">
-                <label for="postal_code" class="control-label col-sm-2">Zipcode</label>
-                <div class="col-sm-10">{% render_field addStoreForm.zip_code class="form-control" type="text" id="postal_code" disabled="true" %}</div>
-              </div>
-              <div class="form-group">
-                <label for="country" class="control-label col-sm-2">Country</label>
-                <div class="col-sm-10">{% render_field addStoreForm.country class="form-control" type="text" id="country" disabled="true" %}</div>
-              </div>
-              <div class="form-group">
-                <label for="has_card" class="control-label col-sm-2">Membership Card</label>
-                <div class="col-sm-1">{% render_field addStoreForm.has_card class="form-control" id="has_card"%}</div>
-              </div>
-              <div class="form-group">
-                <label class="control-label col-sm-2">Sunday Hours</label>
-                <label for="sun_open_time" class="control-label col-sm-1">Open</label>
-                <div class="col-sm-3">{% render_field addStoreForm.sun_open_time class="form-control" id="sun_open_time" %}</div>
-                <label for="sun_close_time" class="control-label col-sm-1">Close</label>
-                <div class="col-sm-3">{% render_field addStoreForm.sun_close_time class="form-control" id="sun_close_time" %}</div>
-                <label for="sun_closed" class="control-label col-sm-1">Closed?</label>
-                <div class="col-sm-1">{% render_field addStoreForm.sun_closed class="form-control" id="sun_closed" %}</div>
-              </div>
-              <div class="form-group">
-                <label class="control-label col-sm-2">Monday Hours</label>
-                <label for="mon_open_time" class="control-label col-sm-1">Open</label>
-                <div class="col-sm-3">{% render_field addStoreForm.mon_open_time class="form-control" id="mon_open_time" %}</div>
-                <label for="mon_close_time" class="control-label col-sm-1">Close</label>
-                <div class="col-sm-3">{% render_field addStoreForm.mon_close_time class="form-control" id="mon_close_time" %}</div>
-                <label for="mon_closed" class="control-label col-sm-1">Closed?</label>
-                <div class="col-sm-1">{% render_field addStoreForm.mon_closed class="form-control" id="mon_closed" %}</div>
-              </div>
-              <div class="form-group">
-                <label class="control-label col-sm-2">Tuesday Hours</label>
-                <label for="tues_open_time" class="control-label col-sm-1">Open</label>
-                <div class="col-sm-3">{% render_field addStoreForm.tues_open_time class="form-control" id="tues_open_time" %}</div>
-                <label for="tues_close_time" class="control-label col-sm-1">Close</label>
-                <div class="col-sm-3">{% render_field addStoreForm.tues_close_time class="form-control" id="tues_close_time" %}</div>
-                <label for="tues_closed" class="control-label col-sm-1">Closed?</label>
-                <div class="col-sm-1">{% render_field addStoreForm.tues_closed class="form-control" id="tues_closed" %}</div>
-              </div>
-              <div class="form-group">
-                <label class="control-label col-sm-2">Wednesday Hours</label>
-                <label for="wed_open_time" class="control-label col-sm-1">Open</label>
-                <div class="col-sm-3">{% render_field addStoreForm.wed_open_time class="form-control" id="wed_open_time" %}</div>
-                <label for="wed_close_time" class="control-label col-sm-1">Close</label>
-                <div class="col-sm-3">{% render_field addStoreForm.wed_close_time class="form-control" id="wed_close_time" %}</div>
-                <label for="wed_closed" class="control-label col-sm-1">Closed?</label>
-                <div class="col-sm-1">{% render_field addStoreForm.wed_closed class="form-control" id="wed_closed" %}</div>
-              </div>
-              <div class="form-group">
-                <label class="control-label col-sm-2">Thursday Hours</label>
-                <label for="thur_open_time" class="control-label col-sm-1">Open</label>
-                <div class="col-sm-3">{% render_field addStoreForm.thur_open_time class="form-control" id="thur_open_time" %}</div>
-                <label for="thur_close_time" class="control-label col-sm-1">Close</label>
-                <div class="col-sm-3">{% render_field addStoreForm.thur_close_time class="form-control" id="thur_close_time" %}</div>
-                <label for="thur_closed" class="control-label col-sm-1">Closed?</label>
-                <div class="col-sm-1">{% render_field addStoreForm.thur_closed class="form-control" id="thur_closed" %}</div>
-              </div>
-              <div class="form-group">
-                <label class="control-label col-sm-2">Friday Hours</label>
-                <label for="fri_open_time" class="control-label col-sm-1">Open</label>
-                <div class="col-sm-3">{% render_field addStoreForm.fri_open_time class="form-control" id="fri_open_time" %}</div>
-                <label for="fri_close_time" class="control-label col-sm-1">Close</label>
-                <div class="col-sm-3">{% render_field addStoreForm.fri_close_time class="form-control" id="fri_close_time" %}</div>
-                <label for="fri_closed" class="control-label col-sm-1">Closed?</label>
-                <div class="col-sm-1">{% render_field addStoreForm.fri_closed class="form-control" id="fri_closed" %}</div>
-              </div>
-              <div class="form-group">
-                <label class="control-label col-sm-2">Saturday Hours</label>
-                <label for="sat_open_time" class="control-label col-sm-1">Open</label>
-                <div class="col-sm-3">{% render_field addStoreForm.sat_open_time class="form-control" id="sat_open_time" %}</div>
-                <label for="sat_close_time" class="control-label col-sm-1">Close</label>
-                <div class="col-sm-3">{% render_field addStoreForm.sat_close_time class="form-control" id="sat_close_time" %}</div>
-                <label for="sat_closed" class="control-label col-sm-1">Closed?</label>
-                <div class="col-sm-1">{% render_field addStoreForm.sat_closed class="form-control" id="sat_closed" %}</div>
+                <label for="has_card" class="control-label col-xs-2">Membership Card</label>
+                <div class="col-xs-1">{% render_field addStoreForm.has_card class="form-control" id="has_card" type="checkbox" %}</div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-default btn-danger" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-default btn-success">Add</button>
+                <button type="button" class="btn btn-default btn-danger pull-left col-sm-2" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-default btn-success pull-right col-sm-4">Add Store</button>
               </div>
             </form>
           </div>
@@ -208,6 +140,17 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script type="text/javascript">
       $("#addStore").on("click", function() {
+        $("#addStore").on("hidden.bs.modal", function() {
+          $("#storeForm").append("<button class='btn' type='reset' id='storeReset'>Reset</button>");
+          $("button#storeReset").click();
+          $("button#storeReset").remove();
+          $("#street_number").attr("disabled", "true");
+          $("#route").attr("disabled", "true");
+          $("#locality").attr("disabled", "true");
+          $("#administrative_area_level_1").attr("disabled", "true");
+          $("#country").attr("disabled", "true");
+          $("#postal_code").attr("disabled", "true");
+        });
         var autocomplete = new google.maps.places.Autocomplete(document.getElementById('autocomplete'));
         google.maps.event.addListener(autocomplete, "place_changed", function() {
           var componentForm = {

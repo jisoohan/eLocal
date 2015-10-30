@@ -79,7 +79,7 @@ class Store(models.Model):
             errors.append("City must be a non-empty string 1 to 128 characters long")
         if not validateStringLen(state, 1, 2):
             errors.append("State must be a non-empty string 2 characters long")
-        if not validateStringLen(zip_code, 1, 10):
+        if not validateStringLen(zip_code, 5, 10):
             errors.append("Zipcode must be a non-empty string 1 to 10 characters long")
         if not validateStringLen(country, 1, 128):
             errors.append("Country must be a non-empty string 1 to 128 characters long")

@@ -77,12 +77,14 @@ class Store(models.Model):
             errors.append("Address must be a non-empty string 1 to 128 characters long")
         if not validateStringLen(city, 1, 128):
             errors.append("City must be a non-empty string 1 to 128 characters long")
-        if not validateStringLen(state, 1, 2):
+        if not validateStringLen(state, 2, 2):
             errors.append("State must be a non-empty string 2 characters long")
         if not validateStringLen(zip_code, 5, 10):
             errors.append("Zipcode must be a non-empty string 5 to 10 characters long")
         if not validateStringLen(country, 1, 128):
             errors.append("Country must be a non-empty string 1 to 128 characters long")
+        if has_card is not True and has_card is not False:
+            errors.append("Has_card must be either true or false")
 
         if len(errors) > 0:
             raise ValidationError(errors)

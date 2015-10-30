@@ -30,7 +30,7 @@ class ElocalUtils:
         stores = Store.getStores(name)
         results = []
         for store in stores:
-            result = {'store_name': store.name}
+            result = {'name': store.name, 'address': store.address, 'city': store.city, 'state': store.state, 'zip_code': store.zip_code, 'country': store.country, 'has_card': store.has_card}
             products = Inventory.getItemsForStore(store.id)
             product_list = []
             for product in products:
@@ -45,7 +45,7 @@ class ElocalUtils:
         products = Item.objects.all()
         results = []
         for product in products:
-            result = {'product_name': product.name}
+            result = {'product_name': product.name, 'description': product.description}
             stores = Inventory.getStoresForItem(product.id)
             store_list = []
             for store in stores:
@@ -60,7 +60,7 @@ class ElocalUtils:
         products = Item.getItems(name)
         results = []
         for product in products:
-            result = {'product_name': product.name}
+            result = {'product_name': product.name, 'description': product.description}
             stores = Inventory.getStoresForItem(product.id)
             store_list = []
             for store in stores:

@@ -57,17 +57,15 @@ def addProduct(request):
         form = ProductAddForm(request.POST)
         if form.is_valid():
             product_name = form.cleaned_data['product_name']
+            description = form.cleaned_data['description']
             price = float(form.cleaned_data['price'])
             store_name = form.cleaned_data['store_name']
-            store_list = Store.getStores(store_name)
-            if len(store_list) == 0:
-                messages.error(request, 'Store must exist.')
-                return HttpResponseRedirect('/products')
+            store = Store.objects.get(name=store_name)
             if Item.objects.filter(name=product_name).exists():
                 item = Item.objects.get(name=product_name)
             else:
-                item = Item.create(product_name)
-            item.addToStore(store_list[0].id, price)
+                item = Item.create(product_name, description)
+            item.addToStore(store.id, price)
         return HttpResponseRedirect('/products')
 
 def searchProduct(request):

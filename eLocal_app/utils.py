@@ -32,14 +32,16 @@ class ElocalUtils:
         stores = [store for store in Store.getStores(name) if store.zip_code == zip_code]
         results = []
         for store in stores:
-            result = {'name': store.name, 'address': store.address, 'city': store.city, 'state': store.state, 'zip_code': store.zip_code, 'country': store.country, 'has_card': store.has_card}
+            store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
             products = Inventory.getItemsForStore(store.id)
             product_list = []
             for product in products:
                 price = Inventory.getPrice(store.id, product.id)
-                product_list.append((product.name, price))
-            result['product_list'] = product_list
-            results.append(result)
+                product_dict = model_to_dict(product, fields=[field.name for field in product._meta.fields])
+                product_dict['price'] = price
+                product_list.append(product_dict)
+            store_dict['product_list'] = product_list
+            results.append(store_dict)
         return results
 
     @staticmethod
@@ -64,19 +66,20 @@ class ElocalUtils:
     @staticmethod
     def searchProduct(name, zip_code):
         stores = Store.objects.filter(zip_code=zip_code)
-        products = []
         results = []
         for store in stores:
             products = Inventory.getItemsForStore(store.id)
             for product in products:
-                if name in product.name:
-                    result = {'product_name': product.name, 'description': product.description}
+                if name.lower() in product.name.lower():
+                    product_dict = model_to_dict(product, fields=[field.name for field in product._meta.fields])
                     stores = Inventory.getStoresForItem(product.id)
                     store_list = []
                     for store in stores:
-                        price = Inventory.getPrice(store.id, product.id)
-                        store_list.append((store.name, price))
-                    result['store_list'] = store_list
-                    results.append(result)
+                        if store.zip_code == zip_code:
+                            store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
+                            price = Inventory.getPrice(store.id, product.id)
+                            store_dict['price'] = price
+                            store_list.append(store_dict)
+                    product_dict['store_list'] = store_list
+                    results.append(product_dict)
         return results
-

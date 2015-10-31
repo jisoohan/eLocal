@@ -5,12 +5,12 @@ from eLocal_app import views
 
 urlpatterns = [
     #url(r'^admin/', include(admin.site.urls)),
-    url(r'^addproduct', views.addProduct),
-    url(r'^addstore', views.addStore),
+    url(r'^stores/search', views.searchStore),
+    url(r'^stores/add', views.addStore),
+    url(r'^stores', views.storeSearchPage),
+    url(r'^products/search', views.searchProduct),
+    url(r'^products/cart', views.shoppingPage),
+    url(r'^products/add', views.addProduct),
     url(r'^products', views.productSearchPage),
-    url(r'^searchproduct', views.searchProduct),
-    url(r'^searchstore', views.searchStore),
-    url(r'^shopping', views.shoppingPage),
-    url(r'^stores', views.storeSearchPage), #improve later to take into account store ID
     url(r'^', views.homePage),
 ]

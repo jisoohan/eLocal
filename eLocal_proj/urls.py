@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^stores/add', views.addStore),
     url(r'^stores', views.storeSearchPage),
     url(r'^products/search', views.searchProduct),
+    url(r'^products/cart/add/product=(?P<product_id>\d+)&store=(?P<store_id>\d+)', views.addCart),
     url(r'^products/cart', views.shoppingPage),
     url(r'^products/add', views.addProduct),
     url(r'^products', views.productSearchPage),

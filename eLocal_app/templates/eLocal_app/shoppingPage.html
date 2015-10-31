@@ -25,6 +25,17 @@
         {% endfor %}
       {% endif %}
       <h1>Shopping Cart</h1>
+      <ul class="list-group">
+        {% if products %}
+          {% for product in products %}
+            <a href="" class="list-group-item">
+              <h4 class="list-group-item-heading">{{product.product.name}}</h4>
+              <p class="list-group-item-text">{{product.store.name}}</p>
+              <p class="list-group-item-text">{{product.price}}</p>
+            </a>
+          {% endfor %}
+        {% endif %}
+      </ul>
     {% endblock %}
 
     <!-- Bootstrap core JavaScript

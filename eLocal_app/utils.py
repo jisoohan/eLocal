@@ -83,3 +83,10 @@ class ElocalUtils:
                     product_dict['store_list'] = store_list
                     results.append(product_dict)
         return results
+
+    @staticmethod
+    def getInfoFromProductStore(product, store):
+        price = Inventory.getPrice(store.id, product.id)
+        product_dict = model_to_dict(product, fields=[field.name for field in product._meta.fields])
+        store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
+        return {'product': product_dict, 'store': store_dict, 'price': price}

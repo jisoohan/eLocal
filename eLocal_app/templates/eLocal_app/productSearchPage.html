@@ -64,6 +64,7 @@
                           <tr>
                             <th>Name</th>
                             <th>Price</th>
+                            <th>Add to Cart</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -72,6 +73,7 @@
                               <tr>
                                 <td class="text-left">{{store.name}}</td>
                                 <td class="text-left">${{store.price}}</td>
+                                <td class="text-left"><a href="{% url 'eLocal_app.views.addCart' product.id store.id %}">Add</a></td>
                               </tr>
                             {% endfor %}
                           {% endif %}

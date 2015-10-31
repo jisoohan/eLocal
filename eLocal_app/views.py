@@ -54,7 +54,8 @@ def shoppingPage(request):
         addProductForm = ProductAddForm()
         addStoreForm = StoreAddForm()
         zip_code = request.session['zip_code']
-        return render(request, 'eLocal_app/shoppingPage.html', {'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'zip_code': zip_code})
+        results = request.session['cart']
+        return render(request, 'eLocal_app/shoppingPage.html', {'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results, 'zip_code': zip_code})
 
 def addStore(request):
     if request.method == 'POST':
@@ -123,3 +124,13 @@ def searchStore(request):
         else:
             messages.error(request, 'Must input a store.')
         return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': results, 'zip_code': zip_code})
+
+def addCart(request, product_id, store_id):
+    product = Item.objects.get(id=product_id)
+    store = Store.objects.get(id=store_id)
+    cart_item = ElocalUtils.getInfoFromProductStore(product, store)
+    if 'cart' in request.session:
+        cart = request.session['cart']
+        cart.append(cart_item)
+        request.session['cart'] = cart
+    return HttpResponseRedirect('/products')

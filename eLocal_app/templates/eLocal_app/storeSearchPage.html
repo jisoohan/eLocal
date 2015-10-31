@@ -81,8 +81,8 @@
                           {% if store.product_list %}
                             {% for product in store.product_list %}
                               <tr>
-                                <td class="text-left">{{product.0}}</td>
-                                <td class="text-left">${{product.1}}</td>
+                                <td class="text-left">{{product.name}}</td>
+                                <td class="text-left">${{product.price}}</td>
                               </tr>
                             {% endfor %}
                           {% endif %}

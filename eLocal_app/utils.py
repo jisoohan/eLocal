@@ -43,7 +43,7 @@ class ElocalUtils:
         return results
 
     @staticmethod
-    def parseProductsInfo(stores):
+    def parseProductsInfo(stores, zip_code):
         results = []
         for store in stores:
             products = Inventory.getItemsForStore(store.id)
@@ -52,10 +52,11 @@ class ElocalUtils:
                 stores = Inventory.getStoresForItem(product.id)
                 store_list = []
                 for store in stores:
-                    store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
-                    price = Inventory.getPrice(store.id, product.id)
-                    store_dict['price'] = price
-                    store_list.append(store_dict)
+                    if store.zip_code == zip_code:
+                        store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
+                        price = Inventory.getPrice(store.id, product.id)
+                        store_dict['price'] = price
+                        store_list.append(store_dict)
                 product_dict['store_list'] = store_list
                 results.append(product_dict)
         return results

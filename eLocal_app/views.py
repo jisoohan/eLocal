@@ -31,7 +31,7 @@ def productSearchPage(request):
         addStoreForm = StoreAddForm()
         zip_code = request.session['zip_code']
         stores = Store.objects.filter(zip_code=zip_code)
-        results = ElocalUtils.parseProductsInfo(stores)
+        results = ElocalUtils.parseProductsInfo(stores, zip_code)
         return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results, 'zip_code': zip_code})
 
 def storeSearchPage(request):

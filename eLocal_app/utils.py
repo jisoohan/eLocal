@@ -30,19 +30,7 @@ class ElocalUtils:
     @staticmethod
     def searchStore(name, zip_code):
         stores = [store for store in Store.getStores(name) if store.zip_code == zip_code]
-        results = []
-        for store in stores:
-            store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
-            products = Inventory.getItemsForStore(store.id)
-            product_list = []
-            for product in products:
-                price = Inventory.getPrice(store.id, product.id)
-                product_dict = model_to_dict(product, fields=[field.name for field in product._meta.fields])
-                product_dict['price'] = price
-                product_list.append(product_dict)
-            store_dict['product_list'] = product_list
-            results.append(store_dict)
-        return results
+        return ElocalUtils.parseStoresInfo(stores)
 
     @staticmethod
     def parseProductsInfo(stores, zip_code):
@@ -89,4 +77,36 @@ class ElocalUtils:
         price = Inventory.getPrice(store.id, product.id)
         product_dict = model_to_dict(product, fields=[field.name for field in product._meta.fields])
         store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
-        return {'product': product_dict, 'store': store_dict, 'price': price}
+        return {'product': product_dict, 'store': store_dict, 'price': price, 'quantity': 1}
+
+    @staticmethod
+    def getHash(product_id, store_id):
+        hashCode = str(product_id) + str(store_id)
+        return hashCode
+
+    @staticmethod
+    def addCart(hashCode, old_cart):
+        found = False
+        cart = old_cart
+        for item in cart:
+            item_hash = ElocalUtils.getHash(item['product']['id'], item['store']['id'])
+            if hashCode == item_hash:
+                item['quantity'] = item['quantity'] + 1
+                found = True
+        if found:
+            return cart
+        else:
+            return None
+
+    @staticmethod
+    def removeCart(hashCode, old_cart):
+        cart = old_cart
+        count = 0
+        for item in cart:
+            item_hash = ElocalUtils.getHash(item['product']['id'], item['store']['id'])
+            if hashCode == item_hash:
+                if item['quantity'] > 1:
+                    item['quantity'] = item['quantity'] - 1
+                else:
+                    cart.remove(item)
+        return cart

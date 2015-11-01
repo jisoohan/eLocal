@@ -126,11 +126,25 @@ def searchStore(request):
         return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': results, 'zip_code': zip_code})
 
 def addCart(request, product_id, store_id):
-    product = Item.objects.get(id=product_id)
-    store = Store.objects.get(id=store_id)
-    cart_item = ElocalUtils.getInfoFromProductStore(product, store)
     if 'cart' in request.session:
+        hashCode = ElocalUtils.getHash(product_id, store_id)
         cart = request.session['cart']
-        cart.append(cart_item)
+        updated_cart = ElocalUtils.addCart(hashCode, cart)
+        if updated_cart is not None:
+            cart = updated_cart
+        else:
+            product = Item.objects.get(id=product_id)
+            store = Store.objects.get(id=store_id)
+            cart_item = ElocalUtils.getInfoFromProductStore(product, store)
+            cart.append(cart_item)
         request.session['cart'] = cart
-    return HttpResponseRedirect('/products')
+    return HttpResponseRedirect('/cart')
+
+def removeCart(request, product_id, store_id):
+    if 'cart' in request.session:
+        hashCode = ElocalUtils.getHash(product_id, store_id)
+        cart = request.session['cart']
+        updated_cart = ElocalUtils.removeCart(hashCode, cart)
+        request.session['cart'] = updated_cart
+    return HttpResponseRedirect('/cart')
+

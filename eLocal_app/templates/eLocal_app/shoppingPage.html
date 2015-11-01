@@ -27,18 +27,20 @@
         {% endfor %}
       {% endif %}
       <h1 class="shopping-title">Shopping Cart</h1>
-      <div class="list-group col-sm-8 col-sm-offset-2">
+      <ul class="list-group">
         {% if products %}
           {% for product in products %}
-            <a href="" class="list-group-item row">
-              <h4 class="list-group-item-heading col-sm-12">{{product.product.name}}</h4>
-              <p class="list-group-item-text col-sm-6">{{product.store.name}}</p>
-              <p class="list-group-item-text col-sm-6 text-right">${{product.price}}</p>
-              <p class="list-group-item-text col-sm-6">{{product.store.address}}, {{product.store.city}}, {{product.store.state}} {{product.store.zip_code}}</p>
+            <a href="" class="list-group-item row col-xs-8 col-xs-offset-1">
+              <h4 class="list-group-item-heading col-xs-6">{{product.product.name}}</h4>
+              <p class="list-group-item-heading col-xs-6 text-right">${{product.price}}</p>
+              <p class="list-group-item-text col-xs-6">{{product.store.name}}</p>
+              <p class="list-group-item-text col-xs-6 text-right">Quantity: {{product.quantity}}</p>
+              <p class="list-group-item-text col-xs-12">{{product.store.address}}, {{product.store.city}}, {{product.store.state}} {{product.store.zip_code}}</p>
             </a>
+            <a class="list-group-item col-xs-1 col-xs-offset-1" href="{% url 'eLocal_app.views.removeCart' product.product.id product.store.id %}">Remove</a>
           {% endfor %}
         {% endif %}
-      </div>
+      </ul>
     {% endblock %}
 
     <!-- Bootstrap core JavaScript

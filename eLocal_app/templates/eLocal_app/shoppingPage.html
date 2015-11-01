@@ -1,4 +1,5 @@
 {% extends "eLocal_app/base.html" %}
+{% load staticfiles %}
 {% load widget_tweaks %}
 
 <!DOCTYPE html>
@@ -12,6 +13,7 @@
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'eLocal_app/base.css' %}">
   </head>
 
   <body>
@@ -24,18 +26,19 @@
           </div>
         {% endfor %}
       {% endif %}
-      <h1>Shopping Cart</h1>
-      <ul class="list-group">
+      <h1 class="shopping-title">Shopping Cart</h1>
+      <div class="list-group col-sm-8 col-sm-offset-2">
         {% if products %}
           {% for product in products %}
-            <a href="" class="list-group-item">
-              <h4 class="list-group-item-heading">{{product.product.name}}</h4>
-              <p class="list-group-item-text">{{product.store.name}}</p>
-              <p class="list-group-item-text">{{product.price}}</p>
+            <a href="" class="list-group-item row">
+              <h4 class="list-group-item-heading col-sm-12">{{product.product.name}}</h4>
+              <p class="list-group-item-text col-sm-6">{{product.store.name}}</p>
+              <p class="list-group-item-text col-sm-6 text-right">${{product.price}}</p>
+              <p class="list-group-item-text col-sm-6">{{product.store.address}}, {{product.store.city}}, {{product.store.state}} {{product.store.zip_code}}</p>
             </a>
           {% endfor %}
         {% endif %}
-      </ul>
+      </div>
     {% endblock %}
 
     <!-- Bootstrap core JavaScript

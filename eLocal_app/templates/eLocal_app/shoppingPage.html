@@ -37,7 +37,7 @@
               <p class="list-group-item-text col-xs-6 text-right">Quantity: {{product.quantity}}</p>
               <p class="list-group-item-text col-xs-12">{{product.store.address}}, {{product.store.city}}, {{product.store.state}} {{product.store.zip_code}}</p>
             </a>
-            <a class="list-group-item col-xs-1 col-xs-offset-1" href="{% url 'eLocal_app.views.removeCart' product.product.id product.store.id %}">Remove</a>
+            <a class="list-group-item col-xs-1 col-xs-offset-1 text-center" href="{% url 'eLocal_app.views.removeCart' product.product.id product.store.id %}">Remove</a>
           {% endfor %}
         {% endif %}
       </ul>

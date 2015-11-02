@@ -24,7 +24,8 @@ class ElocalUtils:
                 product_dict = model_to_dict(product, fields=[field.name for field in product._meta.fields])
                 product_dict['price'] = price
                 product_list.append(product_dict)
-            store_dict['product_list'] = product_list
+            sorted_product_list = sorted(product_list, key=itemgetter('price'))
+            store_dict['product_list'] = sorted_product_list
             results.append(store_dict)
         return results
 

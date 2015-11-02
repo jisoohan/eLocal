@@ -62,25 +62,25 @@
               </div>
               <div class="form-group">
                 <label for="storeName" class="control-label col-xs-2">Name</label>
-                <div class="col-xs-10">{% render_field addStoreForm.store_name class="form-control" type="text" id="storeName" %}</div>
+                <div class="col-xs-10">{% render_field addStoreForm.store_name class="form-control" type="text" id="storeName" autocomplete="off" %}</div>
               </div>
               <div class="form-group">
                 <label for="street_number" class="control-label col-xs-2">Street #</label>
-                <div class="col-xs-2">{% render_field addStoreForm.street_number class="form-control" type="text" id="street_number" %}</div>
+                <div class="col-xs-2">{% render_field addStoreForm.street_number class="form-control" type="text" id="street_number" autocomplete="off" %}</div>
                 <label for="route" class="control-label col-xs-1">Address</label>
-                <div class="col-xs-6 col-xs-offset-1">{% render_field addStoreForm.street_address class="form-control" type="text" id="route" %}</div>
+                <div class="col-xs-6 col-xs-offset-1">{% render_field addStoreForm.street_address class="form-control" type="text" id="route" autocomplete="off" %}</div>
               </div>
               <div class="form-group">
                 <label for="locality" class="control-label col-xs-2">City</label>
-                <div class="col-xs-3">{% render_field addStoreForm.city class="form-control" type="text" id="locality" %}</div>
+                <div class="col-xs-3">{% render_field addStoreForm.city class="form-control" type="text" id="locality" autocomplete="off" %}</div>
                 <label for="administrative_area_level_1" class="control-label col-xs-1">State</label>
-                <div class="col-xs-2">{% render_field addStoreForm.state class="form-control" type="text" id="administrative_area_level_1" %}</div>
+                <div class="col-xs-2">{% render_field addStoreForm.state class="form-control" type="text" id="administrative_area_level_1" autocomplete="off" %}</div>
                 <label for="postal_code" class="control-label col-xs-1">Zipcode</label>
-                <div class="col-xs-2 col-xs-offset-1">{% render_field addStoreForm.zip_code class="form-control" type="text" id="postal_code" %}</div>
+                <div class="col-xs-2 col-xs-offset-1">{% render_field addStoreForm.zip_code class="form-control" type="text" id="postal_code" autocomplete="off" %}</div>
               </div>
               <div class="form-group">
                 <label for="country" class="control-label col-xs-2">Country</label>
-                <div class="col-xs-10">{% render_field addStoreForm.country class="form-control" type="text" id="country" %}</div>
+                <div class="col-xs-10">{% render_field addStoreForm.country class="form-control" type="text" id="country" autocomplete="off" %}</div>
               </div>
               <div class="form-group">
                 <label for="has_card" class="control-label col-xs-2">Membership Card</label>
@@ -107,19 +107,19 @@
               <div class="form-group">
                 <label for="{{ addProductForm.product_name.id_for_label }}" class="control-label col-xs-3">Product Name</label>
                 <div class="col-xs-9">
-                  {% render_field addProductForm.product_name class="form-control" type="text" id="productName" %}
+                  {% render_field addProductForm.product_name class="form-control" type="text" id="productName" autocomplete="off" %}
                 </div>
               </div>
               <div class="form-group">
                 <label for="{{ addProductForm.description.id_for_label }}" class="control-label col-xs-3">Description</label>
                 <div class="col-xs-9">
-                  {% render_field addProductForm.description class="form-control" type="text" id="description" %}
+                  {% render_field addProductForm.description class="form-control" type="text" id="description" autocomplete="off" %}
                 </div>
               </div>
               <div class="form-group">
                 <label for="{{ addProductForm.price.id_for_label }}" class="control-label col-xs-3">Price</label>
                 <div class="col-xs-9">
-                  {% render_field addProductForm.price class="form-control" type="text" id="productPrice" %}
+                  {% render_field addProductForm.price class="form-control" type="text" id="productPrice" autocomplete="off" %}
                 </div>
               </div>
               <div class="form-group">

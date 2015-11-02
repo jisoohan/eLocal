@@ -14,7 +14,7 @@ def homePage(request):
         if form.is_valid():
             zip_code = form.cleaned_data['zip_code']
             searchForm = StoreSearchForm()
-            addProductForm = ProductAddForm()
+            addProductForm = ProductAddForm(zip_code)
             addStoreForm = StoreAddForm()
             stores = Store.objects.filter(zip_code=zip_code)
             results = ElocalUtils.parseStoresInfo(stores)
@@ -27,10 +27,10 @@ def productSearchPage(request):
     if request.method == 'GET':
         if 'zip_code' not in request.session:
             return HttpResponseRedirect('/')
-        searchForm = ProductSearchForm()
-        addProductForm = ProductAddForm()
-        addStoreForm = StoreAddForm()
         zip_code = request.session['zip_code']
+        searchForm = ProductSearchForm()
+        addProductForm = ProductAddForm(zip_code)
+        addStoreForm = StoreAddForm()
         stores = Store.objects.filter(zip_code=zip_code)
         results = ElocalUtils.parseProductsInfo(stores, zip_code)
         return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results, 'zip_code': zip_code})
@@ -39,10 +39,10 @@ def storeSearchPage(request):
     if request.method == 'GET':
         if 'zip_code' not in request.session:
             return HttpResponseRedirect('/')
-        searchForm = StoreSearchForm()
-        addProductForm = ProductAddForm()
-        addStoreForm = StoreAddForm()
         zip_code = request.session['zip_code']
+        searchForm = StoreSearchForm()
+        addProductForm = ProductAddForm(zip_code)
+        addStoreForm = StoreAddForm()
         stores = Store.objects.filter(zip_code=zip_code)
         results = ElocalUtils.parseStoresInfo(stores)
         return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': results, 'zip_code': zip_code})
@@ -51,9 +51,9 @@ def shoppingPage(request):
     if request.method == 'GET':
         if 'zip_code' not in request.session:
             return HttpResponseRedirect('/')
-        addProductForm = ProductAddForm()
-        addStoreForm = StoreAddForm()
         zip_code = request.session['zip_code']
+        addProductForm = ProductAddForm(zip_code)
+        addStoreForm = StoreAddForm()
         results = request.session['cart']
         return render(request, 'eLocal_app/shoppingPage.html', {'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results, 'zip_code': zip_code})
 
@@ -74,28 +74,28 @@ def addStore(request):
 
 def addProduct(request):
     if request.method == 'POST':
-        form = ProductAddForm(request.POST)
+        zip_code = request.session['zip_code']
+        form = ProductAddForm(zip_code, request.POST)
         if form.is_valid():
             product_name = form.cleaned_data['product_name']
             description = form.cleaned_data['description']
             price = float(form.cleaned_data['price'])
-            store_name = form.cleaned_data['store_name']
-            store = Store.objects.get(name=store_name)
-            if Item.hasDuplicate(product_name, description):
-                item = Item.objects.get(name=product_name)
-            else:
-                item = Item.create(product_name, description)
-            item.addToStore(store.id, price)
+            store_id = form.cleaned_data['store_name']
+            if not Inventory.hasDuplicateItem(product_name, store_id):
+                item = ElocalUtils.getProductFromZipcode(product_name, zip_code)
+                if item is None:
+                    item = Item.create(product_name, description)
+                item.addToStore(store_id, price)
         return HttpResponseRedirect('/products')
 
 def searchProduct(request):
     if request.method == 'GET':
         if 'zip_code' not in request.session:
             return HttpResponseRedirect('/')
-        searchForm = ProductSearchForm(request.GET)
-        addProductForm = ProductAddForm()
-        addStoreForm = StoreAddForm()
         zip_code = request.session['zip_code']
+        searchForm = ProductSearchForm(request.GET)
+        addProductForm = ProductAddForm(zip_code)
+        addStoreForm = StoreAddForm()
         stores = Store.objects.filter(zip_code=zip_code)
         results = ElocalUtils.parseProductsInfo(stores, zip_code)
         if searchForm.is_valid():
@@ -111,10 +111,10 @@ def searchStore(request):
     if request.method == 'GET':
         if 'zip_code' not in request.session:
             return HttpResponseRedirect('/')
-        searchForm = StoreSearchForm(request.GET)
-        addProductForm = ProductAddForm()
-        addStoreForm = StoreAddForm()
         zip_code = request.session['zip_code']
+        searchForm = StoreSearchForm(request.GET)
+        addProductForm = ProductAddForm(zip_code)
+        addStoreForm = StoreAddForm()
         results = Store.objects.filter(zip_code=zip_code)
         if searchForm.is_valid():
             name = searchForm.cleaned_data['name']

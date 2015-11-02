@@ -5,11 +5,11 @@ from operator import itemgetter
 class ElocalUtils:
 
     @staticmethod
-    def getStoreChoices():
-        stores = Store.objects.all()
+    def getStoreChoices(zip_code):
+        stores = Store.objects.filter(zip_code=zip_code)
         results = []
         for store in stores:
-            results.append((store.name, store.name))
+            results.append((store.id, store.name))
         return results
 
     @staticmethod
@@ -36,32 +36,13 @@ class ElocalUtils:
 
     @staticmethod
     def parseProductsInfo(stores, zip_code):
+        seen_products = set()
         results = []
         for store in stores:
             products = Inventory.getItemsForStore(store.id)
             for product in products:
-                product_dict = model_to_dict(product, fields=[field.name for field in product._meta.fields])
-                stores = Inventory.getStoresForItem(product.id)
-                store_list = []
-                for store in stores:
-                    if store.zip_code == zip_code:
-                        store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
-                        price = Inventory.getPrice(store.id, product.id)
-                        store_dict['price'] = price
-                        store_list.append(store_dict)
-                sorted_store_list = sorted(store_list, key=itemgetter('price'))
-                product_dict['store_list'] = sorted_store_list
-                results.append(product_dict)
-        return results
-
-    @staticmethod
-    def searchProduct(name, zip_code):
-        stores = Store.objects.filter(zip_code=zip_code)
-        results = []
-        for store in stores:
-            products = Inventory.getItemsForStore(store.id)
-            for product in products:
-                if name.lower() in product.name.lower():
+                if product.id not in seen_products:
+                    seen_products.add(product.id)
                     product_dict = model_to_dict(product, fields=[field.name for field in product._meta.fields])
                     stores = Inventory.getStoresForItem(product.id)
                     store_list = []
@@ -71,8 +52,33 @@ class ElocalUtils:
                             price = Inventory.getPrice(store.id, product.id)
                             store_dict['price'] = price
                             store_list.append(store_dict)
-                    product_dict['store_list'] = store_list
+                    sorted_store_list = sorted(store_list, key=itemgetter('price'))
+                    product_dict['store_list'] = sorted_store_list
                     results.append(product_dict)
+        return results
+
+    @staticmethod
+    def searchProduct(name, zip_code):
+        seen_products = set()
+        stores = Store.objects.filter(zip_code=zip_code)
+        results = []
+        for store in stores:
+            products = Inventory.getItemsForStore(store.id)
+            for product in products:
+                if product.id not in seen_products:
+                    if name.lower() in product.name.lower():
+                        seen_products.add(product.id)
+                        product_dict = model_to_dict(product, fields=[field.name for field in product._meta.fields])
+                        stores = Inventory.getStoresForItem(product.id)
+                        store_list = []
+                        for store in stores:
+                            if store.zip_code == zip_code:
+                                store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
+                                price = Inventory.getPrice(store.id, product.id)
+                                store_dict['price'] = price
+                                store_list.append(store_dict)
+                        product_dict['store_list'] = store_list
+                        results.append(product_dict)
         return results
 
     @staticmethod
@@ -113,3 +119,14 @@ class ElocalUtils:
                 else:
                     cart.remove(item)
         return cart
+
+    @staticmethod
+    def getProductFromZipcode(product_name, zip_code):
+        stores = Store.objects.filter(zip_code=zip_code)
+        for store in stores:
+            products = Inventory.getItemsForStore(store.id)
+            for product in products:
+                if product_name.lower() == product.name.lower():
+                    return Item.objects.get(id=product.id)
+        return None
+

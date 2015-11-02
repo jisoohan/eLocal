@@ -16,6 +16,8 @@ class Item(models.Model):
             errors.append("Item name must be a non-empty string 1 to 128 characters long")
         if not validateStringLen(description, 1, 1024):
             errors.append("Item description must be a non-empty string 1 to 1024 characters long")
+        if Item.hasDuplicate(name, description):
+            errors.append("A matching item already exists")
         if len(errors) > 0:
             raise ValidationError(errors)
 
@@ -24,7 +26,11 @@ class Item(models.Model):
         item = Item(name=name, description=description)
         item.save()
         return item
-
+    
+    @staticmethod
+    def hasDuplicate(name, description):
+        return Item.objects.filter(name__iexact=name).exists()
+    
     # Get a list of items whose names match the query string
     @staticmethod
     def getItems(name):
@@ -85,14 +91,19 @@ class Store(models.Model):
             errors.append("Country must be a non-empty string 1 to 128 characters long")
         if has_card is not True and has_card is not False:
             errors.append("Has_card must be either true or false")
-
+        if Store.hasDuplicate(name, address, city, state, zip_code, country, has_card):
+            errors.append("A matching store already exists")
         if len(errors) > 0:
             raise ValidationError(errors)
 
         store = Store(name=name, address=address, city=city, state=state, zip_code=zip_code, country=country, has_card=has_card)
         store.save()
         return store
-
+    
+    @staticmethod
+    def hasDuplicate(name, address, city, state, zip_code, country, has_card):
+        return Store.objects.filter(name__iexact=name, address__iexact=address, city__iexact=city, state__iexact=state).exists()
+    
     # Get a list of stores whose names match the query string
     @staticmethod
     def getStores(name):

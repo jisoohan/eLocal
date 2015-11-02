@@ -68,7 +68,7 @@ def addStore(request):
             zip_code = form.cleaned_data['zip_code']
             country = form.cleaned_data['country']
             has_card = form.cleaned_data['has_card']
-            if not Store.objects.filter(name=store_name, address=address, city=city, state=state, country=country).exists():
+            if not Store.hasDuplicate(store_name, address, city, state, zip_code, country, has_card):
                 Store.create(store_name, address, city, state, zip_code, country, has_card)
         return HttpResponseRedirect('/stores')
 
@@ -81,7 +81,7 @@ def addProduct(request):
             price = float(form.cleaned_data['price'])
             store_name = form.cleaned_data['store_name']
             store = Store.objects.get(name=store_name)
-            if Item.objects.filter(name=product_name).exists():
+            if Item.hasDuplicate(product_name, description):
                 item = Item.objects.get(name=product_name)
             else:
                 item = Item.create(product_name, description)

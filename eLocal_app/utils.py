@@ -1,5 +1,6 @@
 from .models import Inventory, Item, Store
 from django.forms.models import model_to_dict
+from operator import itemgetter
 
 class ElocalUtils:
 
@@ -47,7 +48,8 @@ class ElocalUtils:
                         price = Inventory.getPrice(store.id, product.id)
                         store_dict['price'] = price
                         store_list.append(store_dict)
-                product_dict['store_list'] = store_list
+                sorted_store_list = sorted(store_list, key=itemgetter('price'))
+                product_dict['store_list'] = sorted_store_list
                 results.append(product_dict)
         return results
 

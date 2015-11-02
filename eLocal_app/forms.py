@@ -4,7 +4,7 @@ from .utils import ElocalUtils
 from eLocal_app.widgets.selecttimewidget import *
 
 class ZipcodeForm(forms.Form):
-    zip_code = forms.CharField(validators=[RegexValidator('^[0-9]{5}(?:-[0-9]{4})?$', message='Enter a valid zipcode.')])
+    zip_code = forms.CharField(validators=[RegexValidator('^[0-9]{5}?$', message='Enter a valid zipcode.')])
 
 class ProductSearchForm(forms.Form):
     name = forms.CharField(max_length=128)
@@ -24,8 +24,8 @@ class StoreAddForm(forms.Form):
     store_name = forms.CharField(max_length=128)
     street_number = forms.CharField(max_length=10)
     street_address = forms.CharField(max_length=256)
-    city = forms.CharField(max_length=128)
+    city = forms.CharField(max_length=60)
     state = forms.CharField(max_length=2)
-    zip_code = forms.CharField(max_length=10)
-    country = forms.CharField(max_length=128)
+    zip_code = forms.CharField(max_length=5)
+    country = forms.CharField(max_length=2)
     has_card = forms.BooleanField(required=False, initial=False)

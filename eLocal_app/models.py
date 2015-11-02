@@ -59,10 +59,10 @@ class Item(models.Model):
 class Store(models.Model):
     name = models.CharField(max_length=128)
     address = models.CharField(max_length=256)
-    city = models.CharField(max_length=128)
+    city = models.CharField(max_length=60)
     state = models.CharField(max_length=2)
-    zip_code = models.CharField(max_length=10)
-    country = models.CharField(max_length=128)
+    zip_code = models.CharField(max_length=5)
+    country = models.CharField(max_length=2)
     has_card = models.BooleanField()
     # Hours can be accessed using <store>.openhour_set
     items = models.ManyToManyField(Item, through='Inventory')
@@ -75,14 +75,14 @@ class Store(models.Model):
             errors.append("Name must be a non-empty string 1 to 128 characters long")
         if not validateStringLen(address, 1, 256):
             errors.append("Address must be a non-empty string 1 to 128 characters long")
-        if not validateStringLen(city, 1, 128):
-            errors.append("City must be a non-empty string 1 to 128 characters long")
+        if not validateStringLen(city, 1, 60):
+            errors.append("City must be a non-empty string 1 to 60 characters long")
         if not validateStringLen(state, 2, 2):
             errors.append("State must be a non-empty string 2 characters long")
-        if not validateStringLen(zip_code, 5, 10):
-            errors.append("Zipcode must be a non-empty string 5 to 10 characters long")
-        if not validateStringLen(country, 1, 128):
-            errors.append("Country must be a non-empty string 1 to 128 characters long")
+        if not validateStringLen(zip_code, 5, 5):
+            errors.append("Zipcode must be a non-empty string 5 characters long")
+        if not validateStringLen(country, 2, 2):
+            errors.append("Country must be a non-empty string 2 characters long")
         if has_card is not True and has_card is not False:
             errors.append("Has_card must be either true or false")
         if Store.hasDuplicate(name, address, city, state, zip_code, country, has_card):

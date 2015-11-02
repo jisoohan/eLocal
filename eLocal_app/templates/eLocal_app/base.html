@@ -152,13 +152,9 @@
         $("#storeForm").append("<button class='btn' type='reset' id='storeReset'>Reset</button>");
         $("button#storeReset").click();
         $("button#storeReset").remove();
-        $("#street_number").attr("disabled", "true");
-        $('#street_address').attr("disabled", "true");
-        $("#route").attr("disabled", "true");
-        $("#locality").attr("disabled", "true");
-        $("#administrative_area_level_1").attr("disabled", "true");
-        $("#country").attr("disabled", "true");
-        $("#postal_code").attr("disabled", "true");
+      });
+      $(document).on("hidden.bs.modal", "#addProduct", function() {
+        $(this).find('form')[0].reset();
       });
       $("#addStore").on("click", function() {
         var autocomplete = new google.maps.places.Autocomplete(document.getElementById('autocomplete'));

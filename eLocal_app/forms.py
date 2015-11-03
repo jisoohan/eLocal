@@ -5,6 +5,7 @@ from eLocal_app.widgets.selecttimewidget import *
 
 class ZipcodeForm(forms.Form):
     zip_code = forms.CharField(max_length=5)
+    radius = forms.ChoiceField(choices=[(x, str(x) + ' miles') for x in range(5, 51, 5)])
 
 class ProductSearchForm(forms.Form):
     name = forms.CharField(max_length=128)

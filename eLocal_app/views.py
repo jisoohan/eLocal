@@ -13,14 +13,15 @@ def homePage(request):
         form = ZipcodeForm(request.POST)
         if form.is_valid():
             zip_code = form.cleaned_data['zip_code']
+            radius = form.cleaned_data['radius']
             coordinates = ElocalUtils.getCoorFromZipcode(zip_code)
             if ElocalUtils.isValidZipcode(zip_code) and len(coordinates) != 0:
                 request.session['zip_code'] = zip_code
                 request.session['coordinates'] = coordinates
-                request.session['radius'] = 20
+                request.session['radius'] = int(radius)
                 request.session['cart'] = []
-                request.session['stores'] = ElocalUtils.geolocateStores(request.session['coordinates'], 20)
-                request.session['products'] = ElocalUtils.geolocateProducts(request.session['coordinates'], 20)
+                request.session['stores'] = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
+                request.session['products'] = ElocalUtils.geolocateProducts(request.session['coordinates'], request.session['radius'])
                 searchForm = StoreSearchForm()
                 addProductForm = ProductAddForm(request.session['coordinates'], request.session['radius'])
                 addStoreForm = StoreAddForm()

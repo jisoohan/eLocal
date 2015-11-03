@@ -64,11 +64,13 @@ class Store(models.Model):
     zip_code = models.CharField(max_length=5)
     country = models.CharField(max_length=2)
     has_card = models.BooleanField()
+    latitude = models.FloatField()
+    longitude = models.FloatField()
     # Hours can be accessed using <store>.openhour_set
     items = models.ManyToManyField(Item, through='Inventory')
 
     @staticmethod
-    def create(name, address, city, state, zip_code, country, has_card):
+    def create(name, address, city, state, zip_code, country, has_card, latitude, longitude):
         # Validate fields
         errors = []
         if not validateStringLen(name, 1, 128):
@@ -90,7 +92,7 @@ class Store(models.Model):
         if len(errors) > 0:
             raise ValidationError(errors)
 
-        store = Store(name=name, address=address, city=city, state=state, zip_code=zip_code, country=country, has_card=has_card)
+        store = Store(name=name, address=address, city=city, state=state, zip_code=zip_code, country=country, has_card=has_card, latitude=latitude, longitude=longitude)
         store.save()
         return store
 

@@ -4,7 +4,7 @@ from .utils import ElocalUtils
 from eLocal_app.widgets.selecttimewidget import *
 
 class ZipcodeForm(forms.Form):
-    zip_code = forms.CharField(validators=[RegexValidator('^[0-9]{5}?$', message='Enter a valid zipcode.')])
+    zip_code = forms.CharField(max_length=5)
 
 class ProductSearchForm(forms.Form):
     name = forms.CharField(max_length=128)
@@ -16,9 +16,9 @@ class ProductAddForm(forms.Form):
     product_name = forms.CharField(max_length=128)
     description = forms.CharField(max_length=1024, widget=forms.Textarea)
     price = forms.FloatField(min_value=0)
-    def __init__(self, zip_code, *args, **kwargs):
+    def __init__(self, origin, radius, *args, **kwargs):
         super(ProductAddForm, self).__init__(*args, **kwargs)
-        self.fields['store_name'] = forms.ChoiceField(choices=ElocalUtils.getStoreChoices(zip_code))
+        self.fields['store_name'] = forms.ChoiceField(choices=ElocalUtils.getStoreChoices(origin, radius))
 
 class StoreAddForm(forms.Form):
     store_name = forms.CharField(max_length=128)

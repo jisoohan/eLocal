@@ -1,44 +1,67 @@
 from .models import Inventory, Item, Store
 from django.forms.models import model_to_dict
 from operator import itemgetter
+import googlemaps
 
 class ElocalUtils:
 
     @staticmethod
-    def getStoreChoices(zip_code):
-        stores = Store.objects.filter(zip_code=zip_code)
+    def getCoorFromZipcode(zip_code):
+        client = googlemaps.Client(key='AIzaSyBuEhmVjHKmjRSodKx3dYUqbyCFquSDMWc')
+        location = client.geocode(components={'postal_code': zip_code})
+        origin = [(location[0]['geometry']['location']['lat'], location[0]['geometry']['location']['lng'])]
+        return origin
+
+    @staticmethod
+    def checkDistance(origin, destination, radius):
+        client = googlemaps.Client(key='AIzaSyBuEhmVjHKmjRSodKx3dYUqbyCFquSDMWc')
+        dis_matrix = client.distance_matrix(origin, destination, units="imperial")
+        distance = 0.00062137 * dis_matrix['rows'][0]['elements'][0]['distance']['value']
+        if distance <= radius:
+            return True
+        return False
+
+    @staticmethod
+    def isValidZipcode(zip_code):
+        client = googlemaps.Client(key='AIzaSyBuEhmVjHKmjRSodKx3dYUqbyCFquSDMWc')
+        location = client.geocode(components={'postal_code': zip_code})
+        if len(location) == 0:
+            return False
+        else:
+            return True
+
+    @staticmethod
+    def geolocateStores(origin, radius):
+        stores = Store.objects.all()
         results = []
         for store in stores:
-            results.append((store.id, store.name))
+            destination = [(store.latitude, store.longitude)]
+            if ElocalUtils.checkDistance(origin, destination, radius):
+                store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
+                products = Inventory.getItemsForStore(store.id)
+                product_list = []
+                for product in products:
+                    price = Inventory.getPrice(store.id, product.id)
+                    product_dict = model_to_dict(product, fields=[field.name for field in product._meta.fields])
+                    product_dict['price'] = price
+                    product_list.append(product_dict)
+                sorted_product_list = sorted(product_list, key=itemgetter('price'))
+                store_dict['product_list'] = sorted_product_list
+                results.append(store_dict)
         return results
 
     @staticmethod
-    def parseStoresInfo(stores):
-        results = []
+    def geolocateProducts(origin, radius):
+        stores = Store.objects.all()
+        store_results = []
         for store in stores:
-            store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
-            products = Inventory.getItemsForStore(store.id)
-            product_list = []
-            for product in products:
-                price = Inventory.getPrice(store.id, product.id)
-                product_dict = model_to_dict(product, fields=[field.name for field in product._meta.fields])
-                product_dict['price'] = price
-                product_list.append(product_dict)
-            sorted_product_list = sorted(product_list, key=itemgetter('price'))
-            store_dict['product_list'] = sorted_product_list
-            results.append(store_dict)
-        return results
+            destination = [(store.latitude, store.longitude)]
+            if ElocalUtils.checkDistance(origin, destination, radius):
+                store_results.append(store)
 
-    @staticmethod
-    def searchStore(name, zip_code):
-        stores = [store for store in Store.getStores(name) if store.zip_code == zip_code]
-        return ElocalUtils.parseStoresInfo(stores)
-
-    @staticmethod
-    def parseProductsInfo(stores, zip_code):
         seen_products = set()
         results = []
-        for store in stores:
+        for store in store_results:
             products = Inventory.getItemsForStore(store.id)
             for product in products:
                 if product.id not in seen_products:
@@ -47,7 +70,8 @@ class ElocalUtils:
                     stores = Inventory.getStoresForItem(product.id)
                     store_list = []
                     for store in stores:
-                        if store.zip_code == zip_code:
+                        destination = [(store.latitude, store.longitude)]
+                        if ElocalUtils.checkDistance(origin, destination, radius):
                             store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
                             price = Inventory.getPrice(store.id, product.id)
                             store_dict['price'] = price
@@ -58,27 +82,78 @@ class ElocalUtils:
         return results
 
     @staticmethod
-    def searchProduct(name, zip_code):
-        seen_products = set()
-        stores = Store.objects.filter(zip_code=zip_code)
+    def getCoorFromAddress(address, city, state, zip_code, country):
+        client = googlemaps.Client(key='AIzaSyBuEhmVjHKmjRSodKx3dYUqbyCFquSDMWc')
+        location = client.geocode(address + ', ' + city + ', ' + state + ', ' + zip_code + ', ' + country)
+        coordinates = (location[0]['geometry']['location']['lat'], location[0]['geometry']['location']['lng'])
+        return coordinates
+
+    @staticmethod
+    def getStoreChoices(origin, radius):
+        stores = Store.objects.all()
         results = []
         for store in stores:
-            products = Inventory.getItemsForStore(store.id)
-            for product in products:
-                if product.id not in seen_products:
-                    if name.lower() in product.name.lower():
-                        seen_products.add(product.id)
-                        product_dict = model_to_dict(product, fields=[field.name for field in product._meta.fields])
-                        stores = Inventory.getStoresForItem(product.id)
-                        store_list = []
-                        for store in stores:
-                            if store.zip_code == zip_code:
-                                store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
-                                price = Inventory.getPrice(store.id, product.id)
-                                store_dict['price'] = price
-                                store_list.append(store_dict)
-                        product_dict['store_list'] = store_list
-                        results.append(product_dict)
+            destination = [(store.latitude, store.longitude)]
+            if ElocalUtils.checkDistance(origin, destination, radius):
+                results.append((store.id, store.name))
+        return results
+
+    @staticmethod
+    def parseStore(store):
+        store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
+        products = Inventory.getItemsForStore(store.id)
+        product_list = []
+        for product in products:
+            price = Inventory.getPrice(store.id, product.id)
+            product_dict = model_to_dict(product, fields=[field.name for field in product._meta.fields])
+            product_dict['price'] = price
+            product_list.append(product_dict)
+        sorted_product_list = sorted(product_list, key=itemgetter('price'))
+        store_dict['product_list'] = sorted_product_list
+        return store_dict
+
+    @staticmethod
+    def parseProduct(product):
+        product_dict = model_to_dict(product, fields=[field.name for field in product._meta.fields])
+        stores = Inventory.getStoresForItem(product.id)
+        store_list = []
+        for store in stores:
+            store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
+            price = Inventory.getPrice(store.id, product.id)
+            store_dict['price'] = price
+            store_list.append(store_dict)
+        sorted_store_list = sorted(store_list, key=itemgetter('price'))
+        product_dict['store_list'] = sorted_store_list
+        return product_dict
+
+    @staticmethod
+    def parseProductAddStore(product_list, product, store_id, price):
+        results = product_list
+        for p in results:
+            if p['id'] == product.id:
+                store_list = p['store_list']
+                store = Store.objects.get(id=store_id)
+                store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
+                store_dict['price'] = price
+                store_list.append(store_dict)
+                sorted_store_list = sorted(store_list, key=itemgetter('price'))
+                p['store_list'] = sorted_store_list
+        return results
+
+    @staticmethod
+    def searchStore(name, stores):
+        results = []
+        for store in stores:
+            if name.lower() in store['name'].lower():
+                results.append(store)
+        return results
+
+    @staticmethod
+    def searchProduct(name, products):
+        results = []
+        for product in products:
+            if name.lower() in product['name'].lower():
+                results.append(product)
         return results
 
     @staticmethod
@@ -121,12 +196,8 @@ class ElocalUtils:
         return cart
 
     @staticmethod
-    def getProductFromZipcode(product_name, zip_code):
-        stores = Store.objects.filter(zip_code=zip_code)
-        for store in stores:
-            products = Inventory.getItemsForStore(store.id)
-            for product in products:
-                if product_name.lower() == product.name.lower():
-                    return Item.objects.get(id=product.id)
+    def getProductFromZipcode(product_name, products):
+        for product in products:
+            if product_name.lower() == product['name'].lower():
+                return Item.objects.get(id=product['id'])
         return None
-

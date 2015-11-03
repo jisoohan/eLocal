@@ -8,8 +8,11 @@ class ElocalUtils:
     @staticmethod
     def getCoorFromZipcode(zip_code):
         client = googlemaps.Client(key='AIzaSyBuEhmVjHKmjRSodKx3dYUqbyCFquSDMWc')
-        location = client.geocode(components={'postal_code': zip_code})
-        origin = [(location[0]['geometry']['location']['lat'], location[0]['geometry']['location']['lng'])]
+        location = client.geocode(components={'postal_code': zip_code, 'country': 'US'})
+        if len(location) == 0:
+            origin = []
+        else:
+            origin = [(location[0]['geometry']['location']['lat'], location[0]['geometry']['location']['lng'])]
         return origin
 
     @staticmethod

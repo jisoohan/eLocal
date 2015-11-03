@@ -157,6 +157,24 @@
         $(this).find('form')[0].reset();
       });
       $("#addStore").on("click", function() {
+        $('#street_number').focus(function(e) {
+          $(this).blur();
+        });
+        $('#route').focus(function(e) {
+          $(this).blur();
+        });
+        $('#locality').focus(function(e) {
+          $(this).blur();
+        });
+        $('#administrative_area_level_1').focus(function(e) {
+          $(this).blur();
+        });
+        $('#country').focus(function(e) {
+          $(this).blur();
+        });
+        $('#postal_code').focus(function(e) {
+          $(this).blur();
+        });
         var autocomplete = new google.maps.places.Autocomplete(document.getElementById('autocomplete'));
         google.maps.event.addListener(autocomplete, "place_changed", function() {
           var componentForm = {

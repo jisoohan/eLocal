@@ -28,8 +28,12 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li><a href="{% url 'eLocal_app.views.homePage' %}">Home</a></li>
-            <li><a href="{% url 'eLocal_app.views.shoppingPage' %}">Shopping Cart</a></li>
-            <li class="active" class="dropdown">
+            {% url 'eLocal_app.views.shoppingPage' as url %}
+            <li {% if request.path == url %} class="active" {% endif %}><a href="{{ url }}">Shopping Cart</a></li>
+
+            {% url 'eLocal_app.views.productSearchPage' as url2 %}
+            {% url 'eLocal_app.views.storeSearchPage' as url3 %}
+            <li {% if request.path == url2 or request.path == url3 %} class="active" {% endif %} class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Search by<span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li><a href="{% url 'eLocal_app.views.productSearchPage' %}">Product</a></li>

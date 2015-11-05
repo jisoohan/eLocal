@@ -10,17 +10,6 @@ class Item(models.Model):
 
     @staticmethod
     def create(name, description):
-        # Validate field
-        errors = []
-        if not validateStringLen(name, 1, 128):
-            errors.append("Item name must be a non-empty string 1 to 128 characters long")
-        if not validateStringLen(description, 1, 1024):
-            errors.append("Item description must be a non-empty string 1 to 1024 characters long")
-        if len(errors) > 0:
-            raise ValidationError(errors)
-
-        name = name.strip()
-        description = description.strip()
         item = Item(name=name, description=description)
         item.save()
         return item
@@ -35,7 +24,6 @@ class Item(models.Model):
         if len(errors) > 0:
             raise ValidationError(errors)
 
-        name = name.strip()
         return list(Item.objects.filter(name__icontains=name))
 
     # Associates this item with a corresponding store and price
@@ -54,6 +42,27 @@ class Item(models.Model):
 
         inv = Inventory.create(store, self, price)
         return inv
+    
+    def clean_fields(self, exclude=None):
+        errors = []
+        if not validateStringLen(self.name, 1, 128):
+            errors.append("Item name must be a non-empty string 1 to 128 characters long")
+        if not validateStringLen(self.description, 1, 1024):
+            errors.append("Item description must be a non-empty string 1 to 1024 characters long")
+        if len(errors) > 0:
+            raise ValidationError(errors)
+    
+    def clean(self):
+        pass
+    
+    def validate_unique(self, exclude=None):
+        pass
+    
+    def save(self):
+        self.full_clean()
+        super(Item, self).save()
+
+
 
 
 class Store(models.Model):
@@ -71,38 +80,25 @@ class Store(models.Model):
 
     @staticmethod
     def create(name, address, city, state, zip_code, country, has_card, latitude, longitude):
-        # Validate fields
-        errors = []
-        if not validateStringLen(name, 1, 128):
-            errors.append("Name must be a non-empty string 1 to 128 characters long")
-        if not validateStringLen(address, 1, 256):
-            errors.append("Address must be a non-empty string 1 to 128 characters long")
-        if not validateStringLen(city, 1, 60):
-            errors.append("City must be a non-empty string 1 to 60 characters long")
-        if not validateStringLen(state, 2, 2):
-            errors.append("State must be a non-empty string 2 characters long")
-        if not validateStringLen(zip_code, 5, 5):
-            errors.append("Zipcode must be a non-empty string 5 characters long")
-        if not validateStringLen(country, 2, 2):
-            errors.append("Country must be a non-empty string 2 characters long")
-        if has_card is not True and has_card is not False:
-            errors.append("Has_card must be either true or false")
-        if Store.hasDuplicate(name, address, city, state, zip_code, country, has_card):
-            errors.append("A matching store already exists")
-        if len(errors) > 0:
-            raise ValidationError(errors)
+        #if Store.hasDuplicate(name, address, city, state, zip_code, country, has_card):
+        #    errors.append("A matching store already exists")
+        #if len(errors) > 0:
+        #    raise ValidationError(errors)
 
-        store = Store(name=name, address=address, city=city, state=state, zip_code=zip_code, country=country, has_card=has_card, latitude=latitude, longitude=longitude)
+        store = Store(name=name, address=address, city=city, state=state, zip_code=zip_code,
+                      country=country, has_card=has_card, latitude=latitude, longitude=longitude)
         store.save()
         return store
 
     @staticmethod
     def hasDuplicate(name, address, city, state, zip_code, country, has_card):
-        return Store.objects.filter(name__iexact=name, address__iexact=address, city__iexact=city, state__iexact=state, zip_code__iexact=zip_code).exists()
+        return Store.objects.filter(name__iexact=name, address__iexact=address, city__iexact=city,
+                                    state__iexact=state, zip_code__iexact=zip_code).exists()
 
     @staticmethod
     def isUpdated(name, address, city, state, zip_code, country, has_card):
-        return Store.objects.filter(name__iexact=name, address__iexact=address, city__iexact=city, state__iexact=state, zip_code__iexact=zip_code, has_card__iexact=has_card).exists()
+        return Store.objects.filter(name__iexact=name, address__iexact=address, city__iexact=city,
+                                    state__iexact=state, zip_code__iexact=zip_code, has_card__iexact=has_card).exists()
 
     # Get a list of stores whose names match the query string
     @staticmethod
@@ -114,7 +110,7 @@ class Store(models.Model):
         if len(errors) > 0:
             raise ValidationError(errors)
 
-        name = name.strip()
+        #name = name.strip()
         return list(Store.objects.filter(name__icontains=name))
 
     # Associates this store with a corresponding item and price
@@ -134,6 +130,45 @@ class Store(models.Model):
         inv = Inventory.create(self, item, price)
         return inv
 
+        def clean_fields(self, exclude=None):
+            raise ValidationError("Test validation error")
+    
+    def clean_fields(self, exclude=None):
+        errors = []
+        if not validateStringLen(self.name, 1, 128):
+            errors.append("Name must be a non-empty string 1 to 128 characters long")
+        if not validateStringLen(self.address, 1, 256):
+            errors.append("Address must be a non-empty string 1 to 128 characters long")
+        if not validateStringLen(self.city, 1, 60):
+            errors.append("City must be a non-empty string 1 to 60 characters long")
+        if not validateStringLen(self.state, 2, 2):
+            errors.append("State must be a non-empty string 2 characters long")
+        if not validateStringLen(self.zip_code, 5, 5):
+            errors.append("Zipcode must be a non-empty string 5 characters long")
+        if not validateStringLen(self.country, 2, 2):
+            errors.append("Country must be a non-empty string 2 characters long")
+        if not isinstance(self.has_card, bool):
+            errors.append("Has_card must be either true or false")
+        if not validateNumClosedSet(self.latitude, -90, 90):
+            errors.append("Latitude must be between -90 and 90")
+        if not validateNumClosedSet(self.longitude, -180, 180):
+            errors.append("Longitude must be between -180 and 180")
+        if len(errors) > 0:
+            raise ValidationError(errors)
+    
+    def clean(self):
+        pass
+    
+    def validate_unique(self, exclude=None):
+        pass
+    
+    def save(self):
+        self.full_clean()
+        super(Store, self).save()
+
+
+
+
 class OpenHour(models.Model):
     # Each OpenHours object belongs to one store, but each store has multiple OpenHours
     store = models.ForeignKey(Store)
@@ -144,21 +179,33 @@ class OpenHour(models.Model):
 
     @staticmethod
     def create(store, day, open_time, close_time, closed):
-        # Validate fields
-        errors = []
-        if not isinstance(store, Store):
-            errors.append("Invalid store object")
-        if not validateStringLen(day, 1, 9):
-            errors.append("Day must be valid")
-        if not closed:
-            if not validateHours(open_time, close_time):
-                errors.append("Hours must be valid")
-        if len(errors) > 0:
-            raise ValidationError(errors)
-
         open_hour = OpenHour(store=store, day=day, open_time=open_time, close_time=close_time, closed=closed)
         open_hour.save()
         return open_hour
+    
+    def clean_fields(self, exclude=None):
+        errors = []
+        if not validateStringLen(self.day, 1, 9):
+            errors.append("Day must be valid")
+        if not isinstance(self.store, Store):
+            errors.append("Invalid store object")
+        if not self.closed:
+            if not validateHours(self.open_time, self.close_time):
+                errors.append("Hours must be valid")
+        if len(errors) > 0:
+            raise ValidationError(errors)
+    
+    def clean(self):
+        pass
+    
+    def validate_unique(self, exclude=None):
+        pass
+    
+    def save(self):
+        self.full_clean()
+        super(Item, self).save()
+
+
 
 
 # Tracks item-store-price associations
@@ -170,16 +217,6 @@ class Inventory(models.Model):
 
     @staticmethod
     def create(store, item, price):
-        errors = []
-        if not isinstance(store, Store):
-            errors.append("Invalid store object")
-        if not isinstance(item, Item):
-            errors.append("Invalid item object")
-        if not validateNumOpenSet(price, 0, 1e6):
-            errors.append("Price must be nonzero and less than $1,000,000")
-        if len(errors) > 0:
-            raise ValidationError(errors)
-
         inv = Inventory(store=store, item=item, price=price)
         inv.save()
         return inv
@@ -217,6 +254,31 @@ class Inventory(models.Model):
         except Inventory.DoesNotExist as e:
             raise e
 
+    def clean_fields(self, exclude=None):
+        errors = []
+        if not isinstance(self.store, Store):
+            errors.append("Invalid store object")
+        if not isinstance(self.item, Item):
+            errors.append("Invalid item object")
+        if not validateNumOpenSet(self.price, 0, 1e6):
+            errors.append("Price must be nonzero and less than $1,000,000")
+        if len(errors) > 0:
+            raise ValidationError(errors)
+
+    def clean(self):
+        pass
+    
+    def validate_unique(self, exclude=None):
+        pass
+    
+    def save(self):
+        self.full_clean()
+        super(Inventory, self).save()
+
+
+
+
+
 def validateStringLen(string, min_len, max_len):
     if not isinstance(string, str):
         return False
@@ -227,13 +289,20 @@ def validateStringLen(string, min_len, max_len):
 def validateNumOpenSet(num, minimum, maximum):
     if not isinstance(num, Decimal) and not isinstance(num, float) and not isinstance(num, int):
         return False
+    if num <= minimum or num >= maximum:
+        return False
+    return True
+
+def validateNumClosedSet(num, minimum, maximum):
+    if not isinstance(num, Decimal) and not isinstance(num, float) and not isinstance(num, int):
+        return False
     if num < minimum or num > maximum:
         return False
     return True
 
 def validateHours(open_time, close_time):
-    if open_time == close_time:
-        return True
-    if close_time > open_time:
-        return True
-    return False
+    if not isinstance(open_time, Date) or not isinstance(close_time, Date):
+        return False
+    if close_time < open_time:
+        return False
+    return True

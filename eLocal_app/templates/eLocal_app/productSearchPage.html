@@ -96,7 +96,7 @@
                       <h3 class="modal-title text-center">Edit Product</h3>
                     </div>
                     <div class="modal-body">
-                      <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.updateProduct' editProductForm.0 %}" id="productForm">
+                      <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.updateProduct' editProductForm.0 %}">
                         <div class="form-group">
                           <label for="productName" class="control-label col-xs-3">Product Name</label>
                           <div class="col-xs-9">
@@ -132,7 +132,41 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script type="text/javascript">
     {% block javascript %}
-
+      var product_count = {{products|length}};
+      function submitProductEditForm(j) {
+        return function(e) {
+          var productName = $('#editproduct' + j + ' #productName');
+          var description = $('#editproduct' + j + ' #description');
+          if (!productName.val()) {
+            e.preventDefault();
+            productName.closest('.form-group').removeClass('has-success').addClass('has-error');
+          } else {
+            productName.closest('.form-group').removeClass('has-error').addClass('has-success');
+          }
+          if (!description.val()) {
+            e.preventDefault();
+            description.closest('.form-group').removeClass('has-success').addClass('has-error');
+          } else {
+            description.closest('.form-group').removeClass('has-error').addClass('has-success');
+          }
+        }
+      }
+      function resetProductEditForm(j, org_storeName, org_description) {
+        return function(e) {
+          $('#editproduct' + j + ' #productName').val(org_storeName);
+          $('#editproduct' + j + ' #description').val(org_description);
+          $('#editproduct' + j + ' #productName').closest('.form-group').removeClass('has-error').removeClass('has-success');
+          $('#editproduct' + j + ' #description').closest('.form-group').removeClass('has-error').removeClass('has-success');
+        }
+      }
+      $(document).ready(function(e) {
+        for (var i = 1; i <= product_count; i++) {
+          var org_storeName = $('#editproduct' + i + ' #productName').val();
+          var org_description = $('#editproduct' + i + ' #description').val();
+          $('#editproduct' + i).on("submit", submitProductEditForm(i));
+          $("#editproduct" + i).on("hidden.bs.modal", resetProductEditForm(i, org_storeName, org_description));
+        }
+      });
     {% endblock %}
     </script>
   </body>

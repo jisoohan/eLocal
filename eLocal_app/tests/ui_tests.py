@@ -12,15 +12,15 @@ class UITest(unittest.TestCase):
         driver.get('http://localhost:8000')
         self.assertIn('eLocal', driver.title)
 
-    def testProductPage(self):
-        driver = self.driver
-        driver.get('http://localhost:8000/products')
-        self.assertIn('Product', driver.title)
+    #def testProductPage(self):
+    #    driver = self.driver
+    #    driver.get('http://localhost:8000/products')
+    #    self.assertIn('Product', driver.title)
 
-    def testStorePage(self):
-        driver = self.driver
-        driver.get('http://localhost:8000/stores')
-        self.assertIn('Store', driver.title)
+    #def testStorePage(self):
+    #    driver = self.driver
+    #    driver.get('http://localhost:8000/stores')
+    #    self.assertIn('Store', driver.title)
 
     def tearDown(self):
         self.driver.close()

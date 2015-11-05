@@ -1,8 +1,7 @@
 from django.contrib import messages
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
-from django.template import RequestContext, loader
-from .forms import ZipcodeForm, ProductSearchForm, StoreSearchForm, ProductAddForm, StoreAddForm, ProductUpdateForm
+from .forms import ZipcodeForm, ProductSearchForm, StoreSearchForm, ProductAddForm, StoreAddForm, ProductUpdateForm, PriceUpdateForm
 from .models import Store, Item, Inventory
 from .utils import ElocalUtils
 
@@ -41,13 +40,21 @@ def productSearchPage(request):
         addStoreForm = StoreAddForm()
         products = request.session['products']
         editProductForms = []
+        editPriceForms = []
+        ids = []
         for product in products:
             editProductForm = ProductUpdateForm(initial={
                                                 'product_name': product['name'],
                                                 'description': product['description']
                                                 })
             editProductForms.append((product['id'], editProductForm))
-        return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': products, 'editProductForms': editProductForms, 'zip_code': zip_code, 'radius': radius})
+            for store in product['store_list']:
+                editPriceForm = PriceUpdateForm(initial={
+                                                'price': store['price']
+                                                })
+                editPriceForms.append([product['id'], store['id'], editPriceForm])
+                ids.append([product['id'], store['id']])
+        return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': products, 'editProductForms': editProductForms, 'editPriceForms': editPriceForms, 'ids': ids, 'zip_code': zip_code, 'radius': radius})
 
 def storeSearchPage(request):
     if request.method == 'GET':
@@ -114,6 +121,17 @@ def updateProduct(request, product_id):
             product_list = request.session['products']
             if Item.updateProductCheck(product, product_list, product_name, description):
                 Item.objects.filter(id=product_id).update(name=product_name, description=description)
+                request.session['stores'] = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
+                request.session['products'] = ElocalUtils.geolocateProducts(request.session['coordinates'], request.session['radius'])
+        return HttpResponseRedirect('/products')
+
+def updatePrice(request, product_id, store_id):
+    if request.method == 'POST':
+        form = PriceUpdateForm(request.POST)
+        if form.is_valid():
+            price = form.cleaned_data['price']
+            if price != Inventory.getPrice(store_id, product_id):
+                Inventory.objects.filter(store=Store.objects.get(id=store_id), item=Item.objects.get(id=product_id)).update(price=price)
                 request.session['stores'] = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
                 request.session['products'] = ElocalUtils.geolocateProducts(request.session['coordinates'], request.session['radius'])
         return HttpResponseRedirect('/products')

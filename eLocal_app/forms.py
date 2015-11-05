@@ -33,3 +33,6 @@ class StoreAddForm(forms.Form):
     zip_code = forms.CharField(max_length=5)
     country = forms.CharField(max_length=2)
     has_card = forms.BooleanField(required=False, initial=False)
+
+class PriceUpdateForm(forms.Form):
+    price = forms.FloatField(min_value=0)

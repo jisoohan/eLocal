@@ -65,6 +65,7 @@
                             <th class="text-left">Name</th>
                             <th class="text-right">Price</th>
                             <th class="text-right">Add to Cart</th>
+                            <th class="text-right">Edit Price</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -74,6 +75,7 @@
                                 <td class="text-left">{{store.name}}</td>
                                 <td class="text-right">${{store.price}}</td>
                                 <td class="text-right"><a href="{% url 'eLocal_app.views.addCart' product.id store.id %}">Add</a></td>
+                                <td class="text-right"><a href="" data-toggle="modal" data-target="#editprice{{product.id}}{{store.id}}">Edit Price</a></td>
                               </tr>
                             {% endfor %}
                           {% endif %}
@@ -119,6 +121,31 @@
                 </div>
               </div>
             {% endfor %}
+            {% for editPriceForm in editPriceForms %}
+              <div id="editprice{{editPriceForm.0}}{{editPriceForm.1}}" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h3 class="modal-title text-center">Edit Price</h3>
+                    </div>
+                    <div class="modal-body">
+                      <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.updatePrice' editPriceForm.0 editPriceForm.1 %}">
+                        <div class="form-group">
+                          <label for="price" class="control-label col-xs-3">Price</label>
+                          <div class="col-xs-9">
+                            {% render_field editPriceForm.2.price class="form-control" type="text" id="price" autocomplete="off" %}
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default btn-danger pull-left col-xs-2" data-dismiss="modal">Close</button>
+                          <button type="submit" class="btn btn-default btn-success pull-right col-xs-4">Update Price</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
           {% endif %}
         </ul>
       </div>
@@ -133,6 +160,7 @@
     <script type="text/javascript">
     {% block javascript %}
       var product_count = {{products|length}};
+      var ids = {{ids}};
       function submitProductEditForm(j) {
         return function(e) {
           var productName = $('#editproduct' + j + ' #productName');
@@ -151,20 +179,42 @@
           }
         }
       }
-      function resetProductEditForm(j, org_storeName, org_description) {
+      function resetProductEditForm(j, productName, description) {
         return function(e) {
-          $('#editproduct' + j + ' #productName').val(org_storeName);
-          $('#editproduct' + j + ' #description').val(org_description);
+          $('#editproduct' + j + ' #productName').val(productName);
+          $('#editproduct' + j + ' #description').val(description);
           $('#editproduct' + j + ' #productName').closest('.form-group').removeClass('has-error').removeClass('has-success');
           $('#editproduct' + j + ' #description').closest('.form-group').removeClass('has-error').removeClass('has-success');
         }
       }
+      function submitPriceEditForm(product_id, store_id) {
+        return function(e) {
+          var price = $('#editprice' + product_id + store_id + ' #price');
+          if (!price.val()) {
+            e.preventDefault();
+            price.closest('.form-group').removeClass('has-success').addClass('has-error');
+          } else {
+            price.closest('.form-group').removeClass('has-error').addClass('has-success');
+          }
+        }
+      }
+      function resetPriceEditForm(product_id, store_id, price) {
+        return function(e) {
+          $('#editprice' + product_id + store_id + ' #price').val(price);
+          $('#editprice' + product_id + store_id + ' #price').closest('.form-group').removeClass('has-error').removeClass('has-success');
+        }
+      }
       $(document).ready(function(e) {
         for (var i = 1; i <= product_count; i++) {
-          var org_storeName = $('#editproduct' + i + ' #productName').val();
+          var org_productName = $('#editproduct' + i + ' #productName').val();
           var org_description = $('#editproduct' + i + ' #description').val();
           $('#editproduct' + i).on("submit", submitProductEditForm(i));
-          $("#editproduct" + i).on("hidden.bs.modal", resetProductEditForm(i, org_storeName, org_description));
+          $("#editproduct" + i).on("hidden.bs.modal", resetProductEditForm(i, org_productName, org_description));
+        }
+        for (var k = 0; k < ids.length; k++) {
+          var org_price = $('#editprice' + ids[k][0] + ids[k][1] + ' #price').val();
+          $('#editprice' + ids[k][0] + ids[k][1]).on("submit", submitPriceEditForm(ids[k][0], ids[k][1]));
+          $('#editprice' + ids[k][0] + ids[k][1]).on("hidden.bs.modal", resetPriceEditForm(ids[k][0], ids[k][1], org_price));
         }
       });
     {% endblock %}

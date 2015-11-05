@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^products/search', views.searchProduct),
     url(r'^products/add', views.addProduct),
     url(r'^products', views.productSearchPage),
+    url(r'^price/update/product=(?P<product_id>\d+)&store=(?P<store_id>\d+)', views.updatePrice),
     url(r'^cart/remove/product=(?P<product_id>\d+)&store=(?P<store_id>\d+)', views.removeCart),
     url(r'^cart/add/product=(?P<product_id>\d+)&store=(?P<store_id>\d+)', views.addCart),
     url(r'^cart', views.shoppingPage),

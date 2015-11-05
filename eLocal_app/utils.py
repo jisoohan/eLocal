@@ -199,7 +199,7 @@ class ElocalUtils:
         return cart
 
     @staticmethod
-    def getProductFromZipcode(product_name, products):
+    def getProductFromSession(product_name, products):
         for product in products:
             if product_name.lower() == product['name'].lower():
                 return Item.objects.get(id=product['id'])

@@ -26,6 +26,17 @@ class Item(models.Model):
 
         return list(Item.objects.filter(name__icontains=name))
 
+    @staticmethod
+    def updateProductCheck(product, product_list, product_name, description):
+        if product.name == product_name and product.description == description:
+            return False
+        if product.name == product_name and product.description != description:
+            return True
+        for product_item in product_list:
+            if product_item['name'] == product_name:
+                return False
+        return True
+
     # Associates this item with a corresponding store and price
     def addToStore(self, storeId, price):
         store = None
@@ -36,7 +47,7 @@ class Item(models.Model):
         inv = Inventory.create(store, self, price)
         inv.save()
         return inv
-    
+
     def clean_fields(self, exclude=None):
         errors = []
         if not validateStringLen(self.name, 1, 128):
@@ -45,13 +56,13 @@ class Item(models.Model):
             errors.append("Item description must be a non-empty string 1 to 1024 characters long")
         if len(errors) > 0:
             raise ValidationError(errors)
-    
+
     def clean(self):
         pass
-    
+
     def validate_unique(self, exclude=None):
         pass
-    
+
     def save(self):
         self.full_clean()
         super(Item, self).save()
@@ -123,7 +134,7 @@ class Store(models.Model):
         inv = Inventory.create(self, item, price)
         inv.save()
         return inv
-    
+
     def clean_fields(self, exclude=None):
         errors = []
         if not validateStringLen(self.name, 1, 128):
@@ -146,13 +157,13 @@ class Store(models.Model):
             errors.append("Longitude must be between -180 and 180")
         if len(errors) > 0:
             raise ValidationError(errors)
-    
+
     def clean(self):
         pass
-    
+
     def validate_unique(self, exclude=None):
         pass
-    
+
     def save(self):
         self.full_clean()
         super(Store, self).save()
@@ -173,7 +184,7 @@ class OpenHour(models.Model):
         open_hour = OpenHour(store=store, day=day, open_time=open_time, close_time=close_time, closed=closed)
         open_hour.save()
         return open_hour
-    
+
     def clean_fields(self, exclude=None):
         errors = []
         if not validateStringLen(self.day, 1, 9):
@@ -185,13 +196,13 @@ class OpenHour(models.Model):
                 errors.append("Hours must be valid")
         if len(errors) > 0:
             raise ValidationError(errors)
-    
+
     def clean(self):
         pass
-    
+
     def validate_unique(self, exclude=None):
         pass
-    
+
     def save(self):
         self.full_clean()
         super(Item, self).save()
@@ -258,10 +269,10 @@ class Inventory(models.Model):
 
     def clean(self):
         pass
-    
+
     def validate_unique(self, exclude=None):
         pass
-    
+
     def save(self):
         self.full_clean()
         super(Inventory, self).save()

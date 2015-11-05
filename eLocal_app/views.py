@@ -105,6 +105,20 @@ def updateStore(request, store_id):
                 request.session['products'] = ElocalUtils.geolocateProducts(request.session['coordinates'], request.session['radius'])
         return HttpResponseRedirect('/stores')
 
+def updateProduct(request, product_id):
+    if request.method == 'POST':
+        form = ProductUpdateForm(request.POST)
+        if form.is_valid():
+            product_name = form.cleaned_data['product_name']
+            description = form.cleaned_data['description']
+            product = Item.objects.get(id=product_id)
+            product_list = request.session['products']
+            if Item.updateProductCheck(product, product_list, product_name, description):
+                Item.objects.filter(id=product_id).update(name=product_name, description=description)
+                request.session['stores'] = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
+                request.session['products'] = ElocalUtils.geolocateProducts(request.session['coordinates'], request.session['radius'])
+        return HttpResponseRedirect('/products')
+
 def addStore(request):
     if request.method == 'POST':
         form = StoreAddForm(request.POST)
@@ -136,7 +150,7 @@ def addProduct(request):
             store_id = form.cleaned_data['store_name']
             if not Inventory.hasDuplicateItem(product_name, store_id):
                 product_list = request.session['products']
-                item = ElocalUtils.getProductFromZipcode(product_name, product_list)
+                item = ElocalUtils.getProductFromSession(product_name, product_list)
                 if item is None:
                     item = Item.create(product_name, description)
                     item.addToStore(store_id, price)

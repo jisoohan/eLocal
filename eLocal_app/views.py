@@ -63,7 +63,8 @@ def storeSearchPage(request):
                                          'has_card': store['has_card']
                                          })
             editStoreForms.append(editStoreForm)
-        return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'editStoreForms': editStoreForms, 'stores': stores, 'zip_code': zip_code})
+        stores = zip(stores, editStoreForms)
+        return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': stores, 'zip_code': zip_code})
 
 def shoppingPage(request):
     if request.method == 'GET':
@@ -74,6 +75,24 @@ def shoppingPage(request):
         addStoreForm = StoreAddForm()
         results = request.session['cart']
         return render(request, 'eLocal_app/shoppingPage.html', {'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results, 'zip_code': zip_code})
+
+def updateStore(request, store_id):
+    if request.method == 'POST':
+        form = StoreAddForm(request.POST)
+        if form.is_valid():
+            store_name = form.cleaned_data['store_name']
+            address = form.cleaned_data['street_number'] + ' ' + form.cleaned_data['street_address']
+            city = form.cleaned_data['city']
+            state = form.cleaned_data['state']
+            zip_code = form.cleaned_data['zip_code']
+            country = form.cleaned_data['country']
+            has_card = form.cleaned_data['has_card']
+            if not Store.isUpdated(store_name, address, city, state, zip_code, country, has_card):
+                coordinates = ElocalUtils.getCoorFromAddress(address, city, state, zip_code, country)
+                Store.objects.filter(id=store_id).update(name=store_name, address=address, city=city, state=state, zip_code=zip_code, country=country, has_card=has_card, latitude=coordinates[0], longitude=coordinates[1])
+                request.session['stores'] = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
+                request.session['products'] = ElocalUtils.geolocateProducts(request.session['coordinates'], request.session['radius'])
+        return HttpResponseRedirect('/stores')
 
 def addStore(request):
     if request.method == 'POST':

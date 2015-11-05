@@ -17,18 +17,12 @@ class InventoryTest(TestCase):
         Store.objects.all().delete()
     
     def testInvalidItemId(self):
-        try:
+        with self.assertRaises(Item.DoesNotExist, msg="Getting stores for invalid item ID should throw exception"):
             result = Inventory.getStoresForItem(-1)
-            self.fail("Getting stores for invalid item ID should throw exception")
-        except Item.DoesNotExist:
-            return
      
     def testInvalidStoreId(self):
-        try:
+        with self.assertRaises(Store.DoesNotExist, msg="Getting items for invalid store ID should throw exception"):
             result = Inventory.getItemsForStore(-1)
-            self.fail("Getting items for invalid store ID should throw exception")
-        except Store.DoesNotExist:
-            return
     
 
 class ItemTest(TestCase):
@@ -87,19 +81,21 @@ class StoreTest(TestCase):
         Store.objects.all().delete()
     
     def testCreateStore(self):
-        store1 = Store.create("Test store 1", "Test address", "Test city", "CA", "12345", "Test country", False)
+        store1 = Store.create("Test store 1", "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
         self.assertEqual("Test store 1", store1.name, "Store name is not correctly stored")
         self.assertEqual("Test address", store1.address, "Store address is not correctly stored")
         self.assertEqual("Test city", store1.city, "Store city is not correctly stored")
         self.assertEqual("CA", store1.state, "Store state is not correctly stored")
         self.assertEqual("12345", store1.zip_code, "Store ZIP code is not correctly stored")
-        self.assertEqual("Test country", store1.country, "Store country is not correctly stored")
+        self.assertEqual("US", store1.country, "Store country is not correctly stored")
         self.assertEqual(False, store1.has_card, "Store has_card is not correctly stored")
+        self.assertEqual(1.0, store1.latitude, "Store latitude is not correctly stored")
+        self.assertEqual(-2.0, store1.longitude, "Store longitude is not correctly stored")
     
     def testSearchStore(self):
-        store1 = Store.create("Test store 1", "Fake address", "Test city", "CA", "12345", "Test country", False)
-        store2 = Store.create("Another shop", "Fake address", "Test city", "CA", "12345", "Test country", False)
-        store3 = Store.create("Third stOre", "Fake address", "Test city", "CA", "12345", "Test country", False)
+        store1 = Store.create("Test store 1", "Fake address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
+        store2 = Store.create("Another shop", "Fake address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
+        store3 = Store.create("Third stOre", "Fake address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
         search_1 = Store.getStores("Test store 1")
         self.assertEqual(len(search_1), 1, "Store search with full string should return one store")
         self.assertEqual(store1.id, search_1[0].id, "Store search returned irrelevant store")
@@ -125,24 +121,39 @@ class StoreTest(TestCase):
                 i += 1
                 with self.assertRaises(ValidationError, msg="Creating store with {0} {1} should raise exception".format(message, field)):
                     if field == "name":
-                        Store.create(arg, "Test address", "Test city", "CA", "12345", "Test country", False)
+                        Store.create(arg, "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
                     elif field == "address":
-                        Store.create("Test store " + str(i), arg, "Test city", "CA", "12345", "Test country", False)
+                        Store.create("Test store " + str(i), arg, "Test city", "CA", "12345", "US", False, 1.0, -2.0)
                     elif field == "city":
-                        Store.create("Test store " + str(i), "Test address", arg, "CA", "12345", "Test country", False)
+                        Store.create("Test store " + str(i), "Test address", arg, "CA", "12345", "US", False, 1.0, -2.0)
                     elif field == "state":
-                        Store.create("Test store " + str(i), "Test address", "Test city", arg, "12345", "Test country", False)
+                        Store.create("Test store " + str(i), "Test address", "Test city", arg, "12345", "US", False, 1.0, -2.0)
                     elif field == "ZIP code":
-                        Store.create("Test store " + str(i), "Test address", "Test city", "CA", arg, "Test country", False)
+                        Store.create("Test store " + str(i), "Test address", "Test city", "CA", arg, "US", False, 1.0, -2.0)
                     elif field == "country":
-                        Store.create("Test store " + str(i), "Test address", "Test city", "CA", "12345", arg, False)
+                        Store.create("Test store " + str(i), "Test address", "Test city", "CA", "12345", arg, False, 1.0, -2.0)
 
     def testCreateInvalidStoreHasCard(self):
         for arg, message in ((None, "null"),
                               (1, "non-string")):
             with self.assertRaises(ValidationError, msg="Creating store with {0} has-card status should raise exception".format(message)):
-                Store.create("Test store", "Test address", "Test city", "CA", "12345", "Test country", arg)
+                Store.create("Test store", "Test address", "Test city", "CA", "12345", "US", arg, 1.0, -2.0)
     
+    def testCreateInvalidStoreCoords(self):
+        for arg, message in ((None, "null"),
+                             (90.1, "too-large"),
+                             (-90.1, "too-small"),
+                             ("1.2", "non-float")):
+            with self.assertRaises(ValidationError, msg="Creating store with {0} latitude should raise exception".format(message)):
+                Store.create("Test store", "Test address", "Test city", "CA", "12345", "US", False, arg, -2.0)
+        for arg, message in ((None, "null"),
+                             (180.1, "too-large"),
+                             (-180.1, "too-small"),
+                             ("1.2", "non-float")):
+            with self.assertRaises(ValidationError, msg="Creating store with {0} latitude should raise exception".format(message)):
+                Store.create("Test store", "Test address", "Test city", "CA", "12345", "US", False, arg, -2.0)
+        
+        
 class ModelFunctionalTest(TestCase):
     def setUp(self):
         Inventory.objects.all().delete()
@@ -156,7 +167,7 @@ class ModelFunctionalTest(TestCase):
 
     def testAddInventory(self):
         item = Item.create("Test item", "Test description")
-        store = Store.create("Test store", "Test address", "Test city", "CA", "12345", "Test country", False)
+        store = Store.create("Test store", "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
         inventory = store.addItem(item.id, 12345.67)
         self.assertEqual(1, len(Inventory.getStoresForItem(item.id)), "Item should remember the store that it is added to")
         self.assertEqual(1, len(Inventory.getItemsForStore(store.id)), "Store should remember the item that it has")

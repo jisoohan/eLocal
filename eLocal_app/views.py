@@ -110,6 +110,8 @@ def updateStore(request, store_id):
                 Store.objects.filter(id=store_id).update(name=store_name, address=address, city=city, state=state, zip_code=zip_code, country=country, has_card=has_card, latitude=coordinates[0], longitude=coordinates[1])
                 request.session['stores'] = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
                 request.session['products'] = ElocalUtils.geolocateProducts(request.session['coordinates'], request.session['radius'])
+                cart = request.session['cart']
+                request.session['cart'] = ElocalUtils.updateCartStore(cart, Store.objects.get(id=store_id))
         return HttpResponseRedirect('/stores')
 
 def updateProduct(request, product_id):
@@ -124,6 +126,8 @@ def updateProduct(request, product_id):
                 Item.objects.filter(id=product_id).update(name=product_name, description=description)
                 request.session['stores'] = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
                 request.session['products'] = ElocalUtils.geolocateProducts(request.session['coordinates'], request.session['radius'])
+                cart = request.session['cart']
+                request.session['cart'] = ElocalUtils.updateCartProduct(cart, Item.objects.get(id=product_id))
         return HttpResponseRedirect('/products')
 
 def updatePrice(request, product_id, store_id):
@@ -135,6 +139,8 @@ def updatePrice(request, product_id, store_id):
                 Inventory.objects.filter(store=Store.objects.get(id=store_id), item=Item.objects.get(id=product_id)).update(price=price)
                 request.session['stores'] = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
                 request.session['products'] = ElocalUtils.geolocateProducts(request.session['coordinates'], request.session['radius'])
+                cart = request.session['cart']
+                request.session['cart'] = ElocalUtils.updateCartPrice(cart, product_id, store_id, price)
         return HttpResponseRedirect('/products')
 
 def addStore(request):
@@ -236,4 +242,3 @@ def removeCart(request, product_id, store_id):
         updated_cart = ElocalUtils.removeCart(hashCode, cart)
         request.session['cart'] = updated_cart
     return HttpResponseRedirect('/cart')
-

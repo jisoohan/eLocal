@@ -204,3 +204,36 @@ class ElocalUtils:
             if product_name.lower() == product['name'].lower():
                 return Item.objects.get(id=product['id'])
         return None
+
+    @staticmethod
+    def updateCartProduct(cart, product):
+        new_cart = cart
+        for cart_item in new_cart:
+            if product.id == cart_item['product']['id']:
+                cart_item['product']['name'] = product.name
+                cart_item['product']['description'] = product.description
+        return new_cart
+
+    @staticmethod
+    def updateCartStore(cart, store):
+        new_cart = cart
+        for cart_item in new_cart:
+            if store.id == cart_item['store']['id']:
+                cart_item['store']['name'] = store.name
+                cart_item['store']['address'] = store.address
+                cart_item['store']['city'] = store.city
+                cart_item['store']['state'] = store.state
+                cart_item['store']['zip_code'] = store.zip_code
+                cart_item['store']['country'] = store.country
+                cart_item['store']['has_card'] = store.has_card
+                cart_item['store']['latitude'] = store.latitude
+                cart_item['store']['longitude'] = store.longitude
+        return new_cart
+
+    @staticmethod
+    def updateCartPrice(cart, product_id, store_id, price):
+        new_cart = cart
+        for cart_item in new_cart:
+            if int(product_id) == int(cart_item['product']['id']) and int(store_id) == int(cart_item['store']['id']):
+                cart_item['price'] = price
+        return new_cart

@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
 from django.template import RequestContext, loader
-from .forms import ZipcodeForm, ProductSearchForm, StoreSearchForm, ProductAddForm, StoreAddForm
+from .forms import ZipcodeForm, ProductSearchForm, StoreSearchForm, ProductAddForm, StoreAddForm, ProductUpdateForm
 from .models import Store, Item, Inventory
 from .utils import ElocalUtils
 
@@ -35,17 +35,27 @@ def productSearchPage(request):
         if 'zip_code' not in request.session:
             return HttpResponseRedirect('/')
         zip_code = request.session['zip_code']
+        radius = request.session['radius']
         searchForm = ProductSearchForm()
         addProductForm = ProductAddForm(request.session['coordinates'], request.session['radius'])
         addStoreForm = StoreAddForm()
         products = request.session['products']
-        return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': products, 'zip_code': zip_code})
+        editProductForms = []
+        for product in products:
+            editProductForm = ProductUpdateForm(initial={
+                                                'product_name': product['name'],
+                                                'description': product['description']
+                                                })
+            editProductForms.append((product['id'], editProductForm))
+        return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': products, 'editProductForms': editProductForms, 'zip_code': zip_code, 'radius': radius})
 
 def storeSearchPage(request):
     if request.method == 'GET':
         if 'zip_code' not in request.session:
             return HttpResponseRedirect('/')
         zip_code = request.session['zip_code']
+        radius = request.session['radius']
+        print(radius)
         searchForm = StoreSearchForm()
         addProductForm = ProductAddForm(request.session['coordinates'], request.session['radius'])
         addStoreForm = StoreAddForm()
@@ -62,19 +72,19 @@ def storeSearchPage(request):
                                          'country': store['country'],
                                          'has_card': store['has_card']
                                          })
-            editStoreForms.append(editStoreForm)
-        stores = zip(stores, editStoreForms)
-        return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': stores, 'zip_code': zip_code})
+            editStoreForms.append((store['id'], editStoreForm))
+        return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': stores, 'editStoreForms': editStoreForms, 'zip_code': zip_code, 'radius': radius})
 
 def shoppingPage(request):
     if request.method == 'GET':
         if 'zip_code' not in request.session:
             return HttpResponseRedirect('/')
         zip_code = request.session['zip_code']
+        radius = request.session['radius']
         addProductForm = ProductAddForm(request.session['coordinates'], request.session['radius'])
         addStoreForm = StoreAddForm()
         results = request.session['cart']
-        return render(request, 'eLocal_app/shoppingPage.html', {'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results, 'zip_code': zip_code})
+        return render(request, 'eLocal_app/shoppingPage.html', {'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': results, 'zip_code': zip_code, 'radius': radius})
 
 def updateStore(request, store_id):
     if request.method == 'POST':
@@ -87,7 +97,8 @@ def updateStore(request, store_id):
             zip_code = form.cleaned_data['zip_code']
             country = form.cleaned_data['country']
             has_card = form.cleaned_data['has_card']
-            if not Store.isUpdated(store_name, address, city, state, zip_code, country, has_card):
+            store = Store.objects.get(id=store_id)
+            if Store.updateStoreCheck(store, store_name, address, city, state, zip_code, country, has_card):
                 coordinates = ElocalUtils.getCoorFromAddress(address, city, state, zip_code, country)
                 Store.objects.filter(id=store_id).update(name=store_name, address=address, city=city, state=state, zip_code=zip_code, country=country, has_card=has_card, latitude=coordinates[0], longitude=coordinates[1])
                 request.session['stores'] = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
@@ -141,6 +152,7 @@ def searchProduct(request):
         if 'zip_code' not in request.session:
             return HttpResponseRedirect('/')
         zip_code = request.session['zip_code']
+        radius = request.session['radius']
         searchForm = ProductSearchForm(request.GET)
         addProductForm = ProductAddForm(request.session['coordinates'], request.session['radius'])
         addStoreForm = StoreAddForm()
@@ -152,13 +164,14 @@ def searchProduct(request):
                 messages.error(request, 'No matching products.')
         else:
             messages.error(request, 'Must input a product.')
-        return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': products, 'zip_code': zip_code})
+        return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': products, 'zip_code': zip_code, 'radius': radius})
 
 def searchStore(request):
     if request.method == 'GET':
         if 'zip_code' not in request.session:
             return HttpResponseRedirect('/')
         zip_code = request.session['zip_code']
+        radius = request.session['radius']
         searchForm = StoreSearchForm(request.GET)
         addProductForm = ProductAddForm(request.session['coordinates'], request.session['radius'])
         addStoreForm = StoreAddForm()
@@ -170,7 +183,7 @@ def searchStore(request):
                 messages.error(request, 'No matching stores.')
         else:
             messages.error(request, 'Must input a store.')
-        return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': stores, 'zip_code': zip_code})
+        return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': stores, 'zip_code': zip_code, 'radius': radius})
 
 def addCart(request, product_id, store_id):
     if 'cart' in request.session:

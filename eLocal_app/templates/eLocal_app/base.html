@@ -1,6 +1,6 @@
 {% load staticfiles %}
 {% load widget_tweaks %}
- 
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -47,7 +47,7 @@
               </ul>
             </li>
           </ul>
-          <p class="nav navbar-text pull-right">Zipcode: {{zip_code}}</p>
+          <p class="nav navbar-text pull-right">Zipcode: {{zip_code}}     Radius: {{radius}}</p>
         </div>
       </div>
     </nav>
@@ -231,17 +231,17 @@
         } else {
           street_number.closest('.form-group').removeClass('has-error').addClass('has-success');
         }
-        if (!locality.val() || !administrative_area_level_1.val() || !postal_code.val()) {
+        if (!locality.val() || !administrative_area_level_1.val()) {
           e.preventDefault();
           locality.closest('.form-group').removeClass('has-success').addClass('has-error');
         } else {
           locality.closest('.form-group').removeClass('has-error').addClass('has-success');
         }
-        if (!country.val()) {
+        if (!postal_code.val() || !country.val()) {
           e.preventDefault();
-          country.closest('.form-group').removeClass('has-success').addClass('has-error');
+          postal_code.closest('.form-group').removeClass('has-success').addClass('has-error');
         } else {
-          country.closest('.form-group').removeClass('has-error').addClass('has-success');
+          postal_code.closest('.form-group').removeClass('has-error').addClass('has-success');
         }
         $('.modal').on('hidden.bs.modal', function() {
           $(this).find('form')[0].reset();

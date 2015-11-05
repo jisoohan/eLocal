@@ -20,6 +20,10 @@ class ProductAddForm(forms.Form):
         super(ProductAddForm, self).__init__(*args, **kwargs)
         self.fields['store_name'] = forms.ChoiceField(choices=ElocalUtils.getStoreChoices(origin, radius))
 
+class ProductUpdateForm(forms.Form):
+    product_name = forms.CharField(max_length=128)
+    description = forms.CharField(max_length=1024, widget=forms.Textarea)
+
 class StoreAddForm(forms.Form):
     store_name = forms.CharField(max_length=128)
     street_number = forms.CharField(max_length=10)

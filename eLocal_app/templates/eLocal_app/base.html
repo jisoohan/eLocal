@@ -179,7 +179,10 @@
         $('#postal_code').focus(function(e) {
           $(this).blur();
         });
-        var autocomplete = new google.maps.places.Autocomplete(document.getElementById('autocomplete'));
+        var options = {
+          componentRestrictions: {country: 'us'}
+        };
+        var autocomplete = new google.maps.places.Autocomplete(document.getElementById('autocomplete'), options);
         google.maps.event.addListener(autocomplete, "place_changed", function() {
           var componentForm = {
             street_number: 'short_name',

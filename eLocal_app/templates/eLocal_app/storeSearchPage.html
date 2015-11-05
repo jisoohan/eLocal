@@ -161,6 +161,7 @@
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBuEhmVjHKmjRSodKx3dYUqbyCFquSDMWc&libraries=places"></script>
     <script type="text/javascript">
       {% block javascript %}
+      var store_count = {{stores|length}};
       function initializeStoreEditForm(j) {
         return function(event) {
           $('#editstore' + j + ' #street_number').focus(function(e) {
@@ -181,7 +182,10 @@
           $('#editstore' + j + ' #postal_code').focus(function(e) {
             $(this).blur();
           });
-          var autocomplete = new google.maps.places.Autocomplete(document.getElementById('editstore' + j).querySelector('#autocomplete'));
+          var options = {
+            componentRestrictions: {country: 'us'}
+          };
+          var autocomplete = new google.maps.places.Autocomplete(document.getElementById('editstore' + j).querySelector('#autocomplete'), options);
           google.maps.event.addListener(autocomplete, "place_changed", function() {
             var componentForm = {
               street_number: 'short_name',
@@ -191,10 +195,6 @@
               country: 'short_name',
               postal_code: 'short_name'
             };
-            // Get the place details from the autocomplete object.
-            var place = autocomplete.getPlace();
-            document.getElementById('editstore' + j).querySelector('#storeName').value = place.name
-
             formFields = [
               document.getElementById('editstore' + j).querySelector('#street_number'),
               document.getElementById('editstore' + j).querySelector('#route'),
@@ -206,25 +206,50 @@
             for (var field in formFields) {
               field.value = '';
             }
-
+            // Get the place details from the autocomplete object.
+            var place = autocomplete.getPlace();
+            document.getElementById('editstore' + j).querySelector('#storeName').value = place.name
             // Get each component of the address from the place details
             // and fill the corresponding field on the form.
             for (var i = 0; i < place.address_components.length; i++) {
               var addressType = place.address_components[i].types[0];
               if (componentForm[addressType]) {
                 var val = place.address_components[i][componentForm[addressType]];
-                formFields[i].value = val;
+                document.getElementById('editstore' + j).querySelector('#' + addressType).value = val;
               }
             }
           });
         }
       }
+      function resetStoreEditForm(j, storeName, street_number, route, locality, administrative_area_level_1, country, postal_code, has_card) {
+        return function(event) {
+          document.getElementById('editstore' + j).querySelector('#autocomplete').value = '';
+          document.getElementById('editstore' + j).querySelector('#storeName').value = storeName;
+          document.getElementById('editstore' + j).querySelector('#street_number').value = street_number;
+          document.getElementById('editstore' + j).querySelector('#route').value = route;
+          document.getElementById('editstore' + j).querySelector('#locality').value = locality
+          document.getElementById('editstore' + j).querySelector('#administrative_area_level_1').value = administrative_area_level_1;
+          document.getElementById('editstore' + j).querySelector('#country').value = country;
+          document.getElementById('editstore' + j).querySelector('#postal_code').value = postal_code;
+          document.getElementById('editstore' + j).querySelector('#has_card').checked = has_card;
+        }
+      }
       $(document).ready(function() {
-        for (var i = 1; i < 4; i++) {
-          $('#editstore' + i).click(initializeStoreEditForm(i))
+        for (var i = 1; i <= store_count; i++) {
+          var org_storeName = document.getElementById('editstore' + i).querySelector('#storeName').value;
+          var org_street_number = document.getElementById('editstore' + i).querySelector('#street_number').value;
+          var org_route = document.getElementById('editstore' + i).querySelector('#route').value;
+          var org_locality = document.getElementById('editstore' + i).querySelector('#locality').value;
+          var org_administrative_area_level_1 = document.getElementById('editstore' + i).querySelector('#administrative_area_level_1').value;
+          var org_country = document.getElementById('editstore' + i).querySelector('#country').value;
+          var org_postal_code = document.getElementById('editstore' + i).querySelector('#postal_code').value;
+          var org_has_card = document.getElementById('editstore' + i).querySelector('#has_card').checked;
+          $('#editstore' + i).click(initializeStoreEditForm(i));
+          $("#editstore" + i).on("hidden.bs.modal", resetStoreEditForm(i, org_storeName, org_street_number, org_route, org_locality, org_administrative_area_level_1, org_country, org_postal_code, org_has_card));
         };
       });
     {% endblock %}
     </script>
   </body>
 </html>
+

@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
 from django.template import RequestContext, loader
-from .forms import ZipcodeForm, ProductSearchForm, StoreSearchForm, ProductAddForm, StoreAddForm
+from .forms import ZipcodeForm, ProductSearchForm, StoreSearchForm, ProductAddForm, StoreAddForm, ProductUpdateForm
 from .models import Store, Item, Inventory
 from .utils import ElocalUtils
 
@@ -40,7 +40,14 @@ def productSearchPage(request):
         addProductForm = ProductAddForm(request.session['coordinates'], request.session['radius'])
         addStoreForm = StoreAddForm()
         products = request.session['products']
-        return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': products, 'zip_code': zip_code, 'radius': radius})
+        editProductForms = []
+        for product in products:
+            editProductForm = ProductUpdateForm(initial={
+                                                'product_name': product['name'],
+                                                'description': product['description']
+                                                })
+            editProductForms.append((product['id'], editProductForm))
+        return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': products, 'editProductForms': editProductForms, 'zip_code': zip_code, 'radius': radius})
 
 def storeSearchPage(request):
     if request.method == 'GET':

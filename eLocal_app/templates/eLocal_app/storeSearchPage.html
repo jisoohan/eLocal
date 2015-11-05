@@ -42,7 +42,7 @@
       <div class="col-xs-4 col-xs-offset-4 text-center">
         <ul class="list-group">
           {% if stores %}
-            {% for store, editStoreForm in stores %}
+            {% for store in stores %}
               <a href="" data-toggle="modal" data-target="#store{{forloop.counter}}" class="list-group-item">
                 <h4 class="list-group-item-heading">{{store.name}}</h4>
               </a>
@@ -93,11 +93,13 @@
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
-                      <a href="" data-toggle="modal" data-target="#editstore{{forloop.counter}}" class="pull-left">Edit</a>
+                      <a href="" data-toggle="modal" data-target="#editstore{{forloop.counter}}" class="btn btn-default pull-left">Edit</a>
                     </div>
                   </div>
                 </div>
               </div>
+            {% endfor %}
+            {% for editStoreForm in editStoreForms %}
               <div id="editstore{{forloop.counter}}" class="modal fade" role="dialog">
                 <div class="modal-dialog">
                   <div class="modal-content">
@@ -105,35 +107,35 @@
                       <h3 class="modal-title text-center">Edit Store</h3>
                     </div>
                     <div class="modal-body">
-                      <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.updateStore' store.id %}" id="storeEditForm{{forloop.counter}}" autocomplete="off">
+                      <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.updateStore' editStoreForm.0 %}" id="storeEditForm{{forloop.counter}}" autocomplete="off">
                         <div class="form-group">
                           <div class="col-xs-12"><input id="autocomplete" class="form-control" placeholder="Enter store address" type="text" autocomplete="off"></input></div>
                         </div>
                         <div class="form-group">
                           <label for="storeName" class="control-label col-xs-2">Name</label>
-                          <div class="col-xs-10">{% render_field editStoreForm.store_name class="form-control" type="text" id="storeName" autocomplete="off" %}</div>
+                          <div class="col-xs-10">{% render_field editStoreForm.1.store_name class="form-control" type="text" id="storeName" autocomplete="off" %}</div>
                         </div>
                         <div class="form-group">
                           <label for="street_number" class="control-label col-xs-2">Street #</label>
-                          <div class="col-xs-2">{% render_field editStoreForm.street_number class="form-control" type="text" id="street_number" autocomplete="off" %}</div>
+                          <div class="col-xs-2">{% render_field editStoreForm.1.street_number class="form-control" type="text" id="street_number" autocomplete="off" %}</div>
                           <label for="route" class="control-label col-xs-2">Address</label>
-                          <div class="col-xs-6">{% render_field editStoreForm.street_address class="form-control" type="text" id="route" autocomplete="off" %}</div>
+                          <div class="col-xs-6">{% render_field editStoreForm.1.street_address class="form-control" type="text" id="route" autocomplete="off" %}</div>
                         </div>
                         <div class="form-group">
                           <label for="locality" class="control-label col-xs-2">City</label>
-                          <div class="col-xs-5">{% render_field editStoreForm.city class="form-control" type="text" id="locality" autocomplete="off" %}</div>
+                          <div class="col-xs-5">{% render_field editStoreForm.1.city class="form-control" type="text" id="locality" autocomplete="off" %}</div>
                           <label for="administrative_area_level_1" class="control-label col-xs-2">State</label>
-                          <div class="col-xs-3">{% render_field editStoreForm.state class="form-control" type="text" id="administrative_area_level_1" autocomplete="off" %}</div>
+                          <div class="col-xs-3">{% render_field editStoreForm.1.state class="form-control" type="text" id="administrative_area_level_1" autocomplete="off" %}</div>
                         </div>
                         <div class="form-group">
                           <label for="postal_code" class="control-label col-xs-2">Zipcode</label>
-                          <div class="col-xs-5">{% render_field editStoreForm.zip_code class="form-control" type="text" id="postal_code" autocomplete="off" %}</div>
+                          <div class="col-xs-5">{% render_field editStoreForm.1.zip_code class="form-control" type="text" id="postal_code" autocomplete="off" %}</div>
                           <label for="country" class="control-label col-xs-2">Country</label>
-                          <div class="col-xs-3">{% render_field editStoreForm.country class="form-control" type="text" id="country" autocomplete="off" %}</div>
+                          <div class="col-xs-3">{% render_field editStoreForm.1.country class="form-control" type="text" id="country" autocomplete="off" %}</div>
                         </div>
                         <div class="form-group">
                           <label for="has_card" class="control-label col-xs-2">Membership Card</label>
-                          <div class="col-xs-1">{% render_field editStoreForm.has_card class="form-control" id="has_card" type="checkbox" %}</div>
+                          <div class="col-xs-1">{% render_field editStoreForm.1.has_card class="form-control" id="has_card" type="checkbox" %}</div>
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-default btn-danger pull-left col-xs-2" data-dismiss="modal">Close</button>

@@ -33,8 +33,11 @@ class ItemTest(TestCase):
         Item.objects.all().delete()
     
     def testCreateItem(self):
+        print("AAAAAAAAAAAAAAAAAAA")
         item1 = Item.create("Test item 1", "Test description")
+        print("BBBBBBBBBBBBBBBBBBB")
         self.assertEqual("Test item 1", item1.name, "Item name is not correctly stored")
+        print("CCCCCCCCCCCCCCCCCCCC")
     
     def testSearchItem(self):
         item1 = Item.create("Test item 1", "Test description")

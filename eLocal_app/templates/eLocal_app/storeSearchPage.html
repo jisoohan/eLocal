@@ -163,7 +163,7 @@
       {% block javascript %}
       var store_count = {{stores|length}};
       function initializeStoreEditForm(j) {
-        return function(event) {
+        return function(e) {
           $('#editstore' + j + ' #street_number').focus(function(e) {
             $(this).blur();
           });
@@ -195,17 +195,12 @@
               country: 'short_name',
               postal_code: 'short_name'
             };
-            formFields = [
-              document.getElementById('editstore' + j).querySelector('#street_number'),
-              document.getElementById('editstore' + j).querySelector('#route'),
-              document.getElementById('editstore' + j).querySelector('#locality'),
-              document.getElementById('editstore' + j).querySelector('#administrative_area_level_1'),
-              document.getElementById('editstore' + j).querySelector('#country'),
-              document.getElementById('editstore' + j).querySelector('#postal_code'),
-            ];
-            for (var field in formFields) {
-              field.value = '';
-            }
+            $('#editstore' + j + ' #street_number').val('');
+            $('#editstore' + j + ' #route').val('');
+            $('#editstore' + j + ' #locality').val('');
+            $('#editstore' + j + ' #administrative_area_level_1').val('');
+            $('#editstore' + j + ' #country').val('');
+            $('#editstore' + j + ' #postal_code').val('');
             // Get the place details from the autocomplete object.
             var place = autocomplete.getPlace();
             document.getElementById('editstore' + j).querySelector('#storeName').value = place.name
@@ -221,30 +216,70 @@
           });
         }
       }
-      function resetStoreEditForm(j, storeName, street_number, route, locality, administrative_area_level_1, country, postal_code, has_card) {
-        return function(event) {
-          document.getElementById('editstore' + j).querySelector('#autocomplete').value = '';
-          document.getElementById('editstore' + j).querySelector('#storeName').value = storeName;
-          document.getElementById('editstore' + j).querySelector('#street_number').value = street_number;
-          document.getElementById('editstore' + j).querySelector('#route').value = route;
-          document.getElementById('editstore' + j).querySelector('#locality').value = locality
-          document.getElementById('editstore' + j).querySelector('#administrative_area_level_1').value = administrative_area_level_1;
-          document.getElementById('editstore' + j).querySelector('#country').value = country;
-          document.getElementById('editstore' + j).querySelector('#postal_code').value = postal_code;
-          document.getElementById('editstore' + j).querySelector('#has_card').checked = has_card;
+      function submitStoreEditForm(j) {
+        return function(e) {
+          var storeName = $('#editstore' + j + ' #storeName');
+          var street_number = $('#editstore' + j + ' #street_number');
+          var street_address = $('#editstore' + j + ' #route');
+          var locality = $('#editstore' + j + ' #locality');
+          var administrative_area_level_1 = $('#editstore' + j + ' #administrative_area_level_1');
+          var postal_code = $('#editstore' + j + ' #postal_code');
+          var country = $('#editstore' + j + ' #country');
+          if (!storeName.val()) {
+            e.preventDefault();
+            storeName.closest('.form-group').removeClass('has-success').addClass('has-error');
+          } else {
+            storeName.closest('.form-group').removeClass('has-error').addClass('has-success');
+          }
+          if (!street_number.val() || !street_address.val()) {
+            e.preventDefault();
+            street_number.closest('.form-group').removeClass('has-success').addClass('has-error');
+          } else {
+            street_number.closest('.form-group').removeClass('has-error').addClass('has-success');
+          }
+          if (!locality.val() || !administrative_area_level_1.val()) {
+            e.preventDefault();
+            locality.closest('.form-group').removeClass('has-success').addClass('has-error');
+          } else {
+            locality.closest('.form-group').removeClass('has-error').addClass('has-success');
+          }
+          if (!postal_code.val() || !country.val()) {
+            e.preventDefault();
+            postal_code.closest('.form-group').removeClass('has-success').addClass('has-error');
+          } else {
+            postal_code.closest('.form-group').removeClass('has-error').addClass('has-success');
+          }
         }
       }
-      $(document).ready(function() {
+      function resetStoreEditForm(j, storeName, street_number, route, locality, administrative_area_level_1, country, postal_code, has_card) {
+        return function(e) {
+          $('#editstore' + j + ' #autocomplete').val('');
+          $('#editstore' + j + ' #storeName').val(storeName);
+          $('#editstore' + j + ' #street_number').val(street_number);
+          $('#editstore' + j + ' #route').val(route);
+          $('#editstore' + j + ' #locality').val(locality);
+          $('#editstore' + j + ' #administrative_area_level_1').val(administrative_area_level_1);
+          $('#editstore' + j + ' #country').val(country);
+          $('#editstore' + j + ' #postal_code').val(postal_code);
+          document.getElementById('editstore' + j).querySelector('#has_card').checked = has_card;
+          $('#editstore' + j + ' #storeName').closest('.form-group').removeClass('has-error').removeClass('has-success');
+          $('#editstore' + j + ' #street_number').closest('.form-group').removeClass('has-error').removeClass('has-success');
+          $('#editstore' + j + ' #locality').closest('.form-group').removeClass('has-error').removeClass('has-success');
+          $('#editstore' + j + ' #country').closest('.form-group').removeClass('has-error').removeClass('has-success');
+        }
+      }
+      $(document).ready(function(e) {
         for (var i = 1; i <= store_count; i++) {
-          var org_storeName = document.getElementById('editstore' + i).querySelector('#storeName').value;
-          var org_street_number = document.getElementById('editstore' + i).querySelector('#street_number').value;
-          var org_route = document.getElementById('editstore' + i).querySelector('#route').value;
-          var org_locality = document.getElementById('editstore' + i).querySelector('#locality').value;
-          var org_administrative_area_level_1 = document.getElementById('editstore' + i).querySelector('#administrative_area_level_1').value;
-          var org_country = document.getElementById('editstore' + i).querySelector('#country').value;
-          var org_postal_code = document.getElementById('editstore' + i).querySelector('#postal_code').value;
+          var org_storeName = $('#editstore' + i + ' #storeName').val();
+          var org_street_number = $('#editstore' + i + ' #street_number').val();
+          var org_route = $('#editstore' + i + ' #route').val();
+          var org_locality = $('#editstore' + i + ' #locality').val();
+          var org_administrative_area_level_1 = $('#editstore' + i + ' #administrative_area_level_1').val();
+          var org_country = $('#editstore' + i + ' #country').val();
+          var org_postal_code = $('#editstore' + i + ' #postal_code').val();
           var org_has_card = document.getElementById('editstore' + i).querySelector('#has_card').checked;
           $('#editstore' + i).click(initializeStoreEditForm(i));
+          $('#editstore' + i).on("submit", submitStoreEditForm(i));
           $("#editstore" + i).on("hidden.bs.modal", resetStoreEditForm(i, org_storeName, org_street_number, org_route, org_locality, org_administrative_area_level_1, org_country, org_postal_code, org_has_card));
         };
       });

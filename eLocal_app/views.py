@@ -55,7 +55,6 @@ def storeSearchPage(request):
             return HttpResponseRedirect('/')
         zip_code = request.session['zip_code']
         radius = request.session['radius']
-        print(radius)
         searchForm = StoreSearchForm()
         addProductForm = ProductAddForm(request.session['coordinates'], request.session['radius'])
         addStoreForm = StoreAddForm()

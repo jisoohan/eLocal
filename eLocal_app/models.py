@@ -28,19 +28,13 @@ class Item(models.Model):
 
     # Associates this item with a corresponding store and price
     def addToStore(self, storeId, price):
-        # Validate fields
-        errors = []
         store = None
-        if not validateNumOpenSet(price, 0, 1e6):
-            errors.append("Price must be nonzero and less than $1,000,000")
         try:
             store = Store.objects.get(id=storeId)
         except Store.DoesNotExist:
-            errors.append("Invalid item ID")
-        if len(errors) > 0:
-            raise ValidationError(errors)
-
+            errors.append("Invalid store ID")
         inv = Inventory.create(store, self, price)
+        inv.save()
         return inv
     
     def clean_fields(self, exclude=None):
@@ -121,23 +115,14 @@ class Store(models.Model):
 
     # Associates this store with a corresponding item and price
     def addItem(self, itemId, price):
-        # Validate fields
-        errors = []
         item = None
-        if not validateNumOpenSet(price, 0, 1e6):
-            errors.append("Price must be nonzero and less than $1,000,000")
         try:
             item = Item.objects.get(id=itemId)
         except Item.DoesNotExist:
             errors.append("Invalid item ID")
-        if len(errors) > 0:
-            raise ValidationError(errors)
-
         inv = Inventory.create(self, item, price)
+        inv.save()
         return inv
-
-        def clean_fields(self, exclude=None):
-            raise ValidationError("Test validation error")
     
     def clean_fields(self, exclude=None):
         errors = []

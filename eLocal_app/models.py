@@ -97,18 +97,18 @@ class Store(models.Model):
         return store
 
     @staticmethod
-    def hasDuplicate(store, name, address, city, state, zip_code, country, has_card):
-        if Store.objects.filter(name__iexact=name, address__iexact=address, city__iexact=city, state__iexact=state, zip_code__iexact=zip_code).exists():
-            if store.id ==  Store.objects.get(name=name, address=address, city=city, state=state, zip_code=zip_code).id:
-                return False
-            else:
-                return True
-        return False
+    def hasDuplicate(name, address, city, state, zip_code, country, has_card):
+        return Store.objects.filter(name__iexact=name, address__iexact=address, city__iexact=city, state__iexact=state, zip_code__iexact=zip_code).exists()
 
     @staticmethod
     def updateStoreCheck(store, name, address, city, state, zip_code, country, has_card):
         if store.name == name and store.address == address and store.city == city and store.state == state and store.zip_code == zip_code and store.country == country and store.has_card == has_card:
             return False
+        if Store.hasDuplicate(name, address, city, state, zip_code, country, has_card):
+            if store.id ==  Store.objects.get(name=name, address=address, city=city, state=state, zip_code=zip_code).id:
+                return True
+            else:
+                return False
         return True
 
     # Get a list of stores whose names match the query string

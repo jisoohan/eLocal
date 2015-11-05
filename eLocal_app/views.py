@@ -88,11 +88,10 @@ def updateStore(request, store_id):
             has_card = form.cleaned_data['has_card']
             store = Store.objects.get(id=store_id)
             if Store.updateStoreCheck(store, store_name, address, city, state, zip_code, country, has_card):
-                if not Store.hasDuplicate(store, store_name, address, city, state, zip_code, country, has_card):
-                    coordinates = ElocalUtils.getCoorFromAddress(address, city, state, zip_code, country)
-                    Store.objects.filter(id=store_id).update(name=store_name, address=address, city=city, state=state, zip_code=zip_code, country=country, has_card=has_card, latitude=coordinates[0], longitude=coordinates[1])
-                    request.session['stores'] = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
-                    request.session['products'] = ElocalUtils.geolocateProducts(request.session['coordinates'], request.session['radius'])
+                coordinates = ElocalUtils.getCoorFromAddress(address, city, state, zip_code, country)
+                Store.objects.filter(id=store_id).update(name=store_name, address=address, city=city, state=state, zip_code=zip_code, country=country, has_card=has_card, latitude=coordinates[0], longitude=coordinates[1])
+                request.session['stores'] = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
+                request.session['products'] = ElocalUtils.geolocateProducts(request.session['coordinates'], request.session['radius'])
         return HttpResponseRedirect('/stores')
 
 def addStore(request):

@@ -100,6 +100,10 @@ class Store(models.Model):
     def hasDuplicate(name, address, city, state, zip_code, country, has_card):
         return Store.objects.filter(name__iexact=name, address__iexact=address, city__iexact=city, state__iexact=state, zip_code__iexact=zip_code).exists()
 
+    @staticmethod
+    def isUpdated(name, address, city, state, zip_code, country, has_card):
+        return Store.objects.filter(name__iexact=name, address__iexact=address, city__iexact=city, state__iexact=state, zip_code__iexact=zip_code, has_card__iexact=has_card).exists()
+
     # Get a list of stores whose names match the query string
     @staticmethod
     def getStores(name):

@@ -5,6 +5,7 @@ from eLocal_app import views
 
 urlpatterns = [
     #url(r'^admin/', include(admin.site.urls)),
+    url(r'^stores/update/store=(?P<store_id>\d+)', views.updateStore),
     url(r'^stores/search', views.searchStore),
     url(r'^stores/add', views.addStore),
     url(r'^stores', views.storeSearchPage),

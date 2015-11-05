@@ -30,7 +30,6 @@
             <li><a href="{% url 'eLocal_app.views.homePage' %}">Home</a></li>
             {% url 'eLocal_app.views.shoppingPage' as url %}
             <li {% if request.path == url %} class="active" {% endif %}><a href="{{ url }}">Shopping Cart</a></li>
-
             {% url 'eLocal_app.views.productSearchPage' as url2 %}
             {% url 'eLocal_app.views.storeSearchPage' as url3 %}
             <li {% if request.path == url2 or request.path == url3 %} class="active" {% endif %} class="dropdown">
@@ -53,7 +52,7 @@
       </div>
     </nav>
 
-    <div id="addStore" class="modal modal-vcenter fade" role="dialog">
+    <div id="addStore" class="modal fade" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -152,6 +151,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBuEhmVjHKmjRSodKx3dYUqbyCFquSDMWc&libraries=places"></script>
     <script type="text/javascript">
+      {% block javascript %}{% endblock %}
       $(document).on("hidden.bs.modal", "#addStore", function() {
         $("#storeForm").append("<button class='btn' type='reset' id='storeReset'>Reset</button>");
         $("button#storeReset").click();

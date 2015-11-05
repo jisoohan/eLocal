@@ -43,7 +43,7 @@
         <ul class="list-group">
           {% if stores %}
             {% for store in stores %}
-              <a href="#store{{forloop.counter}}" data-toggle="modal" data-target="#store{{forloop.counter}}" class="list-group-item">
+              <a href="" data-toggle="modal" data-target="#store{{forloop.counter}}" class="list-group-item">
                 <h4 class="list-group-item-heading">{{store.name}}</h4>
               </a>
               <div id="store{{forloop.counter}}" class="modal fade" role="dialog">
@@ -92,7 +92,56 @@
                       </table>
                     </div>
                     <div class="modal-footer">
-                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+                      <a href="" data-toggle="modal" data-target="#editstore{{forloop.counter}}" class="pull-left">Edit</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+            {% for editStoreForm in editStoreForms %}
+              <div id="editstore{{forloop.counter}}" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h3 class="modal-title text-center">Edit Store</h3>
+                    </div>
+                    <div class="modal-body">
+                      <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.addStore' %}" id="storeEditForm{{forloop.counter}}" autocomplete="off">
+                        <div class="form-group">
+                          <div class="col-xs-12"><input id="autocomplete" class="form-control" placeholder="Enter store address" type="text" autocomplete="off"></input></div>
+                        </div>
+                        <div class="form-group">
+                          <label for="storeName" class="control-label col-xs-2">Name</label>
+                          <div class="col-xs-10">{% render_field editStoreForm.store_name class="form-control" type="text" id="storeName" autocomplete="off" %}</div>
+                        </div>
+                        <div class="form-group">
+                          <label for="street_number" class="control-label col-xs-2">Street #</label>
+                          <div class="col-xs-2">{% render_field editStoreForm.street_number class="form-control" type="text" id="street_number" autocomplete="off" %}</div>
+                          <label for="route" class="control-label col-xs-2">Address</label>
+                          <div class="col-xs-6">{% render_field editStoreForm.street_address class="form-control" type="text" id="route" autocomplete="off" %}</div>
+                        </div>
+                        <div class="form-group">
+                          <label for="locality" class="control-label col-xs-2">City</label>
+                          <div class="col-xs-5">{% render_field editStoreForm.city class="form-control" type="text" id="locality" autocomplete="off" %}</div>
+                          <label for="administrative_area_level_1" class="control-label col-xs-2">State</label>
+                          <div class="col-xs-3">{% render_field editStoreForm.state class="form-control" type="text" id="administrative_area_level_1" autocomplete="off" %}</div>
+                        </div>
+                        <div class="form-group">
+                          <label for="postal_code" class="control-label col-xs-2">Zipcode</label>
+                          <div class="col-xs-5">{% render_field editStoreForm.zip_code class="form-control" type="text" id="postal_code" autocomplete="off" %}</div>
+                          <label for="country" class="control-label col-xs-2">Country</label>
+                          <div class="col-xs-3">{% render_field editStoreForm.country class="form-control" type="text" id="country" autocomplete="off" %}</div>
+                        </div>
+                        <div class="form-group">
+                          <label for="has_card" class="control-label col-xs-2">Membership Card</label>
+                          <div class="col-xs-1">{% render_field editStoreForm.has_card class="form-control" id="has_card" type="checkbox" %}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default btn-danger pull-left col-xs-2" data-dismiss="modal">Close</button>
+                          <button type="submit" class="btn btn-default btn-success pull-right col-xs-4">Update Store</button>
+                        </div>
+                      </form>
                     </div>
                   </div>
                 </div>
@@ -109,5 +158,73 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBuEhmVjHKmjRSodKx3dYUqbyCFquSDMWc&libraries=places"></script>
+    <script type="text/javascript">
+      {% block javascript %}
+      function initializeStoreEditForm(j) {
+        return function(event) {
+          $('#editstore' + j + ' #street_number').focus(function(e) {
+            $(this).blur();
+          });
+          $('#editstore' + j + ' #route').focus(function(e) {
+            $(this).blur();
+          });
+          $('#editstore' + j + ' #locality').focus(function(e) {
+            $(this).blur();
+          });
+          $('#editstore' + j + ' #administrative_area_level_1').focus(function(e) {
+            $(this).blur();
+          });
+          $('#editstore' + j + ' #country').focus(function(e) {
+            $(this).blur();
+          });
+          $('#editstore' + j + ' #postal_code').focus(function(e) {
+            $(this).blur();
+          });
+          var autocomplete = new google.maps.places.Autocomplete(document.getElementById('editstore' + j).querySelector('#autocomplete'));
+          google.maps.event.addListener(autocomplete, "place_changed", function() {
+            var componentForm = {
+              street_number: 'short_name',
+              route: 'long_name',
+              locality: 'long_name',
+              administrative_area_level_1: 'short_name',
+              country: 'short_name',
+              postal_code: 'short_name'
+            };
+            // Get the place details from the autocomplete object.
+            var place = autocomplete.getPlace();
+            document.getElementById('editstore' + j).querySelector('#storeName').value = place.name
+
+            formFields = [
+              document.getElementById('editstore' + j).querySelector('#street_number'),
+              document.getElementById('editstore' + j).querySelector('#route'),
+              document.getElementById('editstore' + j).querySelector('#locality'),
+              document.getElementById('editstore' + j).querySelector('#administrative_area_level_1'),
+              document.getElementById('editstore' + j).querySelector('#country'),
+              document.getElementById('editstore' + j).querySelector('#postal_code'),
+            ];
+            for (var field in formFields) {
+              field.value = '';
+            }
+
+            // Get each component of the address from the place details
+            // and fill the corresponding field on the form.
+            for (var i = 0; i < place.address_components.length; i++) {
+              var addressType = place.address_components[i].types[0];
+              if (componentForm[addressType]) {
+                var val = place.address_components[i][componentForm[addressType]];
+                formFields[i].value = val;
+              }
+            }
+          });
+        }
+      }
+      $(document).ready(function() {
+        for (var i = 1; i < 4; i++) {
+          $('#editstore' + i).click(initializeStoreEditForm(i))
+        };
+      });
+    {% endblock %}
+    </script>
   </body>
 </html>

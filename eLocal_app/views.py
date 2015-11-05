@@ -50,7 +50,20 @@ def storeSearchPage(request):
         addProductForm = ProductAddForm(request.session['coordinates'], request.session['radius'])
         addStoreForm = StoreAddForm()
         stores = request.session['stores']
-        return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': stores, 'zip_code': zip_code})
+        editStoreForms = []
+        for store in stores:
+            editStoreForm = StoreAddForm(initial={
+                                         'store_name': store['name'],
+                                         'street_number': store['address'].split(' ')[0],
+                                         'street_address': ' '.join(store['address'].split(' ')[1:]),
+                                         'city': store['city'],
+                                         'state': store['state'],
+                                         'zip_code': store['zip_code'],
+                                         'country': store['country'],
+                                         'has_card': store['has_card']
+                                         })
+            editStoreForms.append(editStoreForm)
+        return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'editStoreForms': editStoreForms, 'stores': stores, 'zip_code': zip_code})
 
 def shoppingPage(request):
     if request.method == 'GET':

@@ -1,5 +1,4 @@
 from django import forms
-from django.core.validators import RegexValidator
 from .utils import ElocalUtils
 from eLocal_app.widgets.selecttimewidget import *
 

@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^stores', views.storeSearchPage),
     url(r'^products/update/product=(?P<product_id>\d+)', views.updateProduct),
     url(r'^products/search', views.searchProduct),
+    url(r'^products/delete/product=(?P<product_id>\d+)&store=(?P<store_id>\d+)', views.deleteProduct),
     url(r'^products/add', views.addProduct),
     url(r'^products', views.productSearchPage),
     url(r'^price/update/product=(?P<product_id>\d+)&store=(?P<store_id>\d+)', views.updatePrice),

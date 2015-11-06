@@ -63,7 +63,7 @@
                         <thead>
                           <tr>
                             <th class="text-left">Name</th>
-                            <th class="text-right">Price</th>
+                            <th class="text-left">Price</th>
                             <th class="text-right">Add to Cart</th>
                             <th class="text-right">Edit Price</th>
                           </tr>
@@ -73,9 +73,9 @@
                             {% for store in product.store_list %}
                               <tr>
                                 <td class="text-left">{{store.name}}</td>
-                                <td class="text-right">${{store.price}}</td>
-                                <td class="text-right"><a href="{% url 'eLocal_app.views.addCart' product.id store.id %}">Add</a></td>
-                                <td class="text-right"><a href="" data-toggle="modal" data-target="#editprice{{product.id}}{{store.id}}">Edit Price</a></td>
+                                <td class="text-left">${{store.price}}</td>
+                                <td class="text-right"><a href="{% url 'eLocal_app.views.addCart' product.id store.id %}" class="btn btn-default">Add</a></td>
+                                <td class="text-right"><a href="" data-toggle="modal" data-target="#editprice{{product.id}}{{store.id}}" class="btn btn-default">Edit</a></td>
                               </tr>
                             {% endfor %}
                           {% endif %}

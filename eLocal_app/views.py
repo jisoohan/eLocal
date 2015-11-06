@@ -24,7 +24,7 @@ def homePage(request):
                 searchForm = StoreSearchForm()
                 addProductForm = ProductAddForm(request.session['coordinates'], request.session['radius'])
                 addStoreForm = StoreAddForm()
-                return HttpResponseRedirect('/products')
+                return HttpResponseRedirect('/stores')
             else:
                 form.add_error('zip_code', 'Must be a valid zipcode.')
     return render(request, 'eLocal_app/homePage.html', {'form': form})
@@ -128,7 +128,7 @@ def updateProduct(request, product_id):
                 request.session['products'] = ElocalUtils.geolocateProducts(request.session['coordinates'], request.session['radius'])
                 cart = request.session['cart']
                 request.session['cart'] = ElocalUtils.updateCartProduct(cart, Item.objects.get(id=product_id))
-        return HttpResponseRedirect('/products')
+        return HttpResponseRedirect('/stores')
 
 def updatePrice(request, product_id, store_id):
     if request.method == 'POST':
@@ -141,7 +141,7 @@ def updatePrice(request, product_id, store_id):
                 request.session['products'] = ElocalUtils.geolocateProducts(request.session['coordinates'], request.session['radius'])
                 cart = request.session['cart']
                 request.session['cart'] = ElocalUtils.updateCartPrice(cart, product_id, store_id, price)
-        return HttpResponseRedirect('/products')
+        return HttpResponseRedirect('/stores')
 
 def addStore(request):
     if request.method == 'POST':
@@ -181,6 +181,14 @@ def addProduct(request):
                 request.session['stores'] = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
                 request.session['products'] = ElocalUtils.geolocateProducts(request.session['coordinates'], request.session['radius'])
         return HttpResponseRedirect('/products')
+
+def deleteProduct(request, product_id, store_id):
+    Inventory.objects.filter(store=Store.objects.get(id=store_id), item=Item.objects.get(id=product_id)).delete()
+    request.session['stores'] = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
+    request.session['products'] = ElocalUtils.geolocateProducts(request.session['coordinates'], request.session['radius'])
+    cart = request.session['cart']
+    request.session['cart'] = ElocalUtils.deleteCartProduct(cart, product_id)
+    return HttpResponseRedirect('/stores')
 
 def searchProduct(request):
     if request.method == 'GET':

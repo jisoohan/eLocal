@@ -217,6 +217,9 @@ def searchProduct(request):
         addProductForm = ProductAddForm(request.session['coordinates'], request.session['radius'])
         addStoreForm = StoreAddForm()
         products = request.session['products']
+        editProductForms = []
+        editPriceForms = []
+        ids = []
         if searchForm.is_valid():
             name = searchForm.cleaned_data['name']
             products = ElocalUtils.searchProduct(name, products)
@@ -224,7 +227,14 @@ def searchProduct(request):
                 messages.error(request, 'No matching products.')
         else:
             messages.error(request, 'Must input a product.')
-        return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': products, 'zip_code': zip_code, 'radius': radius})
+        for product in products:
+            editProductForm = ProductUpdateForm(initial={'product_name': product['name'],'description': product['description']})
+            editProductForms.append((product['id'], editProductForm))
+            for store in product['store_list']:
+                editPriceForm = PriceUpdateForm(initial={'price': store['price']})
+                editPriceForms.append([product['id'], store['id'], editPriceForm])
+                ids.append([product['id'], store['id']])
+        return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'products': products, 'editProductForms': editProductForms, 'editPriceForms': editPriceForms, 'ids': ids, 'zip_code': zip_code, 'radius': radius})
 
 def searchStore(request):
     if request.method == 'GET':
@@ -236,6 +246,9 @@ def searchStore(request):
         addProductForm = ProductAddForm(request.session['coordinates'], request.session['radius'])
         addStoreForm = StoreAddForm()
         stores = request.session['stores']
+        editStoreForms = []
+        editPriceForms = []
+        ids = []
         if searchForm.is_valid():
             name = searchForm.cleaned_data['name']
             stores = ElocalUtils.searchStore(name, stores)
@@ -243,7 +256,23 @@ def searchStore(request):
                 messages.error(request, 'No matching stores.')
         else:
             messages.error(request, 'Must input a store.')
-        return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': stores, 'zip_code': zip_code, 'radius': radius})
+        for store in stores:
+            editStoreForm = StoreAddForm(initial={
+                                         'store_name': store['name'],
+                                         'street_number': store['address'].split()[0],
+                                         'street_address': ' '.join(store['address'].split()[1:]),
+                                         'city': store['city'],
+                                         'state': store['state'],
+                                         'zip_code': store['zip_code'],
+                                         'country': store['country'],
+                                         'has_card': store['has_card']
+                                         })
+            editStoreForms.append((store['id'], editStoreForm))
+            for product in store['product_list']:
+                editPriceForm = PriceUpdateForm(initial={'price': product['price']})
+                editPriceForms.append([product['id'], store['id'], editPriceForm])
+                ids.append([product['id'], store['id']])
+        return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm, 'addProductForm': addProductForm, 'addStoreForm': addStoreForm, 'stores': stores, 'editStoreForms': editStoreForms, 'editPriceForms': editPriceForms, 'ids': ids, 'zip_code': zip_code, 'radius': radius})
 
 def addCart(request, product_id, store_id):
     if 'cart' in request.session:

@@ -32,7 +32,7 @@ class UITest(unittest.TestCase):
             submit.submit()
             inputElement_ZipCode = driver.find_element_by_id("zip_code")
             inputElement_ZipCode.clear()
-            bodyText = self.driver.find_element_by_tag_name('body').text 
+            bodyText = self.driver.find_element_by_tag_name('body').text
             self.assertIn('Must be a valid zipcode', bodyText)
             print(invalid_zipCode[i] + " Yes")
 
@@ -67,7 +67,7 @@ class UITest(unittest.TestCase):
         membership_card.click()
         addStore_submit = driver.find_element_by_id("submitAddStore")
         addStore_submit.click()
-       
+
         print("\ntest_Navbar_Add_Product\n")
         driver.find_element(By.PARTIAL_LINK_TEXT, "Add").click()
         driver.find_element(By.PARTIAL_LINK_TEXT, "Product").click()
@@ -93,7 +93,7 @@ class UITest(unittest.TestCase):
 
         print("\ntest_ShoppingCart_Add_Orange\n")
         driver.find_element(By.LINK_TEXT, "Add").click()
-       
+
         print("\ntest_ShoppingCart_Remove_Form\n")
         driver.find_element(By.PARTIAL_LINK_TEXT, "Remove").click()
 
@@ -125,7 +125,7 @@ class UITest(unittest.TestCase):
         driver.find_element(By.PARTIAL_LINK_TEXT, "Watermelon").click()
 
         print("\ntest_Assert_Orange_NotExists\n")
-        bodyText = self.driver.find_element_by_tag_name('body').text 
+        bodyText = self.driver.find_element_by_tag_name('body').text
         self.assertNotIn('Orange', bodyText)
         #print("\ntest_EditPriceForm_Watermelon\n")
         #editPrice = wait.until(EC.presence_of_element_located((By.LINK_TEXT, "Edit")))

@@ -15,3 +15,10 @@ body {
 .pac-container {
   z-index: 1050;
 }
+
+/* scroll fixes */
+.modal-open .modal {
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+  overflow-y: scroll;
+}

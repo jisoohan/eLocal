@@ -46,11 +46,10 @@
               <a href="#product{{forloop.counter}}" data-toggle="modal" data-target="#product{{forloop.counter}}" class="list-group-item">
                 <h4 class="list-group-item-heading">{{product.name}}</h4>
               </a>
-              <div id="product{{forloop.counter}}" class="modal fade" role="dialog">
+              <div id="product{{forloop.counter}}" class="modal modal-vcenter fade" role="dialog">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <button type="button" class="close" data-dismiss="modal">&times;</button>
                       <h3 class="modal-title text-center">{{product.name}}</h3>
                     </div>
                     <div class="modal-body">
@@ -91,7 +90,7 @@
               </div>
             {% endfor %}
             {% for editProductForm in editProductForms %}
-              <div id="editproduct{{forloop.counter}}" class="modal fade" role="dialog">
+              <div id="editproduct{{forloop.counter}}" class="modal modal-vcenter fade" role="dialog">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
@@ -122,7 +121,7 @@
               </div>
             {% endfor %}
             {% for editPriceForm in editPriceForms %}
-              <div id="editprice{{editPriceForm.0}}{{editPriceForm.1}}" class="modal fade" role="dialog">
+              <div id="editprice{{editPriceForm.0}}{{editPriceForm.1}}" class="modal modal-vcenter fade" role="dialog">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">

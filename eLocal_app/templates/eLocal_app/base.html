@@ -53,7 +53,7 @@
       </div>
     </nav>
 
-    <div id="addStore" class="modal fade" role="dialog">
+    <div id="addStore" class="modal modal-vcenter fade" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -100,7 +100,7 @@
       </div>
     </div>
 
-    <div id="addProduct" class="modal fade" role="dialog">
+    <div id="addProduct" class="modal modal-vcenter fade" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -281,6 +281,26 @@
           productPrice.closest('.form-group').removeClass('has-error').removeClass('has-success');
         });
       });
+      /* center modal */
+      function centerModals($element) {
+        var $modals;
+        if ($element.length) {
+          $modals = $element;
+        } else {
+          $modals = $('.modal-vcenter:visible');
+        }
+        $modals.each( function(i) {
+          var $clone = $(this).clone().css('display', 'block').appendTo('body');
+          var top = Math.round(($clone.height() - $clone.find('.modal-content').height()) / 3);
+          top = top > 0 ? top : 0;
+          $clone.remove();
+          $(this).find('.modal-content').css("margin-top", top);
+        });
+      }
+      $('.modal-vcenter').on('show.bs.modal', function(e) {
+        centerModals($(this));
+      });
+      $(window).on('resize', centerModals);
     </script>
   </body>
 </html>

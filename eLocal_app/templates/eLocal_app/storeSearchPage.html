@@ -46,11 +46,10 @@
               <a href="" data-toggle="modal" data-target="#store{{forloop.counter}}" class="list-group-item">
                 <h4 class="list-group-item-heading">{{store.name}}</h4>
               </a>
-              <div id="store{{forloop.counter}}" class="modal fade" role="dialog">
+              <div id="store{{forloop.counter}}" class="modal modal-vcenter fade" role="dialog">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <button type="button" class="close" data-dismiss="modal">&times;</button>
                       <h3 class="modal-title text-center">{{store.name}}</h3>
                     </div>
                     <div class="modal-body">
@@ -104,22 +103,22 @@
               </div>
             {% endfor %}
             {% for id in ids %}
-              <div id="deleteProductFromStore{{id.0}}{{id.1}}" class="modal fade" role="dialog">
+              <div id="deleteProductFromStore{{id.0}}{{id.1}}" class="modal modal-vcenter fade" role="dialog">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-body">
-                      <h3>Delete?</h3>
+                      <h3>Delete Product?</h3>
                     </div>
                     <div class="modal-footer">
-                      <button type="button" class="btn btn-default btn-danger pull-left col-xs-2" data-dismiss="modal">No</button>
-                      <a href="{% url 'eLocal_app.views.deleteProductFromStore' id.0 id.1 %}" class="btn btn-default btn-success pull-right col-xs-4">Yes</a>
+                      <button type="button" class="btn btn-default pull-left" data-dismiss="modal">No</button>
+                      <a href="{% url 'eLocal_app.views.deleteProductFromStore' id.0 id.1 %}" class="btn btn-default pull-right">Yes</a>
                     </div>
                   </div>
                 </div>
               </div>
             {% endfor %}
             {% for editStoreForm in editStoreForms %}
-              <div id="editstore{{forloop.counter}}" class="modal fade" role="dialog">
+              <div id="editstore{{forloop.counter}}" class="modal modal-vcenter fade" role="dialog">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
@@ -167,7 +166,7 @@
               </div>
             {% endfor %}
             {% for editPriceForm in editPriceForms %}
-              <div id="editprice{{editPriceForm.0}}{{editPriceForm.1}}" class="modal fade" role="dialog">
+              <div id="editprice{{editPriceForm.0}}{{editPriceForm.1}}" class="modal modal-vcenter fade" role="dialog">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">

@@ -44,7 +44,7 @@ class Item(models.Model):
         try:
             store = Store.objects.get(id=storeId)
         except Store.DoesNotExist:
-            errors.append("Invalid store ID")
+            raise ValidationError(["Invalid store ID"])
         inv = Inventory.create(store, self, price)
         return inv
 
@@ -130,11 +130,10 @@ class Store(models.Model):
         try:
             item = Item.objects.get(id=itemId)
         except Item.DoesNotExist:
-            errors.append("Invalid item ID")
+            raise ValidationError(["Invalid item ID"])
         inv = Inventory.create(self, item, price)
-        inv.save()
         return inv
-
+    
     def clean_fields(self, exclude=None):
         errors = []
         if not validateStringLen(self.name, 1, 128):
@@ -219,6 +218,8 @@ class Inventory(models.Model):
 
     @staticmethod
     def create(store, item, price):
+        if isinstance(price, float) or isinstance(price, int):
+            price = Decimal(price)
         inv = Inventory(store=store, item=item, price=price)
         inv.save()
         return inv

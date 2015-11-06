@@ -17,13 +17,26 @@ class InventoryTest(TestCase):
         Store.objects.all().delete()
     
     def testInvalidItemId(self):
-        with self.assertRaises(Item.DoesNotExist, msg="Getting stores for invalid item ID should throw exception"):
+        with self.assertRaises(Item.DoesNotExist, msg="Getting stores for invalid item ID should fail"):
             result = Inventory.getStoresForItem(-1)
      
     def testInvalidStoreId(self):
-        with self.assertRaises(Store.DoesNotExist, msg="Getting items for invalid store ID should throw exception"):
+        with self.assertRaises(Store.DoesNotExist, msg="Getting items for invalid store ID should fail"):
             result = Inventory.getItemsForStore(-1)
     
+    def testCreateInvalidItem(self):
+        store1 = Store.create("Test store 1", "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
+        with self.assertRaises(ValueError, msg="Creating inventory with invalid store should fail"):
+            Inventory.create(store1, None, 3.0)
+    
+    def testCreateInvalidPrice(self):
+        store1 = Store.create("Test store 1", "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
+        item1 = Item.create("Test item 1", "Test description")
+        for arg, msg in ((None, "null"),
+                              (0.0, "zero"),
+                              (1000000.0, "overly large")):
+            with self.assertRaises(ValidationError, msg="Creating inventory with {0} price should fail".format(msg)):
+                Inventory.create(store1, item1, arg)
 
 class ItemTest(TestCase):
     def setUp(self):
@@ -33,11 +46,8 @@ class ItemTest(TestCase):
         Item.objects.all().delete()
     
     def testCreateItem(self):
-        print("AAAAAAAAAAAAAAAAAAA")
         item1 = Item.create("Test item 1", "Test description")
-        print("BBBBBBBBBBBBBBBBBBB")
         self.assertEqual("Test item 1", item1.name, "Item name is not correctly stored")
-        print("CCCCCCCCCCCCCCCCCCCC")
     
     def testSearchItem(self):
         item1 = Item.create("Test item 1", "Test description")
@@ -53,24 +63,24 @@ class ItemTest(TestCase):
         self.assertEqual(0, len(result), "Store queries with non-matching keyword should return 0 results")
     
     def testSearchInvalidItem(self):
-        for arg, message in ((None, "null"),
+        for arg, msg in ((None, "null"),
                               ("", "empty"),
                               ("A"*129, "overly long"),
                               (1, "non-string")):
-            with self.assertRaises(ValidationError, msg="Item search with {0} keyword should raise exception".format(message)):
+            with self.assertRaises(ValidationError, msg="Item search with {0} keyword should fail".format(msg)):
                 Item.getItems(arg)
         
     def testCreateInvalidItem(self):
         i = 0
         for min_len, max_len, field in ((1, 128, "name"),
                                         (1, 1024, "description")):
-            for arg, message in ((None, "null"),
+            for arg, msg in ((None, "null"),
                               ("", "empty"),
                               ("A"*max(min_len-1, 0), "overly short"),
                               ("A"*(max_len+1), "overly long"),
                               (1, "non-string")):
                 i += 1
-                with self.assertRaises(ValidationError, msg="Creating store with {0} {1} should raise exception".format(message, field)):
+                with self.assertRaises(ValidationError, msg="Creating store with {0} {1} should fail".format(msg, field)):
                     if field == "name":
                         Item.create(arg, "Test description")
                     elif field == "description":
@@ -96,9 +106,9 @@ class StoreTest(TestCase):
         self.assertEqual(-2.0, store1.longitude, "Store longitude is not correctly stored")
     
     def testSearchStore(self):
-        store1 = Store.create("Test store 1", "Fake address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
-        store2 = Store.create("Another shop", "Fake address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
-        store3 = Store.create("Third stOre", "Fake address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
+        store1 = Store.create("Test store 1", "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
+        store2 = Store.create("Another shop", "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
+        store3 = Store.create("Third stOre", "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
         search_1 = Store.getStores("Test store 1")
         self.assertEqual(len(search_1), 1, "Store search with full string should return one store")
         self.assertEqual(store1.id, search_1[0].id, "Store search returned irrelevant store")
@@ -108,6 +118,14 @@ class StoreTest(TestCase):
         result = Store.getStores('HUi887zu8HDzdKNNarDXujvvkzE')
         self.assertEqual(0, len(result), "Store queries with invalid keyword should return 0 results")
     
+    
+    def testSearchInvalidStore(self):
+        for arg, msg in ((None, "null"),
+                              ("A"*129, "overly long"),
+                              (1, "non-string")):
+            with self.assertRaises(ValidationError, msg="Searching for {0} store name should fail"):
+                Store.getStores(arg)
+    
     def testCreateInvalidStoreStrings(self):
         i = 0
         for min_len, max_len, field in ((1, 128, "name"),
@@ -116,14 +134,14 @@ class StoreTest(TestCase):
                                         (2, 2, "state"),
                                         (5, 10, "ZIP code"),
                                         (1, 128, "country")):
-            for arg, message in ((None, "null"),
+            for arg, msg in ((None, "null"),
                               ("", "empty"),
                               ("A"*max(min_len-1, 0), "overly short"),
                               ("A"*(max_len+1), "overly long"),
                               (1, "non-string")):
                 i += 1
                 store_name = "Test store " + str(i)
-                with self.assertRaises(ValidationError, msg="Creating store with {0} {1} should raise exception".format(message, field)):
+                with self.assertRaises(ValidationError, msg="Creating store with {0} {1} should fail".format(msg, field)):
                     if field == "name":
                         Store.create(arg, "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
                     elif field == "address":
@@ -138,25 +156,31 @@ class StoreTest(TestCase):
                         Store.create(store_name, "Test address", "Test city", "CA", "12345", arg, False, 1.0, -2.0)
 
     def testCreateInvalidStoreHasCard(self):
-        for arg, message in ((None, "null"),
+        for arg, msg in ((None, "null"),
                               (1, "non-string")):
-            with self.assertRaises(ValidationError, msg="Creating store with {0} has-card status should raise exception".format(message)):
+            with self.assertRaises(ValidationError, msg="Creating store with {0} has-card status should fail".format(msg)):
                 Store.create("Test store", "Test address", "Test city", "CA", "12345", "US", arg, 1.0, -2.0)
     
     def testCreateInvalidStoreCoords(self):
-        for arg, message in ((None, "null"),
+        for arg, msg in ((None, "null"),
                              (90.1, "too-large"),
                              (-90.1, "too-small"),
                              ("1.2", "non-float")):
-            with self.assertRaises(ValidationError, msg="Creating store with {0} latitude should raise exception".format(message)):
+            with self.assertRaises(ValidationError, msg="Creating store with {0} latitude should fail".format(msg)):
                 Store.create("Test store", "Test address", "Test city", "CA", "12345", "US", False, arg, -2.0)
-        for arg, message in ((None, "null"),
+        for arg, msg in ((None, "null"),
                              (180.1, "too-large"),
                              (-180.1, "too-small"),
                              ("1.2", "non-float")):
-            with self.assertRaises(ValidationError, msg="Creating store with {0} latitude should raise exception".format(message)):
-                Store.create("Test store", "Test address", "Test city", "CA", "12345", "US", False, arg, -2.0)
-        
+            with self.assertRaises(ValidationError, msg="Creating store with {0} latitude should fail".format(msg)):
+                Store.create("Test store", "Test address", "Test city", "CA", "12345", "US", False, 1.0, arg)
+    
+    def testAddInvalidAddItem(self):
+        store1 = Store.create("Test store", "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
+        with self.assertRaises(ValidationError, msg="Adding invalid item to store should fail"):
+            store1.addItem(-1, 3.0)
+    
+    
 class OpenHourTest(TestCase):
     def setUp(self):
         OpenHour.objects.all().delete()
@@ -167,7 +191,7 @@ class OpenHourTest(TestCase):
         Store.objects.all().delete()
     
     def testCreateOpenHour(self):
-        store1 = Store.create("Test store 1", "Fake address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
+        store1 = Store.create("Test store 1", "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
         hours = OpenHour.create(store1, "Wednesday", TimeOfDay(9), TimeOfDay(21), False)
         hours_set = store1.openhour_set.all()
         self.assertEquals(1, len(hours_set), "Wrong number of open hours was saved")
@@ -175,22 +199,27 @@ class OpenHourTest(TestCase):
     
     
     def testInvalidOpenHourDay(self):
-        store1 = Store.create("Test store 1", "Fake address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
-        for arg, message in ((None, "null"),
+        store1 = Store.create("Test store 1", "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
+        for arg, msg in ((None, "null"),
                              ("A"*10, "too-large"),
                              ("", "too-small"),
                              (1, "non-string")):
-            with self.assertRaises(ValidationError, msg="Creating open hours with {0} day should raise exception".format(message)):
+            with self.assertRaises(ValidationError, msg="Creating open hours with {0} day should fail".format(msg)):
                 OpenHour.create(store1, arg, TimeOfDay(9), TimeOfDay(21), False)
 
-    def testInvalidOpenHours(self):
-        store1 = Store.create("Test store 1", "Fake address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
-        for arg1, arg2, message in ((None, None, "null times"),
+    def testInvalidOpenHourTimes(self):
+        store1 = Store.create("Test store 1", "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
+        for arg1, arg2, msg in ((None, None, "null times"),
                              (TimeOfDay(20), TimeOfDay(19), "end before start")):
-            with self.assertRaises(ValidationError, msg="Creating open hours with {0} should raise exception".format(message)):
+            with self.assertRaises(ValidationError, msg="Creating open hours with {0} should fail".format(msg)):
                 OpenHour.create(store1, "Tuesday", arg1, arg2, False)
 
-
+    def testInvalidOpenHourStore(self):
+        for arg, msg in ((None, "null"),
+                             (1, "wrong type for")):
+            with self.assertRaises(ValueError, msg="Creating open hours with {0} store should fail".format(msg)):
+                OpenHour.create(arg, "Wednesday", TimeOfDay(9), TimeOfDay(21), False)
+    
 class ModelFunctionalTest(TestCase):
     def setUp(self):
         Inventory.objects.all().delete()

@@ -183,11 +183,14 @@ def addProduct(request):
         return HttpResponseRedirect('/products')
 
 def deleteProduct(request, product_id, store_id):
-    Inventory.objects.filter(store=Store.objects.get(id=store_id), item=Item.objects.get(id=product_id)).delete()
+    product = Item.objects.get(id=product_id)
+    Inventory.objects.filter(store=Store.objects.get(id=store_id), item=product).delete()
+    if len(product.store_set.all()) == 0:
+        product.delete()
     request.session['stores'] = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
     request.session['products'] = ElocalUtils.geolocateProducts(request.session['stores'])
     cart = request.session['cart']
-    request.session['cart'] = ElocalUtils.deleteCartProduct(cart, product_id)
+    request.session['cart'] = ElocalUtils.deleteCartProduct(cart, product_id, store_id)
     return HttpResponseRedirect('/stores')
 
 def searchProduct(request):

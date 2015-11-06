@@ -193,6 +193,9 @@ def deleteProductFromStore(request, product_id, store_id):
     request.session['cart'] = ElocalUtils.deleteCartProductFromStore(cart, product_id, store_id)
     return HttpResponseRedirect('/stores')
 
+def deleteStore(request, store_id):
+    return HttpResponseRedirect('/stores')
+
 def searchProduct(request):
     if request.method == 'GET':
         if 'zip_code' not in request.session:

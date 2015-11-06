@@ -190,7 +190,7 @@ def deleteProductFromStore(request, product_id, store_id):
     request.session['stores'] = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
     request.session['products'] = ElocalUtils.geolocateProducts(request.session['stores'])
     cart = request.session['cart']
-    request.session['cart'] = ElocalUtils.deleteCartProduct(cart, product_id, store_id)
+    request.session['cart'] = ElocalUtils.deleteCartProductFromStore(cart, product_id, store_id)
     return HttpResponseRedirect('/stores')
 
 def searchProduct(request):

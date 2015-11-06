@@ -216,7 +216,7 @@ class ElocalUtils:
         return new_cart
 
     @staticmethod
-    def deleteCartProduct(cart, product_id, store_id):
+    def deleteCartProductFromStore(cart, product_id, store_id):
         new_cart = cart
         for cart_item in new_cart:
             if int(product_id) == int(cart_item['product']['id']) and int(store_id) == int(cart_item['store']['id']):

@@ -65,6 +65,7 @@
                             <th class="text-left">Price</th>
                             <th class="text-right">Add to Cart</th>
                             <th class="text-right">Edit Price</th>
+                            <th class="text-right">Delete Product</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -75,6 +76,7 @@
                                 <td class="text-left">${{store.price}}</td>
                                 <td class="text-right"><a href="{% url 'eLocal_app.views.addCart' product.id store.id %}" class="btn btn-default">Add</a></td>
                                 <td class="text-right"><a href="" data-toggle="modal" data-target="#editprice{{product.id}}{{store.id}}" class="btn btn-default">Edit</a></td>
+                                <td class="text-right"><a href="" data-toggle="modal" data-target="#deleteProductFromStore{{product.id}}{{store.id}}" class="btn btn-default">Delete</a></td>
                               </tr>
                             {% endfor %}
                           {% endif %}
@@ -84,6 +86,21 @@
                     <div class="modal-footer">
                       <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
                       <a href="" data-toggle="modal" data-target="#editproduct{{forloop.counter}}" class="btn btn-default pull-right">Edit</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+            {% for id in ids %}
+              <div id="deleteProductFromStore{{id.0}}{{id.1}}" class="modal modal-vcenter fade" role="dialog">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <h3>Delete Product?</h3>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default pull-left" data-dismiss="modal">No</button>
+                      <a href="{% url 'eLocal_app.views.deleteProductFromStore' id.0 id.1 %}" class="btn btn-default pull-right">Yes</a>
                     </div>
                   </div>
                 </div>

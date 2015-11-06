@@ -32,7 +32,9 @@
             <li {% if request.path == url %} class="active" {% endif %}><a href="{{ url }}">Shopping Cart</a></li>
             {% url 'eLocal_app.views.productSearchPage' as url2 %}
             {% url 'eLocal_app.views.storeSearchPage' as url3 %}
-            <li {% if request.path == url2 or request.path == url3 %} class="active" {% endif %} class="dropdown">
+            {% url 'eLocal_app.views.searchStore' as url4 %}
+            {% url 'eLocal_app.views.searchProduct' as url5 %}
+            <li {% if request.path == url2 or request.path == url3 or request.path == url4 or request.path == url5 %} class="active" {% endif %} class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Search by<span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li><a href="{% url 'eLocal_app.views.productSearchPage' %}">Product</a></li>

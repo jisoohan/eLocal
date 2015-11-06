@@ -5,7 +5,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
+# eLocal_app import utils, views
 
 class UITest(unittest.TestCase):
         #unittest.TestCase
@@ -19,7 +19,8 @@ class UITest(unittest.TestCase):
         invalid_zipCode = ['1', '12', '123', '1234', 'a', 'aa', 'aaa', 'aaaa', '@/abc', '1234@', '@1234', '!@123', '!@a12']
 
         print("\ntest_HomePage\n")
-        self.driver.get('http://localhost:8000')
+        #self.driver.get('http://localhost:8000')
+        self.driver.get("http://elocalshops.herokuapp.com")
         print("\ntest_Invalid_Zipcodes\n")
 
         for i in range(len(invalid_zipCode)):

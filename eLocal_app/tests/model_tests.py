@@ -2,7 +2,7 @@ from django.test import TestCase
 from eLocal_app.models import Item, Store, Inventory, OpenHour
 from django.core.exceptions import ValidationError
 from datetime import time as TimeOfDay
-
+from eLocal_app import utils, views
 # Create your tests here.
 
 class InventoryTest(TestCase):

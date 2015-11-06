@@ -54,18 +54,11 @@ class ElocalUtils:
         return results
 
     @staticmethod
-    def geolocateProducts(origin, radius):
-        stores = Store.objects.all()
-        store_results = []
-        for store in stores:
-            destination = [(store.latitude, store.longitude)]
-            if ElocalUtils.checkDistance(origin, destination, radius):
-                store_results.append(store)
-
+    def geolocateProducts(stores):
         seen_products = set()
         results = []
-        for store in store_results:
-            products = Inventory.getItemsForStore(store.id)
+        for store in stores:
+            products = Inventory.getItemsForStore(store['id'])
             for product in products:
                 if product.id not in seen_products:
                     seen_products.add(product.id)
@@ -73,12 +66,10 @@ class ElocalUtils:
                     stores = Inventory.getStoresForItem(product.id)
                     store_list = []
                     for store in stores:
-                        destination = [(store.latitude, store.longitude)]
-                        if ElocalUtils.checkDistance(origin, destination, radius):
-                            store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
-                            price = Inventory.getPrice(store.id, product.id)
-                            store_dict['price'] = price
-                            store_list.append(store_dict)
+                        store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
+                        price = Inventory.getPrice(store.id, product.id)
+                        store_dict['price'] = price
+                        store_list.append(store_dict)
                     sorted_store_list = sorted(store_list, key=itemgetter('price'))
                     product_dict['store_list'] = sorted_store_list
                     results.append(product_dict)
@@ -114,20 +105,6 @@ class ElocalUtils:
         sorted_product_list = sorted(product_list, key=itemgetter('price'))
         store_dict['product_list'] = sorted_product_list
         return store_dict
-
-    @staticmethod
-    def parseProduct(product):
-        product_dict = model_to_dict(product, fields=[field.name for field in product._meta.fields])
-        stores = Inventory.getStoresForItem(product.id)
-        store_list = []
-        for store in stores:
-            store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
-            price = Inventory.getPrice(store.id, product.id)
-            store_dict['price'] = price
-            store_list.append(store_dict)
-        sorted_store_list = sorted(store_list, key=itemgetter('price'))
-        product_dict['store_list'] = sorted_store_list
-        return product_dict
 
     @staticmethod
     def parseProductAddStore(product_list, product, store_id, price):

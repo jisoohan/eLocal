@@ -88,7 +88,7 @@
                                 <td class="text-left">${{product.price}}</td>
                                 <td class="text-right"><a href="{% url 'eLocal_app.views.addCart' product.id store.id %}" class="btn btn-default">Add</a></td>
                                 <td class="text-right"><a href="" data-toggle="modal" data-target="#editprice{{product.id}}{{store.id}}" class="btn btn-default">Edit</a></td>
-                                <td class="text-right"><a href="{% url 'eLocal_app.views.deleteProduct' product.id store.id %}" class="btn btn-default">Delete</a></td>
+                                <td class="text-right"><a href="{% url 'eLocal_app.views.deleteProductFromStore' product.id store.id %}" class="btn btn-default">Delete</a></td>
                               </tr>
                             {% endfor %}
                           {% endif %}

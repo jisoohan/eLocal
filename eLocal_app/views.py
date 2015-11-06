@@ -182,7 +182,7 @@ def addProduct(request):
                 request.session['products'] = ElocalUtils.geolocateProducts(request.session['stores'])
         return HttpResponseRedirect('/products')
 
-def deleteProduct(request, product_id, store_id):
+def deleteProductFromStore(request, product_id, store_id):
     product = Item.objects.get(id=product_id)
     Inventory.objects.filter(store=Store.objects.get(id=store_id), item=product).delete()
     if len(product.store_set.all()) == 0:

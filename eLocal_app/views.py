@@ -67,8 +67,8 @@ def storeSearchPage(request):
         for store in stores:
             editStoreForm = StoreAddForm(initial={
                                          'store_name': store['name'],
-                                         'street_number': store['address'].split(' ')[0],
-                                         'street_address': ' '.join(store['address'].split(' ')[1:]),
+                                         'street_number': store['address'].split()[0],
+                                         'street_address': ' '.join(store['address'].split()[1:]),
                                          'city': store['city'],
                                          'state': store['state'],
                                          'zip_code': store['zip_code'],

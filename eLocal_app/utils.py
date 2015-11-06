@@ -7,7 +7,7 @@ class ElocalUtils:
 
     @staticmethod
     def getCoorFromZipcode(zip_code):
-        client = googlemaps.Client(key='AIzaSyBuEhmVjHKmjRSodKx3dYUqbyCFquSDMWc')
+        client = googlemaps.Client(key='AIzaSyCS0rwZGjZriydJ7yvE58fSSuPxKVH38xU')
         location = client.geocode(components={'postal_code': zip_code, 'country': 'US'})
         if len(location) == 0:
             origin = []
@@ -17,7 +17,7 @@ class ElocalUtils:
 
     @staticmethod
     def checkDistance(origin, destination, radius):
-        client = googlemaps.Client(key='AIzaSyBuEhmVjHKmjRSodKx3dYUqbyCFquSDMWc')
+        client = googlemaps.Client(key='AIzaSyCS0rwZGjZriydJ7yvE58fSSuPxKVH38xU')
         dis_matrix = client.distance_matrix(origin, destination, units="imperial")
         distance = 0.00062137 * dis_matrix['rows'][0]['elements'][0]['distance']['value']
         if distance <= radius:
@@ -26,7 +26,7 @@ class ElocalUtils:
 
     @staticmethod
     def isValidZipcode(zip_code):
-        client = googlemaps.Client(key='AIzaSyBuEhmVjHKmjRSodKx3dYUqbyCFquSDMWc')
+        client = googlemaps.Client(key='AIzaSyCS0rwZGjZriydJ7yvE58fSSuPxKVH38xU')
         location = client.geocode(components={'postal_code': zip_code})
         if len(location) == 0:
             return False
@@ -86,7 +86,7 @@ class ElocalUtils:
 
     @staticmethod
     def getCoorFromAddress(address, city, state, zip_code, country):
-        client = googlemaps.Client(key='AIzaSyBuEhmVjHKmjRSodKx3dYUqbyCFquSDMWc')
+        client = googlemaps.Client(key='AIzaSyCS0rwZGjZriydJ7yvE58fSSuPxKVH38xU')
         location = client.geocode(address + ', ' + city + ', ' + state + ', ' + zip_code + ', ' + country)
         coordinates = (location[0]['geometry']['location']['lat'], location[0]['geometry']['location']['lng'])
         return coordinates

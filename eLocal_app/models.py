@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from time import time
+from datetime import time as TimeOfDay
 from decimal import *
 
 class Item(models.Model):
@@ -45,7 +46,6 @@ class Item(models.Model):
         except Store.DoesNotExist:
             errors.append("Invalid store ID")
         inv = Inventory.create(store, self, price)
-        inv.save()
         return inv
 
     def clean_fields(self, exclude=None):
@@ -205,7 +205,7 @@ class OpenHour(models.Model):
 
     def save(self):
         self.full_clean()
-        super(Item, self).save()
+        super(OpenHour, self).save()
 
 
 
@@ -303,7 +303,7 @@ def validateNumClosedSet(num, minimum, maximum):
     return True
 
 def validateHours(open_time, close_time):
-    if not isinstance(open_time, Date) or not isinstance(close_time, Date):
+    if not isinstance(open_time, TimeOfDay) or not isinstance(close_time, TimeOfDay):
         return False
     if close_time < open_time:
         return False

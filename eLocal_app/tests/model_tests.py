@@ -1,7 +1,7 @@
 from django.test import TestCase
-from eLocal_app.models import Item, Store, Inventory
+from eLocal_app.models import Item, Store, Inventory, OpenHour
 from django.core.exceptions import ValidationError
-
+from datetime import time as TimeOfDay
 
 # Create your tests here.
 
@@ -122,19 +122,20 @@ class StoreTest(TestCase):
                               ("A"*(max_len+1), "overly long"),
                               (1, "non-string")):
                 i += 1
+                store_name = "Test store " + str(i)
                 with self.assertRaises(ValidationError, msg="Creating store with {0} {1} should raise exception".format(message, field)):
                     if field == "name":
                         Store.create(arg, "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
                     elif field == "address":
-                        Store.create("Test store " + str(i), arg, "Test city", "CA", "12345", "US", False, 1.0, -2.0)
+                        Store.create(store_name, arg, "Test city", "CA", "12345", "US", False, 1.0, -2.0)
                     elif field == "city":
-                        Store.create("Test store " + str(i), "Test address", arg, "CA", "12345", "US", False, 1.0, -2.0)
+                        Store.create(store_name, "Test address", arg, "CA", "12345", "US", False, 1.0, -2.0)
                     elif field == "state":
-                        Store.create("Test store " + str(i), "Test address", "Test city", arg, "12345", "US", False, 1.0, -2.0)
+                        Store.create(store_name, "Test address", "Test city", arg, "12345", "US", False, 1.0, -2.0)
                     elif field == "ZIP code":
-                        Store.create("Test store " + str(i), "Test address", "Test city", "CA", arg, "US", False, 1.0, -2.0)
+                        Store.create(store_name, "Test address", "Test city", "CA", arg, "US", False, 1.0, -2.0)
                     elif field == "country":
-                        Store.create("Test store " + str(i), "Test address", "Test city", "CA", "12345", arg, False, 1.0, -2.0)
+                        Store.create(store_name, "Test address", "Test city", "CA", "12345", arg, False, 1.0, -2.0)
 
     def testCreateInvalidStoreHasCard(self):
         for arg, message in ((None, "null"),
@@ -156,7 +157,40 @@ class StoreTest(TestCase):
             with self.assertRaises(ValidationError, msg="Creating store with {0} latitude should raise exception".format(message)):
                 Store.create("Test store", "Test address", "Test city", "CA", "12345", "US", False, arg, -2.0)
         
-        
+class OpenHourTest(TestCase):
+    def setUp(self):
+        OpenHour.objects.all().delete()
+        Store.objects.all().delete()
+    
+    def tearDown(self):
+        OpenHour.objects.all().delete()
+        Store.objects.all().delete()
+    
+    def testCreateOpenHour(self):
+        store1 = Store.create("Test store 1", "Fake address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
+        hours = OpenHour.create(store1, "Wednesday", TimeOfDay(9), TimeOfDay(21), False)
+        hours_set = store1.openhour_set.all()
+        self.assertEquals(1, len(hours_set), "Wrong number of open hours was saved")
+        self.assertEquals(hours, hours_set[0], "Open hours were not properly saved")
+    
+    
+    def testInvalidOpenHourDay(self):
+        store1 = Store.create("Test store 1", "Fake address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
+        for arg, message in ((None, "null"),
+                             ("A"*10, "too-large"),
+                             ("", "too-small"),
+                             (1, "non-string")):
+            with self.assertRaises(ValidationError, msg="Creating open hours with {0} day should raise exception".format(message)):
+                OpenHour.create(store1, arg, TimeOfDay(9), TimeOfDay(21), False)
+
+    def testInvalidOpenHours(self):
+        store1 = Store.create("Test store 1", "Fake address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
+        for arg1, arg2, message in ((None, None, "null times"),
+                             (TimeOfDay(20), TimeOfDay(19), "end before start")):
+            with self.assertRaises(ValidationError, msg="Creating open hours with {0} should raise exception".format(message)):
+                OpenHour.create(store1, "Tuesday", arg1, arg2, False)
+
+
 class ModelFunctionalTest(TestCase):
     def setUp(self):
         Inventory.objects.all().delete()

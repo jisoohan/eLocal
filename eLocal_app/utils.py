@@ -5,10 +5,16 @@ import googlemaps
 
 class ElocalUtils:
 
+    def getClient(key='AIzaSyCS0rwZGjZriydJ7yvE58fSSuPxKVH38xU'):
+        return googlemaps.Client(key)
+
+    def getLocation(zip_code, client):
+        return client.geocode(components={'postal_code': zip_code, 'country': 'US'})
+
     @staticmethod
     def getCoorFromZipcode(zip_code):
-        client = googlemaps.Client(key='AIzaSyCS0rwZGjZriydJ7yvE58fSSuPxKVH38xU')
-        location = client.geocode(components={'postal_code': zip_code, 'country': 'US'})
+        client = ElocalUtils.getClient()
+        location = ElocalUtils.getLocation(zip_code, client)
         if len(location) == 0:
             origin = []
         else:
@@ -51,6 +57,7 @@ class ElocalUtils:
                 sorted_product_list = sorted(product_list, key=itemgetter('price'))
                 store_dict['product_list'] = sorted_product_list
                 results.append(store_dict)
+        print(results)
         return results
 
     @staticmethod

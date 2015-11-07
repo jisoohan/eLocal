@@ -21,8 +21,8 @@ class UITest(unittest.TestCase):
         invalid_zipCode = ['1', '12', '123', '1234', 'a', 'aa', 'aaa', 'aaaa', '@/abc', '1234@', '@1234', '!@123', '!@a12']
 
         print("\ntest_HomePage\n")
-        #self.driver.get('http://localhost:8000')
-        self.driver.get("http://elocalshops.herokuapp.com")
+        self.driver.get('http://localhost:8000')
+        #self.driver.get("http://elocalshops.herokuapp.com")
         print("\ntest_Invalid_Zipcodes\n")
         for i in range(len(invalid_zipCode)):
             inputElement_ZipCode = driver.find_element_by_id("zip_code")
@@ -200,10 +200,13 @@ class UITest(unittest.TestCase):
         #time.sleep(sec)
         #price.send_keys("1.00")
         #time.sleep(sec)
-        #updatePrice = drive.find_element_by_xpath('//button[@id="editProductPriceSubmit"]')
-        #time.sleep(sec)
-        #updatePrice.submit()
-    
+        updatePrice = driver.find_element_by_xpath('//button[@id="editProductPriceSubmit"]')
+        time.sleep(sec)
+        updatePrice.submit()
+        time.sleep(sec)
+
+        print("\ntest_Go_Back_To_HomePage\n")
+        driver.find_element(By.PARTIAL_LINK_TEXT, "Home").click()
         #productName = driver.find_element_by_id("productName")
         #productName = wait.until(EC.visibility_of_element_located((By.ID, "productName")))
         #updatePrice = wait.until(EC.presence_of_element_located((By.XPATH, '//button[@id="editProductPriceSubmit"]')))
@@ -216,14 +219,6 @@ class UITest(unittest.TestCase):
 
 if __name__ == '__main__':
     #unittest.main()
-    #unittest.main()
-    #testHomePage = UITest()
-    #testHomePage.setUp()
-    #testHomePage.testHomePage()
-    #UITest.tearDown()
-    #testHomePage2 = UI2Test()
-    #testHomePage2.setUp()
-    #testHomePage2.testHomePage()
 
     suite = unittest.TestLoader().loadTestsFromTestCase(UITest)
     unittest.TextTestRunner(verbosity=2).run(suite)

@@ -164,7 +164,6 @@ class UITest(unittest.TestCase):
         bodyText = self.driver.find_element_by_tag_name('body').text 
         self.assertNotIn('Orange', bodyText)
         
-
         print("\ntest_EditPriceForm_Watermelon\n")
         #driver.implicitly_wait(10)
         #actions = ActionChains(driver)

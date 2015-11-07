@@ -17,12 +17,12 @@ class UITest(unittest.TestCase):
     def test_eLocal_app(self):
         driver = self.driver
         #wait = WebDriverWait(self.driver, 100)
-        sec = 1
+        sec = 0.5
         invalid_zipCode = ['1', '12', '123', '1234', 'a', 'aa', 'aaa', 'aaaa', '@/abc', '1234@', '@1234', '!@123', '!@a12']
 
         print("\ntest_HomePage\n")
-        self.driver.get('http://localhost:8000')
-        #self.driver.get("http://elocalshops.herokuapp.com")
+        #self.driver.get('http://localhost:8000')
+        self.driver.get("http://elocalshops.herokuapp.com")
         print("\ntest_Invalid_Zipcodes\n")
         for i in range(len(invalid_zipCode)):
             inputElement_ZipCode = driver.find_element_by_id("zip_code")
@@ -180,24 +180,29 @@ class UITest(unittest.TestCase):
         #reset.click()
         time.sleep(sec)
         
-        #driver.find_element(By.PARTIAL_LINK_TEXT, "Watermelon").click()
-        #time.sleep(sec)
+        driver.find_element(By.PARTIAL_LINK_TEXT, "Watermelon").click()
+        time.sleep(sec)
         
         
         #watermelon = driver.find_element(By.PARTIAL_LINK_TEXT, "Watermelon")
         #watermelon.click()
         #time.sleep(sec)
         #editPrice = wait.until(EC.presence_of_element_located((By.LINK_TEXT, "Edit")))
-        #editPrice = driver.find_element(By.LINK_TEXT, "Edit")
+        editPrice = driver.find_element(By.LINK_TEXT, "Edit")
+        time.sleep(sec)
+        editPrice.click()
         #time.sleep(sec)
         #editPrice.click()
-        
+        time.sleep(sec)
 
         #driver.implicitly_wait(10)
         #price = driver.find_element_by_xpath('//input[@id="price"]')
+        #time.sleep(sec)
         #price.send_keys("1.00")
-        #updatePrice = drive.find_element_by_xpath('//button[@id="editProductPriceSubmit"]')
-        #updatePrice.submit()
+        #time.sleep(sec)
+        updatePrice = drive.find_element_by_xpath('//button[@id="editProductPriceSubmit"]')
+        time.sleep(sec)
+        updatePrice.submit()
     
         #productName = driver.find_element_by_id("productName")
         #productName = wait.until(EC.visibility_of_element_located((By.ID, "productName")))

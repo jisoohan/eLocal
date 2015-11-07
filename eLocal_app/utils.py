@@ -99,6 +99,7 @@ class ElocalUtils:
             destination = [(store.latitude, store.longitude)]
             if ElocalUtils.checkDistance(origin, destination, radius):
                 results.append((store.id, store.name))
+        print(results)
         return results
 
     @staticmethod

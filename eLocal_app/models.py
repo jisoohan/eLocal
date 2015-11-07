@@ -24,7 +24,6 @@ class Item(models.Model):
             errors.append("Item name must be a non-empty string 1 to 128 characters long")
         if len(errors) > 0:
             raise ValidationError(errors)
-
         return list(Item.objects.filter(name__icontains=name))
 
     @staticmethod
@@ -66,7 +65,6 @@ class Item(models.Model):
     def save(self):
         self.full_clean()
         super(Item, self).save()
-
 
 
 
@@ -169,7 +167,6 @@ class Store(models.Model):
 
 
 
-
 class OpenHour(models.Model):
     # Each OpenHours object belongs to one store, but each store has multiple OpenHours
     store = models.ForeignKey(Store)
@@ -205,7 +202,6 @@ class OpenHour(models.Model):
     def save(self):
         self.full_clean()
         super(OpenHour, self).save()
-
 
 
 
@@ -279,33 +275,18 @@ class Inventory(models.Model):
         super(Inventory, self).save()
 
 
-
-
-
 def validateStringLen(string, min_len, max_len):
-    if not isinstance(string, str):
-        return False
-    if not (min_len <= len(string) <= max_len):
-        return False
-    return True
+    return isinstance(string, str) and min_len <= len(string) <= max_len
 
 def validateNumOpenSet(num, minimum, maximum):
     if not isinstance(num, Decimal) and not isinstance(num, float) and not isinstance(num, int):
         return False
-    if num <= minimum or num >= maximum:
-        return False
-    return True
+    return minimum < num < maximum
 
 def validateNumClosedSet(num, minimum, maximum):
     if not isinstance(num, Decimal) and not isinstance(num, float) and not isinstance(num, int):
         return False
-    if num < minimum or num > maximum:
-        return False
-    return True
+    return minimum <= num <= maximum
 
 def validateHours(open_time, close_time):
-    if not isinstance(open_time, TimeOfDay) or not isinstance(close_time, TimeOfDay):
-        return False
-    if close_time < open_time:
-        return False
-    return True
+    return isinstance(open_time, TimeOfDay) and isinstance(close_time, TimeOfDay) and close_time >= open_time

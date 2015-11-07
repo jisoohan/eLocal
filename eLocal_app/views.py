@@ -14,7 +14,7 @@ def homePage(request):
             zip_code    = form.cleaned_data['zip_code']
             radius      = form.cleaned_data['radius']
             coordinates = ElocalUtils.getCoorFromZipcode(zip_code)
-            if ElocalUtils.isValidZipcode(zip_code) and len(coordinates) != 0:
+            if len(coordinates) != 0:
                 request.session['zip_code']    = zip_code
                 request.session['coordinates'] = coordinates
                 request.session['radius']      = int(radius)

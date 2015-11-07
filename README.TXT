@@ -6,6 +6,7 @@ cd eLocal
 pip install -r requirements.txt
 ------Please make sure latest version of Firefox is installed in computer-------
 rm -rf cover .coverage "*/*.pyc" "*/__pycache__"
+python manage.py collectstatic
 python manage.py test
 python eLocal_app/tests/ui_tests.py (To only run the UI tests, and can see print messages in terminal of tests run)
 --------------------------------------------------------------------------------

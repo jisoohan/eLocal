@@ -21,8 +21,8 @@ class UITest(unittest.TestCase):
         invalid_zipCode = ['1', '12', '123', '1234', 'a', 'aa', 'aaa', 'aaaa', '@/abc', '1234@', '@1234', '!@123', '!@a12']
 
         print("\ntest_HomePage\n")
-        self.driver.get('http://localhost:8000')
-        #self.driver.get("http://elocalshops.herokuapp.com")
+        #self.driver.get('http://localhost:8000')
+        self.driver.get("http://elocalshops.herokuapp.com")
         print("\ntest_Invalid_Zipcodes\n")
         for i in range(len(invalid_zipCode)):
             inputElement_ZipCode = driver.find_element_by_id("zip_code")
@@ -279,13 +279,13 @@ class UITest(unittest.TestCase):
         reset.click()
         time.sleep(sec)
 
-        #print("\ntest_Go_Back_To_HomePage\n")
-        #time.sleep(sec)
-        #driver.find_element(By.PARTIAL_LINK_TEXT, "Home").click()
+        print("\ntest_Go_Back_To_HomePage\n")
+        time.sleep(sec)
+        driver.find_element(By.PARTIAL_LINK_TEXT, "Home").click()
 
-    #def tearDown(self):
-    #    time.sleep(3)
-    #    self.driver.close()
+    def tearDown(self):
+        time.sleep(3)
+        self.driver.close()
 
 
 if __name__ == '__main__':

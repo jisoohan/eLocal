@@ -4,8 +4,8 @@ from operator import itemgetter
 import googlemaps
 
 class ElocalUtils:
-
-    def getClient(key='AIzaSyD_eOeXynkGshNoWp8mNgec-RxEeV8U9vk'):
+    googleAPIKey = 'AIzaSyD_eOeXynkGshNoWp8mNgec-RxEeV8U9vk'
+    def getClient(key= googleAPIKey):
         return googlemaps.Client(key)
 
     def getLocation(zip_code, client):
@@ -23,7 +23,7 @@ class ElocalUtils:
 
     @staticmethod
     def checkDistance(origin, destination, radius):
-        client = googlemaps.Client(key='AIzaSyD_eOeXynkGshNoWp8mNgec-RxEeV8U9vk')
+        client = googlemaps.Client(key=ElocalUtils.googleAPIKey)
         dis_matrix = client.distance_matrix(origin, destination, units="imperial")
         distance = 0.00062137 * dis_matrix['rows'][0]['elements'][0]['distance']['value']
         if distance <= radius:
@@ -32,7 +32,7 @@ class ElocalUtils:
 
     @staticmethod
     def isValidZipcode(zip_code):
-        client = googlemaps.Client(key='AIzaSyD_eOeXynkGshNoWp8mNgec-RxEeV8U9vk')
+        client = googlemaps.Client(key=ElocalUtils.googleAPIKey)
         location = client.geocode(components={'postal_code': zip_code})
         if len(location) == 0:
             return False
@@ -57,7 +57,6 @@ class ElocalUtils:
                 sorted_product_list = sorted(product_list, key=itemgetter('price'))
                 store_dict['product_list'] = sorted_product_list
                 results.append(store_dict)
-        print(results)
         return results
 
     @staticmethod
@@ -84,7 +83,7 @@ class ElocalUtils:
 
     @staticmethod
     def getCoorFromAddress(address, city, state, zip_code, country):
-        client = googlemaps.Client(key='AIzaSyD_eOeXynkGshNoWp8mNgec-RxEeV8U9vk')
+        client = googlemaps.Client(key=elocalUtils.googleAPIKey)
         location = client.geocode(address + ', ' + city + ', ' + state + ', ' + zip_code + ', ' + country)
         coordinates = (location[0]['geometry']['location']['lat'], location[0]['geometry']['location']['lng'])
         return coordinates

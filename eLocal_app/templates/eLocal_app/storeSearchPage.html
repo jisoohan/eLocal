@@ -34,8 +34,8 @@
               <label for="{{ searchForm.name.id_for_label }}" class="control-label">Name: </label>
               {% render_field searchForm.name class="form-control" type="text" %}
             </div>
-            <button type="submit" class="btn btn-default btn-success">Search</button>
-            <a href="{% url 'eLocal_app.views.storeSearchPage' %}" class="btn btn-default">Reset</a>
+            <button id="storeSearch" type="submit" class="btn btn-default btn-success">Search</button>
+            <a id="storeSearchReset" href="{% url 'eLocal_app.views.storeSearchPage' %}" class="btn btn-default">Reset</a>
           </form>
         </div>
       </div>

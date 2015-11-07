@@ -200,17 +200,18 @@ class UITest(unittest.TestCase):
         #time.sleep(sec)
         #price.send_keys("1.00")
         #time.sleep(sec)
-        updatePrice = drive.find_element_by_xpath('//button[@id="editProductPriceSubmit"]')
-        time.sleep(sec)
-        updatePrice.submit()
+        #updatePrice = drive.find_element_by_xpath('//button[@id="editProductPriceSubmit"]')
+        #time.sleep(sec)
+        #updatePrice.submit()
     
         #productName = driver.find_element_by_id("productName")
         #productName = wait.until(EC.visibility_of_element_located((By.ID, "productName")))
         #updatePrice = wait.until(EC.presence_of_element_located((By.XPATH, '//button[@id="editProductPriceSubmit"]')))
         
 
-    #def tearDown(self):
-    #    self.driver.close()
+    def tearDown(self):
+        time.sleep(10)
+        self.driver.close()
 
 
 if __name__ == '__main__':

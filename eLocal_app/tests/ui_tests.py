@@ -79,7 +79,7 @@ class UITest(unittest.TestCase):
         time.sleep(sec)
         addStore_submit = driver.find_element_by_id("submitAddStore")
         addStore_submit.click()
-       
+
         print("\ntest_Navbar_Add_Product\n")
         time.sleep(sec)
         driver.find_element(By.PARTIAL_LINK_TEXT, "Add").click()
@@ -294,17 +294,6 @@ class UITest(unittest.TestCase):
         reset = driver.find_element_by_id("productSearchReset")
         time.sleep(sec)
         reset.click()
-        time.sleep(sec)
-        product = driver.find_element_by_id("id_name")
-        product.send_keys("Orange")
-        time.sleep(sec)
-        productSearch =driver.find_element_by_id("productSearch")
-        productSearch.submit()
-        time.sleep(sec)
-        reset = driver.find_element_by_id("productSearchReset")
-        time.sleep(sec)
-        reset.click()
-        time.sleep(sec)
 
         print("\ntest_Go_Back_To_HomePage\n")
         time.sleep(sec)

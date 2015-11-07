@@ -86,7 +86,7 @@ class ElocalUtils:
 
     @staticmethod
     def getCoorFromAddress(address, city, state, zip_code, country):
-        client = googlemaps.Client(key=elocalUtils.googleAPIKey)
+        client = googlemaps.Client(key=ElocalUtils.googleAPIKey)
         location = client.geocode(address + ', ' + city + ', ' + state + ', ' + zip_code + ', ' + country)
         coordinates = (location[0]['geometry']['location']['lat'], location[0]['geometry']['location']['lng'])
         return coordinates

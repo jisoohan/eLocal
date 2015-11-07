@@ -1,5 +1,6 @@
 from .models import Inventory, Item, Store
 from django.forms.models import model_to_dict
+from math import sin, cos, sqrt, asin, pi
 from operator import itemgetter
 import googlemaps
 
@@ -23,12 +24,14 @@ class ElocalUtils:
 
     @staticmethod
     def checkDistance(origin, destination, radius):
-        client = googlemaps.Client(key=ElocalUtils.googleAPIKey)
-        dis_matrix = client.distance_matrix(origin, destination, units="imperial")
-        distance = 0.00062137 * dis_matrix['rows'][0]['elements'][0]['distance']['value']
-        if distance <= radius:
-            return True
-        return False
+        lat1 = deg2rad(origin[0][0])
+        lon1 = deg2rad(origin[0][1])
+        lat2 = deg2rad(destination[0][0])
+        lon2 = deg2rad(destination[0][1])
+        r = 3958.8
+
+        distance = 2*3958.8*asin(sqrt( haversin(lat2-lat1) + cos(lat1)*cos(lat2)*haversin(lon2-lon1) ))
+        return distance <= radius
 
     @staticmethod
     def isValidZipcode(zip_code):
@@ -236,3 +239,9 @@ class ElocalUtils:
             if int(store_id) == int(cart_item['store']['id']):
                 new_cart.remove(cart_item)
         return new_cart
+
+def haversin(theta):
+    return sin(theta/2)**2
+
+def deg2rad(deg):
+    return deg*pi/180

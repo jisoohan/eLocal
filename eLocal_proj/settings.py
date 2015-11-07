@@ -45,7 +45,8 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 NOSE_ARGS = [
     '--with-coverage',
     '--cover-package=eLocal_app',
-    '--cover-html'
+    '--cover-html',
+    '--cover-inclusive'
 ]
 
 MIDDLEWARE_CLASSES = (

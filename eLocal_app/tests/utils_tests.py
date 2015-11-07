@@ -44,6 +44,7 @@ class UtilTest(TestCase):
 		Store.create("Target", "2187 Shattuck Avenue", "Berkeley", "CA", "94704", "US", False, 37.8696496, -122.2675342)
 		Store.create("Target", "789 Mission Street", "San Francisco","CA","94103","US",False,37.7847358,-122.4036914)
 		expected = [(1, 'Target'), (2, 'Target')]
+		self.assertEquals(expected, ElocalUtils.getStoreChoices(origin, radius))
 
 
 	# def testGetCoorFromZipcode(self):

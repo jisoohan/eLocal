@@ -16,13 +16,13 @@ class UITest(unittest.TestCase):
 
     def test_eLocal_app(self):
         driver = self.driver
-        #wait = WebDriverWait(self.driver, 100)
+        wait = WebDriverWait(self.driver, 10)
         sec = 0.5
         invalid_zipCode = ['1', '12', '123', '1234', 'a', 'aa', 'aaa', 'aaaa', '@/abc', '1234@', '@1234', '!@123', '!@a12']
 
         print("\ntest_HomePage\n")
-        self.driver.get('http://localhost:8000')
-        #self.driver.get("http://elocalshops.herokuapp.com")
+        #self.driver.get('http://localhost:8000')
+        self.driver.get("http://elocalshops.herokuapp.com")
         print("\ntest_Invalid_Zipcodes\n")
         for i in range(len(invalid_zipCode)):
             inputElement_ZipCode = driver.find_element_by_id("zip_code")
@@ -35,7 +35,7 @@ class UITest(unittest.TestCase):
             inputElement_ZipCode.clear()
             bodyText = self.driver.find_element_by_tag_name('body').text 
             self.assertIn('Must be a valid zipcode', bodyText)
-            print(invalid_zipCode[i] + " Yes")
+            print(invalid_zipCode[i] + " No")
 
         inputElement_ZipCode = driver.find_element_by_id("zip_code")
         inputElement_ZipCode.send_keys("94704")
@@ -164,7 +164,6 @@ class UITest(unittest.TestCase):
         bodyText = self.driver.find_element_by_tag_name('body').text 
         self.assertNotIn('Orange', bodyText)
         
-
         print("\ntest_EditPriceForm_Watermelon\n")
         #driver.implicitly_wait(10)
         #actions = ActionChains(driver)
@@ -197,23 +196,95 @@ class UITest(unittest.TestCase):
 
         #driver.implicitly_wait(10)
         #price = driver.find_element_by_xpath('//input[@id="price"]')
+        #price = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@id="price"]')))
         #time.sleep(sec)
         #price.send_keys("1.00")
         #time.sleep(sec)
+
         updatePrice = driver.find_element_by_xpath('//button[@id="editProductPriceSubmit"]')
         time.sleep(sec)
         updatePrice.submit()
-        time.sleep(sec)
 
-        print("\ntest_Go_Back_To_HomePage\n")
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Home").click()
         #productName = driver.find_element_by_id("productName")
         #productName = wait.until(EC.visibility_of_element_located((By.ID, "productName")))
         #updatePrice = wait.until(EC.presence_of_element_located((By.XPATH, '//button[@id="editProductPriceSubmit"]')))
         
+        print("\ntest_Delete_Watermelon\n")
+        time.sleep(sec)
+        driver.find_element(By.PARTIAL_LINK_TEXT, "Search").click()
+        time.sleep(sec)
+        driver.find_element(By.PARTIAL_LINK_TEXT, "Product").click()
+        time.sleep(sec)
+        product = driver.find_element_by_id("id_name")
+        product.send_keys("Watermelon")
+        time.sleep(sec)
+        productSearch =driver.find_element_by_id("productSearch")
+        productSearch.submit()
+        time.sleep(sec)
+        driver.find_element(By.PARTIAL_LINK_TEXT, "Watermelon").click()
+        time.sleep(sec)
+        delete = driver.find_element(By.LINK_TEXT, "Delete")
+        time.sleep(3)
+        delete.click()
+        driver.find_element(By.LINK_TEXT, "Yes").click()
+        time.sleep(3)
+
+        print("\ntest_Assert_Watermelon_NotExists\n")
+        time.sleep(sec)
+        driver.find_element(By.PARTIAL_LINK_TEXT, "Search").click()
+        time.sleep(sec)
+        driver.find_element(By.PARTIAL_LINK_TEXT, "Product").click()
+        time.sleep(sec)
+        product = driver.find_element_by_id("id_name")
+        product.send_keys("Watermelon")
+        time.sleep(sec)
+        productSearch =driver.find_element_by_id("productSearch")
+        productSearch.submit()
+        time.sleep(sec)
+        reset = driver.find_element_by_id("productSearchReset")
+        time.sleep(sec)
+        reset.click()
+        time.sleep(sec)
+        #bodyText = self.driver.find_element_by_tag_name('body').text 
+        #self.assertNotIn('Orange', bodyText)
+
+        print("\ntest_Delete_Trader'sJoe\n")
+        time.sleep(sec)
+        driver.find_element(By.PARTIAL_LINK_TEXT, "Search").click()
+        time.sleep(sec)
+        driver.find_element(By.PARTIAL_LINK_TEXT, "Store").click()
+        time.sleep(sec)
+        store = driver.find_element_by_id("id_name")
+        store.send_keys("Trader's Joe")
+        time.sleep(sec)
+        storeSearch =driver.find_element_by_id("storeSearch")
+        storeSearch.submit()
+        driver.find_element(By.PARTIAL_LINK_TEXT, "Trader's Joe").click()
+        time.sleep(sec)
+        delete = driver.find_element(By.LINK_TEXT, "Delete Store")
+        time.sleep(sec)
+        delete.click()
+        driver.find_element(By.LINK_TEXT, "Yes").click()
+        time.sleep(sec)
+
+        print("\ntest_Assert_Trader'sJoe_NotExists\n")
+        store = driver.find_element_by_id("id_name")
+        store.send_keys("Trader's Joe")
+        time.sleep(sec)
+        storeSearch =driver.find_element_by_id("storeSearch")
+        storeSearch.submit()
+        time.sleep(sec)
+        reset = driver.find_element_by_id("storeSearchReset")
+        time.sleep(sec)
+        reset.click()
+        time.sleep(sec)
+
+        print("\ntest_Go_Back_To_HomePage\n")
+        time.sleep(sec)
+        driver.find_element(By.PARTIAL_LINK_TEXT, "Home").click()
 
     def tearDown(self):
-        time.sleep(10)
+        time.sleep(3)
         self.driver.close()
 
 

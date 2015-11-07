@@ -237,7 +237,8 @@ class OpenHourTest(TestCase):
     def testCreateInvalidOHTimes(self):
         store1 = Store.create("Test store 1", "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
         for arg1, arg2, msg in ((None, None, "null times"),
-                             (TimeOfDay(20), TimeOfDay(19), "end before start")):
+                                (1, TimeOfDay(20), "bad type for start"),
+                                (TimeOfDay(20), TimeOfDay(19), "end before start")):
             with self.assertRaises(ValidationError, msg="Creating open hours with {0} should fail".format(msg)):
                 OpenHour.create(store1, "Tuesday", arg1, arg2, False)
 

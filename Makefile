@@ -12,3 +12,9 @@ check-model: clean
 check-ui: clean
 	python manage.py test eLocal_app/tests/ui_tests.py
 
+check-util: clean
+	python manage.py test eLocal_app/tests/utils_tests.py
+
+check-view: clean
+	python manage.py test eLocal_app/tests/view_tests.py
+

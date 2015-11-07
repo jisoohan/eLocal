@@ -46,6 +46,11 @@ class UtilTest(TestCase):
 		expected = [(1, 'Target'), (2, 'Target')]
 		self.assertEquals(expected, ElocalUtils.getStoreChoices(origin, radius))
 
+	def testParseStore(self):
+		testStore = Store.create("Jupiter", "2181 Shattuck Avenue", "Berkeley", "CA", "94704", "US", False, 37.8698014, -122.267527)
+		expected = {'address': '2181 Shattuck Avenue', 'latitude': 37.8698014, 'has_card': False, 'zip_code': '94704', 'longitude': -122.267527, 'name': 'Jupiter', 'country': 'US', 'state': 'CA', 'city': 'Berkeley', 'product_list': [], 'id': 1}
+		assertEquals(expected, ElocalUtils.parseStore(testStore))
+
 
 	# def testGetCoorFromZipcode(self):
 	# 	zipcode = 94704

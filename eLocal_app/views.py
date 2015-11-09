@@ -26,7 +26,9 @@ def homePage(request):
                 addStoreForm   = StoreAddForm()
                 return HttpResponseRedirect('/stores')
             else:
-                form.add_error('zip_code', 'Must be a valid zipcode.')
+                messages.error(request, 'Not a valid zipcode.')
+        else:
+            messages.error(request, 'Must enter a zipcode.')
     return render(request, 'eLocal_app/homePage.html', {'form': form})
 
 def productSearchPage(request):

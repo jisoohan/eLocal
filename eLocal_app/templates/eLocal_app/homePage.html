@@ -19,21 +19,15 @@
     <div class="site-wrapper">
       <div class="site-wrapper-inner">
         <div class="cover-container">
-          <div class="inner cover">
+          <div class="inner cover col-xs-12">
             <h1 class="cover-heading">eLocal</h1>
             <p class="lead">Shop smart.</p>
             <form role="form" class="form-horizontal" method="post" action="{% url 'eLocal_app.views.homePage' %}" autocomplete="off">
-              {% if form.errors %}
-                {% for field in form %}
-                  {% for error in field.errors %}
-                    <div class="alert alert-error">
-                      <strong>{{ error|escape }}</strong>
-                    </div>
-                  {% endfor %}
-                {% endfor %}
-                {% for error in form.non_field_errors %}
-                  <div class="alert alert-error">
-                    <strong>{{ error|escape }}</strong>
+              {% if messages %}
+                {% for message in messages %}
+                  <div class="alert alert-danger text-center col-xs-9 col-xs-offset-1">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <strong>{{ message|escape }}</strong>
                   </div>
                 {% endfor %}
               {% endif %}

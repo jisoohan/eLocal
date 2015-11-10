@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from .forms import ZipcodeForm, ProductSearchForm, StoreSearchForm, ProductAddForm, StoreAddForm, ProductUpdateForm, PriceUpdateForm
 from .models import Store, Item, Inventory
 from .utils import ElocalUtils
+from decimal import Decimal
 
 def homePage(request):
     if request.method == 'GET':
@@ -184,7 +185,7 @@ def addProduct(request):
         if form.is_valid():
             product_name = form.cleaned_data['product_name']
             description  = form.cleaned_data['description']
-            price        = float(form.cleaned_data['price'])
+            price        = Decimal(form.cleaned_data['price'])
             store_id     = form.cleaned_data['store_name']
             if not Inventory.hasDuplicateItem(product_name, store_id):
                 product_list = request.session['products']

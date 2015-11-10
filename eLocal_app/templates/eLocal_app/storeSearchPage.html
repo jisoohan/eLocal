@@ -61,7 +61,7 @@
             {% endfor %}
           </div>
           {% for store in stores %}
-            <div class="col-xs-8" id="showStore{{forloop.counter}}">
+            <div class="col-xs-8 hidden" id="showStore{{forloop.counter}}">
               <div class="panel panel-default scrolly">
                 <div class="panel-heading">
                   <h2 class="panel-title text-center">{{store.name}}</h2>
@@ -191,9 +191,7 @@
               </div>
             </div>
           </div>
-        {% endfor %}
-        {% for id in ids %}
-          <div id="deleteProductFromStore{{id.0}}{{id.1}}" class="modal modal-vcenter fade" role="dialog">
+          <div id="deleteProductFromStore{{editPriceForm.0}}{{editPriceForm.1}}" class="modal modal-vcenter fade" role="dialog">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-body text-center">
@@ -201,7 +199,7 @@
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-default pull-left" data-dismiss="modal">No</button>
-                  <a href="{% url 'eLocal_app.views.deleteProductFromStore' id.0 id.1 %}" class="btn btn-default pull-right">Yes</a>
+                  <a href="{% url 'eLocal_app.views.deleteProductFromStore' editPriceForm.0 editPriceForm.1 %}" class="btn btn-default pull-right">Yes</a>
                 </div>
               </div>
             </div>
@@ -220,8 +218,8 @@
     <script type="text/javascript">
       {% block javascript %}
         var store_count = {{stores|length}};
-        var ids = {{ids}};
-        var openStore;
+        var productsLength = {{editPriceForms|length}};
+        var lastBtnClickedNum = -1;
         function initializeStoreEditForm(j) {
           return function(e) {
             $('#editstore' + j + ' #street_number').focus(function(e) {
@@ -347,22 +345,25 @@
         }
         function showStoreInfo(j) {
           return function(e) {
-            var currStore = $('#showStore' + j);
-            if (openStore == null) {
-              openStore = currStore;
-              openStore.show();
-            } else if (openStore.get(0) == currStore.get(0)) {
-              openStore.toggle();
+            var currBtn = $('#showStoreBtn' + j);
+            if (lastBtnClickedNum == -1) {
+              $('#showStore' + j).removeClass('hidden');
+              lastBtnClickedNum = j;
+            } else if (j == lastBtnClickedNum) {
+              if ($('#showStore' + j).hasClass('hidden')) {
+                $('#showStore' + j).removeClass('hidden');
+              } else {
+                $('#showStore' + j).addClass('hidden');
+              }
             } else {
-              openStore.hide();
-              currStore.show();
-              openStore = currStore
+              $('#showStore' + lastBtnClickedNum).addClass('hidden');
+              $('#showStore' + j).removeClass('hidden');
+              lastBtnClickedNum = j;
             }
           }
         }
         $(document).ready(function(e) {
           for (var i = 1; i <= store_count; i++) {
-            $('#showStore' + i).hide();
             $('#showStoreBtn' + i).click(showStoreInfo(i));
             var org_storeName = $('#editstore' + i + ' #storeName').val();
             var org_street_number = $('#editstore' + i + ' #street_number').val();
@@ -376,10 +377,10 @@
             $('#editstore' + i).on("submit", submitStoreEditForm(i));
             $("#editstore" + i).on("hidden.bs.modal", resetStoreEditForm(i, org_storeName, org_street_number, org_route, org_locality, org_administrative_area_level_1, org_country, org_postal_code, org_has_card));
           }
-          for (var k = 0; k < ids.length; k++) {
-            var org_price = $('#editprice' + ids[k][0] + ids[k][1] + ' #price').val();
-            $('#editprice' + ids[k][0] + ids[k][1]).on("submit", submitPriceEditForm(ids[k][0], ids[k][1]));
-            $('#editprice' + ids[k][0] + ids[k][1]).on("hidden.bs.modal", resetPriceEditForm(ids[k][0], ids[k][1], org_price));
+          for (var k = 0; k < productsLength.length; k++) {
+            var org_price = $('#editprice' + productsLength[k][0] + productsLength[k][1] + ' #price').val();
+            $('#editprice' + productsLength[k][0] + productsLength[k][1]).on("submit", submitPriceEditForm(productsLength[k][0], productsLength[k][1]));
+            $('#editprice' + productsLength[k][0] + productsLength[k][1]).on("hidden.bs.modal", resetPriceEditForm(productsLength[k][0], productsLength[k][1], org_price));
           }
         });
       {% endblock %}

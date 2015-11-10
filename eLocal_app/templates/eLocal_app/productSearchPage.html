@@ -18,153 +18,154 @@
     {% block content %}
       {% if messages %}
         {% for message in messages %}
-          <div class="alert alert-danger text-center">
+          <div class="alert alert-danger text-center col-xs-10 col-xs-offset-1">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
             <strong>{{ message|escape }}</strong>
           </div>
         {% endfor %}
       {% endif %}
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h2 class="panel-title text-center">Product Search</h2>
-        </div>
-        <div class="panel-body text-center">
-          <form form="form" class="form-inline" method="get" action="{% url 'eLocal_app.views.searchProduct' %}">
-            <div class="form-group">
-              <label for="{{ searchForm.name.id_for_label }}" class="control-label">Name: </label>
-              {% render_field searchForm.name class="form-control" type="text" %}
-            </div>
-            <button id="productSearch" type="submit" class="btn btn-default btn-success">Search</button>
-            <a id="productSearchReset" href="{% url 'eLocal_app.views.productSearchPage' %}" class="btn btn-default">Reset</a>
-          </form>
+      <div class="col-xs-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h2 class="panel-title text-center">Product Search</h2>
+          </div>
+          <div class="panel-body text-center">
+            <form form="form" class="form-inline" method="get" action="{% url 'eLocal_app.views.searchProduct' %}">
+              <div class="form-group">
+                <label for="{{ searchForm.name.id_for_label }}" class="control-label">Name: </label>
+                {% render_field searchForm.name class="form-control" type="text" %}
+              </div>
+              <button id="productSearch" type="submit" class="btn btn-default btn-success">Search</button>
+              <a id="productSearchReset" href="{% url 'eLocal_app.views.productSearchPage' %}" class="btn btn-default">Reset</a>
+            </form>
+          </div>
         </div>
       </div>
-      <div class="col-xs-4 col-xs-offset-4 text-center">
-        <ul class="list-group">
-          {% if products %}
+      {% if products %}
+        <div class="container-fluid col-xs-12">
+          <div class="table-hover col-xs-4 scrolly">
             {% for product in products %}
-              <a href="#product{{forloop.counter}}" data-toggle="modal" data-target="#product{{forloop.counter}}" class="list-group-item">
-                <h4 class="list-group-item-heading">{{product.name}}</h4>
-              </a>
-              <div id="product{{forloop.counter}}" class="modal modal-vcenter fade" role="dialog">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h3 class="modal-title text-center">{{product.name}}</h3>
-                    </div>
-                    <div class="modal-body">
-                      <h4>Description</h4>
-                      <p>{{product.description}}</p>
-                    </div>
-                    <div class="modal-body">
-                      <h4>Stores</h4>
-                      <table class="table table-condensed">
-                        <thead>
+              <div class="list-group-item">
+                <h4 class="list-group-item-heading">
+                  {{product.name}}
+                  <button type="button" class="btn btn-default pull-right" id="showProductBtn{{forloop.counter}}">Info</button>
+                </h4>
+                <br>
+              </div>
+            {% endfor %}
+          </div>
+          {% for product in products %}
+            <div class="col-xs-8 hidden" id="showProduct{{forloop.counter}}">
+              <div class="panel panel-default scrolly">
+                <div class="panel-heading">
+                  <h2 class="panel-title text-center">{{product.name}}</h2>
+                </div>
+                <div class="panel-body text-center">
+                  <h4>Description</h4>
+                  <p>{{product.description}}</p>
+                  <h4>Stores</h4>
+                  <table class="table table-condensed">
+                    <thead>
+                      <tr>
+                        <th class="text-left">Name</th>
+                        <th class="text-right">Price</th>
+                        <th class="text-right">Add to Cart</th>
+                        <th class="text-right">Edit Price</th>
+                        <th class="text-right">Delete Product</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% if product.store_list %}
+                        {% for store in product.store_list %}
                           <tr>
-                            <th class="text-left">Name</th>
-                            <th class="text-left">Price</th>
-                            <th class="text-right">Add to Cart</th>
-                            <th class="text-right">Edit Price</th>
-                            <th class="text-right">Delete Product</th>
+                            <td class="text-left">{{store.name}}</td>
+                            <td class="text-right">${{store.price}}</td>
+                            <td class="text-right"><a href="{% url 'eLocal_app.views.addCart' product.id store.id %}" class="btn btn-default">Add</a></td>
+                            <td class="text-right"><a href="" data-toggle="modal" data-target="#editprice{{product.id}}{{store.id}}" class="btn btn-default">Edit</a></td>
+                            <td class="text-right"><a href="" data-toggle="modal" data-target="#deleteProductFromStore{{product.id}}{{store.id}}" class="btn btn-default">Delete</a></td>
                           </tr>
-                        </thead>
-                        <tbody>
-                          {% if product.store_list %}
-                            {% for store in product.store_list %}
-                              <tr>
-                                <td class="text-left">{{store.name}}</td>
-                                <td class="text-left">${{store.price}}</td>
-                                <td class="text-right"><a href="{% url 'eLocal_app.views.addCart' product.id store.id %}" class="btn btn-default">Add</a></td>
-                                <td class="text-right"><a href="" data-toggle="modal" data-target="#editprice{{product.id}}{{store.id}}" class="btn btn-default">Edit</a></td>
-                                <td class="text-right"><a href="" data-toggle="modal" data-target="#deleteProductFromStore{{product.id}}{{store.id}}" class="btn btn-default">Delete</a></td>
-                              </tr>
-                            {% endfor %}
-                          {% endif %}
-                        </tbody>
-                      </table>
+                        {% endfor %}
+                      {% endif %}
+                    </tbody>
+                  </table>
+                </div>
+                <div class="modal-footer">
+                  <a href="" data-toggle="modal" data-target="#editproduct{{forloop.counter}}" class="btn btn-default pull-left">Edit Product</a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        {% for editProductForm in editProductForms %}
+          <div id="editproduct{{forloop.counter}}" class="modal modal-vcenter fade" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h3 class="modal-title text-center">Edit Product</h3>
+                </div>
+                <div class="modal-body">
+                  <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.updateProduct' editProductForm.0 %}">
+                    <div class="form-group">
+                      <label for="productName" class="control-label col-xs-3">Product Name</label>
+                      <div class="col-xs-9">
+                        {% render_field editProductForm.1.product_name class="form-control" type="text" id="productName" autocomplete="off" %}
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="description" class="control-label col-xs-3">Description</label>
+                      <div class="col-xs-9">
+                        {% render_field editProductForm.1.description class="form-control" type="text" id="description" autocomplete="off" %}
+                      </div>
                     </div>
                     <div class="modal-footer">
-                      <button id="productClose" type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-                      <a href="" data-toggle="modal" data-target="#editproduct{{forloop.counter}}" class="btn btn-default pull-right">Edit</a>
+                      <button type="button" class="btn btn-default btn-danger pull-left col-xs-2" data-dismiss="modal">Close</button>
+                      <button type="submit" class="btn btn-default btn-success pull-right col-xs-4">Update Product</button>
                     </div>
-                  </div>
+                  </form>
                 </div>
               </div>
-            {% endfor %}
-            {% for id in ids %}
-              <div id="deleteProductFromStore{{id.0}}{{id.1}}" class="modal modal-vcenter fade" role="dialog">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-body">
-                      <h3>Delete Product?</h3>
+            </div>
+          </div>
+        {% endfor %}
+        {% for editPriceForm in editPriceForms %}
+          <div id="editprice{{editPriceForm.0}}{{editPriceForm.1}}" class="modal modal-vcenter fade" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h3 class="modal-title text-center">Edit Price</h3>
+                </div>
+                <div class="modal-body">
+                  <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.updatePrice' editPriceForm.0 editPriceForm.1 %}">
+                    <div class="form-group">
+                      <label for="price" class="control-label col-xs-3">Price</label>
+                      <div class="col-xs-9">
+                        {% render_field editPriceForm.2.price class="form-control" type="text" id="price" autocomplete="off" %}
+                      </div>
                     </div>
                     <div class="modal-footer">
-                      <button type="button" class="btn btn-default pull-left" data-dismiss="modal">No</button>
-                      <a href="{% url 'eLocal_app.views.deleteProductFromStore' id.0 id.1 %}" class="btn btn-default pull-right">Yes</a>
+                      <button type="button" class="btn btn-default btn-danger pull-left col-xs-2" data-dismiss="modal">Close</button>
+                      <button id="editProductPriceSubmit" type="submit" class="btn btn-default btn-success pull-right col-xs-4">Update Price</button>
                     </div>
-                  </div>
+                  </form>
                 </div>
               </div>
-            {% endfor %}
-            {% for editProductForm in editProductForms %}
-              <div id="editproduct{{forloop.counter}}" class="modal modal-vcenter fade" role="dialog">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h3 class="modal-title text-center">Edit Product</h3>
-                    </div>
-                    <div class="modal-body">
-                      <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.updateProduct' editProductForm.0 %}">
-                        <div class="form-group">
-                          <label for="productName" class="control-label col-xs-3">Product Name</label>
-                          <div class="col-xs-9">
-                            {% render_field editProductForm.1.product_name class="form-control" type="text" id="productName" autocomplete="off" %}
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label for="description" class="control-label col-xs-3">Description</label>
-                          <div class="col-xs-9">
-                            {% render_field editProductForm.1.description class="form-control" type="text" id="description" autocomplete="off" %}
-                          </div>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-default btn-danger pull-left col-xs-2" data-dismiss="modal">Close</button>
-                          <button type="submit" class="btn btn-default btn-success pull-right col-xs-4">Update Product</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
+            </div>
+          </div>
+          <div id="deleteProductFromStore{{editPriceForm.0}}{{editPriceForm.1}}" class="modal modal-vcenter fade" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-body text-center">
+                  <h3>Delete Product?</h3>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default pull-left" data-dismiss="modal">No</button>
+                  <a href="{% url 'eLocal_app.views.deleteProductFromStore' editPriceForm.0 editPriceForm.1 %}" class="btn btn-default pull-right">Yes</a>
                 </div>
               </div>
-            {% endfor %}
-            {% for editPriceForm in editPriceForms %}
-              <div id="editprice{{editPriceForm.0}}{{editPriceForm.1}}" class="modal modal-vcenter fade" role="dialog">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h3 class="modal-title text-center">Edit Price</h3>
-                    </div>
-                    <div class="modal-body">
-                      <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.updatePrice' editPriceForm.0 editPriceForm.1 %}">
-                        <div class="form-group">
-                          <label for="price" class="control-label col-xs-3">Price</label>
-                          <div class="col-xs-9">
-                            {% render_field editPriceForm.2.price class="form-control" type="text" id="price" autocomplete="off" %}
-                          </div>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-default btn-danger pull-left col-xs-2" data-dismiss="modal">Close</button>
-                          <button id="editProductPriceSubmit" type="submit" class="btn btn-default btn-success pull-right col-xs-4">Update Price</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            {% endfor %}
-          {% endif %}
-        </ul>
-      </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
     {% endblock %}
 
     <!-- Bootstrap core JavaScript
@@ -174,66 +175,87 @@
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script type="text/javascript">
-    {% block javascript %}
-      var product_count = {{products|length}};
-      var ids = {{ids}};
-      function submitProductEditForm(j) {
-        return function(e) {
-          var productName = $('#editproduct' + j + ' #productName');
-          var description = $('#editproduct' + j + ' #description');
-          if (!productName.val()) {
-            e.preventDefault();
-            productName.closest('.form-group').removeClass('has-success').addClass('has-error');
-          } else {
-            productName.closest('.form-group').removeClass('has-error').addClass('has-success');
-          }
-          if (!description.val()) {
-            e.preventDefault();
-            description.closest('.form-group').removeClass('has-success').addClass('has-error');
-          } else {
-            description.closest('.form-group').removeClass('has-error').addClass('has-success');
-          }
-        }
-      }
-      function resetProductEditForm(j, productName, description) {
-        return function(e) {
-          $('#editproduct' + j + ' #productName').val(productName);
-          $('#editproduct' + j + ' #description').val(description);
-          $('#editproduct' + j + ' #productName').closest('.form-group').removeClass('has-error').removeClass('has-success');
-          $('#editproduct' + j + ' #description').closest('.form-group').removeClass('has-error').removeClass('has-success');
-        }
-      }
-      function submitPriceEditForm(product_id, store_id) {
-        return function(e) {
-          var price = $('#editprice' + product_id + store_id + ' #price');
-          if (!price.val()) {
-            e.preventDefault();
-            price.closest('.form-group').removeClass('has-success').addClass('has-error');
-          } else {
-            price.closest('.form-group').removeClass('has-error').addClass('has-success');
+      {% block javascript %}
+        var product_count = {{products|length}};
+        var productsNum = {{editProductForms|length}};
+        var lastBtnClickedNum = -1;
+        function submitProductEditForm(j) {
+          return function(e) {
+            var productName = $('#editproduct' + j + ' #productName');
+            var description = $('#editproduct' + j + ' #description');
+            if (!productName.val()) {
+              e.preventDefault();
+              productName.closest('.form-group').removeClass('has-success').addClass('has-error');
+            } else {
+              productName.closest('.form-group').removeClass('has-error').addClass('has-success');
+            }
+            if (!description.val()) {
+              e.preventDefault();
+              description.closest('.form-group').removeClass('has-success').addClass('has-error');
+            } else {
+              description.closest('.form-group').removeClass('has-error').addClass('has-success');
+            }
           }
         }
-      }
-      function resetPriceEditForm(product_id, store_id, price) {
-        return function(e) {
-          $('#editprice' + product_id + store_id + ' #price').val(price);
-          $('#editprice' + product_id + store_id + ' #price').closest('.form-group').removeClass('has-error').removeClass('has-success');
+        function resetProductEditForm(j, productName, description) {
+          return function(e) {
+            $('#editproduct' + j + ' #productName').val(productName);
+            $('#editproduct' + j + ' #description').val(description);
+            $('#editproduct' + j + ' #productName').closest('.form-group').removeClass('has-error').removeClass('has-success');
+            $('#editproduct' + j + ' #description').closest('.form-group').removeClass('has-error').removeClass('has-success');
+          }
         }
-      }
-      $(document).ready(function(e) {
-        for (var i = 1; i <= product_count; i++) {
-          var org_productName = $('#editproduct' + i + ' #productName').val();
-          var org_description = $('#editproduct' + i + ' #description').val();
-          $('#editproduct' + i).on("submit", submitProductEditForm(i));
-          $("#editproduct" + i).on("hidden.bs.modal", resetProductEditForm(i, org_productName, org_description));
+        function submitPriceEditForm(product_id, store_id) {
+          return function(e) {
+            var price = $('#editprice' + product_id + store_id + ' #price');
+            if (!price.val()) {
+              e.preventDefault();
+              price.closest('.form-group').removeClass('has-success').addClass('has-error');
+            } else {
+              price.closest('.form-group').removeClass('has-error').addClass('has-success');
+            }
+          }
         }
-        for (var k = 0; k < ids.length; k++) {
-          var org_price = $('#editprice' + ids[k][0] + ids[k][1] + ' #price').val();
-          $('#editprice' + ids[k][0] + ids[k][1]).on("submit", submitPriceEditForm(ids[k][0], ids[k][1]));
-          $('#editprice' + ids[k][0] + ids[k][1]).on("hidden.bs.modal", resetPriceEditForm(ids[k][0], ids[k][1], org_price));
+        function resetPriceEditForm(product_id, store_id, price) {
+          return function(e) {
+            $('#editprice' + product_id + store_id + ' #price').val(price);
+            $('#editprice' + product_id + store_id + ' #price').closest('.form-group').removeClass('has-error').removeClass('has-success');
+          }
         }
-      });
-    {% endblock %}
+        function showProductInfo(j) {
+          return function(e) {
+            var currBtn = $('#showProductBtn' + j);
+            if (lastBtnClickedNum == -1) {
+              $('#showProduct' + j).removeClass('hidden');
+              lastBtnClickedNum = j;
+            } else if (j == lastBtnClickedNum) {
+              if ($('#showProduct' + j).hasClass('hidden')) {
+                $('#showProduct' + j).removeClass('hidden');
+              } else {
+                $('#showProduct' + j).addClass('hidden');
+              }
+            } else {
+              $('#showProduct' + lastBtnClickedNum).addClass('hidden');
+              $('#showProduct' + j).removeClass('hidden');
+              lastBtnClickedNum = j;
+            }
+          }
+        }
+        $(document).ready(function(e) {
+          for (var i = 1; i <= product_count; i++) {
+            $('#showProductBtn' + i).click(showProductInfo(i));
+            var org_productName = $('#editproduct' + i + ' #productName').val();
+            var org_description = $('#editproduct' + i + ' #description').val();
+            $('#editproduct' + i).on("submit", submitProductEditForm(i));
+            $("#editproduct" + i).on("hidden.bs.modal", resetProductEditForm(i, org_productName, org_description));
+          }
+          for (var k = 0; k < productsNum.length; k++) {
+            var org_price = $('#editprice' + productsNum[k][0] + productsNum[k][1] + ' #price').val();
+            $('#editprice' + productsNum[k][0] + productsNum[k][1]).on("submit", submitPriceEditForm(productsNum[k][0], productsNum[k][1]));
+            $('#editprice' + productsNum[k][0] + productsNum[k][1]).on("hidden.bs.modal", resetPriceEditForm(productsNum[k][0], productsNum[k][1], org_price));
+          }
+        });
+      {% endblock %}
     </script>
   </body>
 </html>

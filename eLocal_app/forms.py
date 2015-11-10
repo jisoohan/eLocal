@@ -15,7 +15,7 @@ class StoreSearchForm(forms.Form):
 class ProductAddForm(forms.Form):
     product_name = forms.CharField(max_length=128)
     description = forms.CharField(max_length=1024, widget=forms.Textarea)
-    price = forms.FloatField(min_value=0)
+    price = forms.FloatField(min_value=0.01)
     def __init__(self, origin, radius, *args, **kwargs):
         super(ProductAddForm, self).__init__(*args, **kwargs)
         self.fields['store_name'] = forms.ChoiceField(choices=ElocalUtils.getStoreChoices(origin, radius))

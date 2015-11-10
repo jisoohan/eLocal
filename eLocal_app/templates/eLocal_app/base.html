@@ -111,32 +111,33 @@
           <div class="modal-body">
             <form form="form" class="form-horizontal text-center" method="post" action="{% url 'eLocal_app.views.addProduct' %}" id="productForm">
               <div class="form-group">
-                <label for="{{ addProductForm.product_name.id_for_label }}" class="control-label col-xs-3">Product Name</label>
+                <label for="productName" class="control-label col-xs-3">Product Name</label>
                 <div class="col-xs-9">
-                  {% render_field addProductForm.product_name class="form-control" type="text" id="productName" autocomplete="off" %}
+                  {% render_field addProductForm.product_name class="form-control" type="text" name="product_name" id="productName" autocomplete="off" %}
                 </div>
               </div>
               <div class="form-group">
-                <label for="{{ addProductForm.description.id_for_label }}" class="control-label col-xs-3">Description</label>
+                <label for="description" class="control-label col-xs-3">Description</label>
                 <div class="col-xs-9">
-                  {% render_field addProductForm.description class="form-control" type="text" id="description" autocomplete="off" %}
+                  {% render_field addProductForm.description class="form-control" name="description" id="description" autocomplete="off" %}
                 </div>
               </div>
               <div class="form-group">
-                <label for="{{ addProductForm.price.id_for_label }}" class="control-label col-xs-3">Price</label>
+                <label for="productPrice" class="control-label col-xs-3">Price</label>
                 <div class="col-xs-9">
-                  {% render_field addProductForm.price class="form-control" type="text" id="productPrice" autocomplete="off" %}
+                  {% render_field addProductForm.price class="form-control" type="number" name="price" id="productPrice" autocomplete="off" %}
                 </div>
               </div>
               <div class="form-group">
-                <label for="{{ addProductForm.store_name.id_for_label }}" class="control-label col-xs-3">Store Name</label>
+                <label for="storeName" class="control-label col-xs-3">Store Name</label>
                 <div class="col-xs-9">
-                  {% render_field addProductForm.store_name class="form-control" id="storeNameproduct" %}
+                  {% render_field addProductForm.store_name class="form-control" name="store_name" id="storeName" %}
                 </div>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default btn-danger pull-left col-xs-2" data-dismiss="modal">Close</button>
-                <button id="submitAddProduct" type="submit" class="btn btn-default btn-success pull-right col-xs-4">Add Product</button>
+                <input type="submit" class="btn btn-default btn-success pull-right col-xs-4" value="Add Product" />
+                <input type="reset" class="hidden" value="Reset Product Form" />
               </div>
             </form>
           </div>
@@ -150,6 +151,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://cdn.jsdelivr.net/jquery.validation/1.14.0/jquery.validate.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_eOeXynkGshNoWp8mNgec-RxEeV8U9vk&libraries=places"></script>
@@ -159,9 +161,6 @@
         $("#storeForm").append("<button class='btn' type='reset' id='storeReset'>Reset</button>");
         $("button#storeReset").click();
         $("button#storeReset").remove();
-      });
-      $(document).on("hidden.bs.modal", "#addProduct", function() {
-        $(this).find('form')[0].reset();
       });
       $("#addStore").on("click", function() {
         $('#street_number').focus(function(e) {
@@ -245,7 +244,7 @@
           postal_code.closest('.form-group').removeClass('has-success').addClass('has-error');
         } else {
           postal_code.closest('.form-group').removeClass('has-error').addClass('has-success');
-        }
+       }
         $('.modal').on('hidden.bs.modal', function() {
           $(this).find('form')[0].reset();
           storeName.closest('.form-group').removeClass('has-error').removeClass('has-success');
@@ -254,34 +253,35 @@
           country.closest('.form-group').removeClass('has-error').removeClass('has-success');
         });
       });
-      $('#productForm').on('submit', function(e) {
-        var productName = $('#productName');
-        var description = $('#description');
-        var productPrice = $('#productPrice');
-        if (!productName.val()) {
-          e.preventDefault();
-          productName.closest('.form-group').removeClass('has-success').addClass('has-error');
-        } else {
-          productName.closest('.form-group').removeClass('has-error').addClass('has-success');
+      $('#productForm').validate({
+        rules: {
+          product_name: {
+            required: true,
+            maxlength: 128
+          },
+          description: {
+            required: true,
+            maxlength: 1024
+          },
+          price: {
+            required: true,
+            number: true,
+            min: 0.01
+          }
+        },
+        highlight: function(element) {
+          $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+        },
+        success: function(element) {
+          element.addClass("valid").text('Ok!').closest('.form-group').removeClass('has-error').addClass('has-success');
         }
-        if (!description.val()) {
-          e.preventDefault();
-          description.closest('.form-group').removeClass('has-success').addClass('has-error');
-        } else {
-          description.closest('.form-group').removeClass('has-error').addClass('has-success');
-        }
-        if (!productPrice.val()) {
-          e.preventDefault();
-          productPrice.closest('.form-group').removeClass('has-success').addClass('has-error');
-        } else {
-          productPrice.closest('.form-group').removeClass('has-error').addClass('has-success');
-        }
-        $('.modal').on('hidden.bs.modal', function() {
-          $(this).find('form')[0].reset();
-          productName.closest('.form-group').removeClass('has-error').removeClass('has-success');
-          description.closest('.form-group').removeClass('has-error').removeClass('has-success');
-          productPrice.closest('.form-group').removeClass('has-error').removeClass('has-success');
-        });
+      });
+      $('#addProduct').on('hidden.bs.modal', function() {
+        $('#productName').closest('.form-group').removeClass('has-success').removeClass('has-error');
+        $('#description').closest('.form-group').removeClass('has-success').removeClass('has-error');
+        $('#productPrice').closest('.form-group').removeClass('has-success').removeClass('has-error');
+        $('#productForm').validate().resetForm();
+        $(this).find('form')[0].reset();
       });
       /* center modal */
       function centerModals($element) {

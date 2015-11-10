@@ -180,7 +180,7 @@ def addStore(request):
 def addProduct(request):
     if request.method == 'POST':
         zip_code = request.session['zip_code']
-        form     = ProductAddForm(request.session['coordinates'], request.session['radius'], request.POST)
+        form = ProductAddForm(request.session['coordinates'], request.session['radius'], request.POST)
         if form.is_valid():
             product_name = form.cleaned_data['product_name']
             description  = form.cleaned_data['description']

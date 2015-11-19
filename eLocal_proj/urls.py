@@ -1,3 +1,16 @@
+from django.conf.urls import include, url
+from django.contrib import admin
+from eLocal_app import views
+from rest_framework.routers import SimpleRouter
+from rest_framework_nested.routers import NestedSimpleRouter
+
+urlpatterns = [
+    #url(r'^admin/', include(admin.site.urls)),
+    url(r'^$', views.base_render, name='base'),
+]
+
+
+'''
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
@@ -21,3 +34,4 @@ urlpatterns = [
     url(r'^cart', views.shoppingPage),
     url(r'^', views.homePage),
 ]
+'''

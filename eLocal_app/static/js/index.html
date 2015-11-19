@@ -1,0 +1,16 @@
+<header>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="">UDEK</a>
+    </div>
+
+    <ul class="nav navbar-nav navbar-right">
+      <li><a ui-sref="index.home">Home</a></li>
+      <li><a ui-sref="index.userPage({'username': username})">Profile</a></li>
+      <li><a style="cursor:pointer;" ng-click="logout()">Logout</a></li>
+    </ul>
+  </div>
+  </nav>
+</header>
+<div style="padding-top:70px;" ui-view></div>

@@ -4,34 +4,14 @@ from eLocal_app import views
 from rest_framework.routers import SimpleRouter
 from rest_framework_nested.routers import NestedSimpleRouter
 
+router = SimpleRouter()
+router.register(r'users', views.UserViewSet, base_name='user')
+
 urlpatterns = [
     #url(r'^admin/', include(admin.site.urls)),
+    url(r'^api/', include(router.urls)),
+    url(r'^auth/register/$', views.register, name='register'),
+    url(r'^auth/logout/$', views.logout, name='logout'),
+    url(r'^auth/login/$', views.login, name='login'),
     url(r'^$', views.base_render, name='base'),
 ]
-
-
-'''
-from django.conf.urls import patterns, include, url
-from django.contrib import admin
-
-from eLocal_app import views
-
-urlpatterns = [
-    #url(r'^admin/', include(admin.site.urls)),
-    url(r'^stores/update/store=(?P<store_id>\d+)', views.updateStore),
-    url(r'^stores/search', views.searchStore),
-    url(r'^stores/delete/store=(?P<store_id>\d+)', views.deleteStore),
-    url(r'^stores/add', views.addStore),
-    url(r'^stores', views.storeSearchPage),
-    url(r'^products/update/product=(?P<product_id>\d+)', views.updateProduct),
-    url(r'^products/search', views.searchProduct),
-    url(r'^products/delete/product=(?P<product_id>\d+)&store=(?P<store_id>\d+)', views.deleteProductFromStore),
-    url(r'^products/add', views.addProduct),
-    url(r'^products', views.productSearchPage),
-    url(r'^price/update/product=(?P<product_id>\d+)&store=(?P<store_id>\d+)', views.updatePrice),
-    url(r'^cart/remove/product=(?P<product_id>\d+)&store=(?P<store_id>\d+)', views.removeCart),
-    url(r'^cart/add/product=(?P<product_id>\d+)&store=(?P<store_id>\d+)', views.addCart),
-    url(r'^cart', views.shoppingPage),
-    url(r'^', views.homePage),
-]
-'''

@@ -11,7 +11,7 @@
     var service = {};
 
     service.getMerchantStores = function (merchant_id) {
-      return $http.get(API_SERVER + 'api/user/' + merchant_id + '/stores');
+      return $http.get(API_SERVER + 'api/users/' + merchant_id + '/stores/');
     };
 
     return service;

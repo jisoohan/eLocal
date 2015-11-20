@@ -16,8 +16,8 @@ class AddressSerializer(serializers.ModelSerializer):
         return Address.objects.create(**validated_data)
 
 class StoreSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    address = AddressSerializer(read_only=True)
+    user = UserSerializer()
+    address = AddressSerializer()
 
     class Meta:
         model = Store

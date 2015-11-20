@@ -6,6 +6,7 @@ from rest_framework_nested.routers import NestedSimpleRouter
 
 router = SimpleRouter()
 router.register(r'users', views.UserViewSet, base_name='user')
+router.register(r'stores', views.StoreViewSet, base_name='store')
 
 urlpatterns = [
     #url(r'^admin/', include(admin.site.urls)),

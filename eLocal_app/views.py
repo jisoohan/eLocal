@@ -48,6 +48,25 @@ class UserViewSet(viewsets.ModelViewSet):
             store_serializer = StoreSerializer(store)
             return Response(store_serializer.data)
 
+    @detail_route(methods=['get'], permission_classes=[IsAuthenticated])
+    def store_info(self, request, pk=None):
+        if request.method == 'GET':
+            store = Store.objects.get(id=pk)
+            if store.user.id != request.user.id:
+                return Response({'error': 'Cannot get store'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                store_serializer = StoreSerializer(store)
+                return Response(store_serializer.data)
+
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
+    def delete_store(self, request, pk=None):
+        if request.method == 'POST':
+            if Store.objects.filter(id=pk).exists():
+                Store.objects.get(id=pk).delete()
+                return Response({'success': 'Store deleted'})
+            else:
+                return Response({'error': 'Error while deleting store'})
+
 class StoreViewSet(viewsets.ModelViewSet):
     queryset = Store.objects.all()
     serializer_class = StoreSerializer

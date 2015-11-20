@@ -4,11 +4,13 @@
   angular
     .module('Merchant')
     .controller('MerchantHomeController', MerchantHomeController)
-    .controller('MerchantNavController', MerchantNavController);
+    .controller('MerchantNavController', MerchantNavController)
+    .controller('MerchantStoreController', MerchantStoreController);
 
-  MerchantNavController.$inject = ['$scope', '$state', 'ngToast', 'AuthService'];
+  MerchantNavController.$inject = ['$scope', '$window', '$state', 'ngToast', 'AuthService'];
 
-  function MerchantNavController ($scope, $state, ngToast, AuthService) {
+  function MerchantNavController ($scope, $window, $state, ngToast, AuthService) {
+    $scope.username = $window.localStorage.username;
     $scope.logout = function () {
       AuthService.logout().then(
         function () {
@@ -64,7 +66,7 @@
        $scope.storeForm.lng = $scope.storeModel.geometry.location.lng();
     };
 
-    $scope.getMerchantStores = function () {
+    function getMerchantStores () {
       StoreService.getMerchantStores($scope.userId).then(
         function (response) {
           $scope.stores = response.data;
@@ -76,12 +78,18 @@
           });
         }
       );
-    };
+    }
 
     $scope.createStore = function () {
       StoreService.createStore($scope.userId, $scope.storeForm).then(
         function (response) {
           $scope.stores.push(response.data);
+          $scope.storeForm = {};
+          $scope.address = null;
+          ngToast.success({
+            content: "Created store",
+            dismissButton: true
+          });
         },
         function (response) {
           ngToast.danger({
@@ -92,6 +100,55 @@
       );
     };
 
-    $scope.getMerchantStores();
+    getMerchantStores();
   }
+
+  MerchantStoreController.$inject = ['$scope', '$window', '$state', '$stateParams', 'StoreService', 'ngToast'];
+
+  function MerchantStoreController ($scope, $window, $state, $stateParams, StoreService, ngToast) {
+    if (!$window.localStorage.token) {
+      $state.go('auth');
+      return;
+    }
+    $scope.username = $window.localStorage.username;
+    $scope.userId = $window.localStorage.userId;
+
+    $scope.deleteStore = function () {
+      StoreService.deleteStore($stateParams.storeId).then(
+        function (response) {
+          $state.go('merchant.home');
+          ngToast.success({
+            content: "Deleted store",
+            dismissButton: true
+          });
+        },
+        function (response) {
+          ngToast.danger({
+            content: "Error while deleting store",
+            dismissButton: true
+          });
+        }
+      );
+    };
+
+    function getStore() {
+      StoreService.getStore($stateParams.storeId).then(
+        function (response) {
+          $scope.store = response.data;
+        },
+        function (response) {
+          $state.go('merchant.home');
+          ngToast.danger({
+            content: "Error while loading store",
+            dismissButton: true
+          });
+        }
+      );
+    }
+
+    getStore();
+
+  }
+
+
 })();

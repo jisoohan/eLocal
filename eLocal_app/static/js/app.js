@@ -42,6 +42,11 @@
         url: '',
         templateUrl: '/static/js/merchants/views/merchant.home.html',
         controller: 'MerchantHomeController'
+      })
+      .state('merchant.store', {
+        url: '/store/:storeId',
+        templateUrl: '/static/js/merchants/views/merchant.store.html',
+        controller: 'MerchantStoreController'
       });
 
       ngToast.configure({

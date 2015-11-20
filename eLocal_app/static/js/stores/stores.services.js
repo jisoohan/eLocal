@@ -18,6 +18,14 @@
       return $http.post(API_SERVER + 'api/users/' + merchant_id + '/stores/', data);
     };
 
+    service.getStore = function (store_id) {
+      return $http.get(API_SERVER + 'api/users/' + store_id + '/store_info/');
+    };
+
+    service.deleteStore = function (store_id) {
+      return $http.post(API_SERVER + 'api/users/' + store_id + '/delete_store/');
+    };
+
     return service;
   }
 })();

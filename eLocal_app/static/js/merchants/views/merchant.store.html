@@ -23,8 +23,8 @@
       <h1>Add Product</h1>
       <form ng-submit="addProduct()" name="productForm" role="form" novalidate>
         <formly-form model="productModel" fields="productFields" form="productForm" options="options">
-          <button type="submit" ng-disabled="productForm.$invalid" class="btn btn-primary submit-button">Add Product</button>
-          <button type="button" class="btn btn-default" ng-click="options.resetModel()">Reset</button>
+          <button type="button" class="btn btn-warning" ng-click="options.resetModel()">Reset</button>
+          <button type="submit" ng-disabled="productForm.$invalid" class="btn btn-success submit-button pull-right">Add Product</button>
         </formly-form>
       </form>
     </div>
@@ -38,7 +38,7 @@
         <div style="white-space:pre-line;">
           <p>{{product.description}}</p>
         </div>
-        <p class="">Price: {{product.price}}</p>
+        <p class="">Price: ${{product.price}}</p>
         <button type="button" class="btn btn-primary" ng-click="editProduct($index, product.id, product.name, product.description, product.price)">Edit</button>
         <button ng-click="deleteProduct(product.id, $index)" class="btn btn-danger pull-right">Delete</button>
       </uib-accordion-group>

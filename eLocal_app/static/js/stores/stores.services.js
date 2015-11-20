@@ -34,6 +34,10 @@
       return $http.post(API_SERVER + 'api/stores/' + productId + '/delete_product/');
     };
 
+    service.editStoreProduct = function (productId, data) {
+      return $http.post(API_SERVER + 'api/stores/' + productId + '/edit_product/', data);
+    };
+
     service.getStoreProducts = function (store_id) {
       return $http.get(API_SERVER + 'api/stores/' + store_id + '/products/');
     };

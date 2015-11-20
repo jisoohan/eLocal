@@ -39,9 +39,11 @@
           <p>{{product.description}}</p>
         </div>
         <p class="">Price: {{product.price}}</p>
+        <button type="button" class="btn btn-primary" ng-click="editProduct($index, product.id, product.name, product.description, product.price)">Edit</button>
         <button ng-click="deleteProduct(product.id, $index)" class="btn btn-danger pull-right">Delete</button>
       </uib-accordion-group>
     </uib-accordion>
+
 
   </div>
 

@@ -93,6 +93,14 @@ class StoreViewSet(viewsets.ModelViewSet):
             product_serializer = ProductSerializer(products, many=True)
             return Response(product_serializer.data)
 
+    @detail_route(methods=['post'], permission_classes=[AllowAny])
+    def edit_product(self, request, pk=None):
+        if request.method == 'POST':
+            Product.objects.filter(id=pk).update(name=request.data['product_name'], description=request.data['description'], price=round(Decimal(request.data['price']), 2))
+            product = Product.objects.get(id=pk)
+            product_serializer = ProductSerializer(product)
+            return Response(product_serializer.data)
+
 @api_view(['POST'])
 @permission_classes([AllowAny, ])
 def register(request):

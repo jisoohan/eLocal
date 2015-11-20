@@ -5,7 +5,8 @@
     .module('Merchant')
     .controller('MerchantHomeController', MerchantHomeController)
     .controller('MerchantNavController', MerchantNavController)
-    .controller('MerchantStoreController', MerchantStoreController);
+    .controller('MerchantStoreController', MerchantStoreController)
+    .controller('MerchantEditProductController', MerchantEditProductController);
 
   MerchantNavController.$inject = ['$scope', '$window', '$state', 'ngToast', 'AuthService'];
 
@@ -103,9 +104,9 @@
     getMerchantStores();
   }
 
-  MerchantStoreController.$inject = ['$scope', '$window', '$state', '$stateParams', 'StoreService', 'ngToast'];
+  MerchantStoreController.$inject = ['$scope', '$window', '$state', '$uibModal', '$stateParams', 'StoreService', 'ngToast'];
 
-  function MerchantStoreController ($scope, $window, $state, $stateParams, StoreService, ngToast) {
+  function MerchantStoreController ($scope, $window, $state, $uibModal, $stateParams, StoreService, ngToast) {
     if (!$window.localStorage.token) {
       $state.go('auth');
       return;
@@ -160,6 +161,45 @@
           });
         }
       );
+    };
+
+    $scope.editProduct = function (index, product_id, product_name, description, price) {
+      var editProductModal = $uibModal.open({
+        animation: true,
+        templateUrl: '/static/js/merchants/views/merchantEditProduct.html',
+        controller: 'MerchantEditProductController',
+        size: 'md',
+        resolve: {
+          product_name: function () {
+            return product_name;
+          },
+          description: function () {
+            return description;
+          },
+          price: function () {
+            return price;
+          }
+        }
+      });
+      editProductModal.result.then(function (productEditModel) {
+        StoreService.editStoreProduct(product_id, productEditModel).then(
+          function (response) {
+            $scope.products[index].name = response.data.name;
+            $scope.products[index].description = response.data.description;
+            $scope.products[index].price = response.data.price;
+            ngToast.success({
+              content: "Product updated",
+              dismissButton: true
+            });
+          },
+          function (response) {
+            ngToast.danger({
+              content: "Error while updating product",
+              dismissButton: true
+            });
+          }
+        );
+      });
     };
 
     $scope.deleteStore = function () {
@@ -229,5 +269,51 @@
 
   }
 
+  MerchantEditProductController.$inject = ['$scope', '$uibModalInstance', 'product_name', 'description', 'price'];
+
+  function MerchantEditProductController ($scope, $uibModalInstance, product_name, description, price) {
+
+    $scope.productEditModel = {
+      'product_name': product_name,
+      'description': description,
+      'price': Number(price)
+    };
+    $scope.productEditFields = [
+      {
+        key: 'product_name',
+        type: 'input',
+        templateOptions: {
+          type: 'text',
+          placeholder: 'Product name',
+          required: true
+        }
+      },
+      {
+        key: 'description',
+        type: 'textarea',
+        templateOptions: {
+          placeholder: 'Description',
+          required: true
+        }
+      },
+      {
+        key: 'price',
+        type: 'input',
+        templateOptions: {
+          type: 'number',
+          placeholder: 'Price',
+          required: true
+        }
+      }
+    ];
+
+    $scope.editProduct = function () {
+      $uibModalInstance.close($scope.productEditModel);
+    };
+
+    $scope.cancel = function () {
+      $uibModalInstance.dismiss('cancel');
+    };
+  }
 
 })();

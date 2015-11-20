@@ -6,7 +6,7 @@ from .utils import json_response
 from rest_framework import permissions, viewsets, status, pagination
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
-from rest_framework.decorators import api_view, permission_classes, detail_route
+from rest_framework.decorators import api_view, permission_classes, detail_route, list_route
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -61,6 +61,11 @@ class UserViewSet(viewsets.ModelViewSet):
 class StoreViewSet(viewsets.ModelViewSet):
     queryset = Store.objects.all()
     serializer_class = StoreSerializer
+
+    @list_route(methods=['post'], permission_classes=[AllowAny])
+    def stores_in_zipcode(self, request):
+        return Response
+
 
     @detail_route(methods=['get'], permission_classes=[AllowAny])
     def store_info(self, request, pk=None):

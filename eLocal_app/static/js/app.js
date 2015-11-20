@@ -4,6 +4,7 @@
   angular.module('Auth', []);
   angular.module('Merchant', []);
   angular.module('Store', []);
+  angular.module('Index', []);
 
   angular.module('udekApp', [
     'ui.router',
@@ -17,7 +18,8 @@
     'ngMap',
     'Auth',
     'Merchant',
-    'Store'
+    'Store',
+    'Index'
   ])
 
   .config(['$stateProvider', '$urlRouterProvider', '$httpProvider', 'ngToastProvider', function ($stateProvider, $urlRouterProvider, $httpProvider, ngToast) {
@@ -47,6 +49,17 @@
         url: '/store/:storeId',
         templateUrl: '/static/js/merchants/views/merchant.store.html',
         controller: 'MerchantStoreController'
+      })
+      .state('index', {
+        abstract: true,
+        url: '/',
+        templateUrl: '/static/js/index/views/index.html',
+        controller: 'IndexNavController'
+      })
+      .state('index.stores', {
+        url: 'stores',
+        templateUrl: '/static/js/index/views/index.stores.html',
+        controller: 'IndexStoreController'
       });
 
       ngToast.configure({

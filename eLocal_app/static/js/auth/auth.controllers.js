@@ -24,7 +24,7 @@
         }
         AuthService.register(username, password).then(
           function () {
-            $state.go('index.home');
+            $state.go('merchant');
           },
           function (error) {
             ngToast.danger({
@@ -48,7 +48,7 @@
       if (username && password) {
         AuthService.login(username, password).then(
           function () {
-            $state.go('index.home');
+            $state.go('merchant');
           },
           function (error) {
             ngToast.danger({

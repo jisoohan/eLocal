@@ -2,6 +2,8 @@
   'use strict';
 
   angular.module('Auth', []);
+  angular.module('Merchant', []);
+  angular.module('Store', []);
 
   angular.module('udekApp', [
     'ui.router',
@@ -10,7 +12,9 @@
     'ngSanitize',
     'dc.endlessScroll',
     'ngToast',
-    'Auth'
+    'Auth',
+    'Merchant',
+    'Store'
   ])
 
   .config(['$stateProvider', '$urlRouterProvider', '$httpProvider', 'ngToastProvider', function ($stateProvider, $urlRouterProvider, $httpProvider, ngToast) {
@@ -24,6 +28,17 @@
         url: '/login',
         templateUrl: '/static/js/auth/views/auth.html',
         controller: 'AuthController'
+      })
+      .state('merchant', {
+        abstract: true,
+        url: '/merchant',
+        templateUrl: '/static/js/merchants/views/merchant.html',
+        controller: 'MerchantNavController'
+      })
+      .state('merchant.home', {
+        url: '',
+        templateUrl: '/static/js/merchants/views/merchant.home.html',
+        controller: 'MerchantHomeController'
       });
 
       ngToast.configure({
@@ -37,27 +52,6 @@
   .run(['$http', function ($http) {
     $http.defaults.xsrfHeaderName = 'X-CSRFToken';
     $http.defaults.xsrfCookieName = 'csrftoken';
-  }])
-
-  .controller('IndexController', IndexController);
-
-  IndexController.$inject = ['$scope', '$window', '$state', 'ngToast', 'AuthService'];
-
-  function IndexController ($scope, $window, $state, ngToast, AuthService) {
-    $scope.username = $window.localStorage.username;
-    $scope.logout = function () {
-      AuthService.logout().then(
-        function () {
-          $state.go('auth');
-        },
-        function (error) {
-          ngToast.danger({
-            content: error,
-            dismissButton: true
-          });
-        }
-      );
-    };
-  }
+  }]);
 
 })();

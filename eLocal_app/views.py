@@ -70,7 +70,11 @@ class StoreViewSet(viewsets.ModelViewSet):
         for store in Store.objects.all():
             if check_distance([lat, lng], [store.address.lat, store.address.lng], 10):
                 store_serializer = StoreSerializer(store)
-                stores.append(store_serializer.data)
+                store_data = store_serializer.data
+                products = Product.objects.select_related('store').filter(store_id=store_data['id'])
+                product_serializer = ProductSerializer(products, many=True)
+                store_data['products'] = product_serializer.data
+                stores.append(store_data)
         return Response(stores)
 
     @detail_route(methods=['get'], permission_classes=[AllowAny])

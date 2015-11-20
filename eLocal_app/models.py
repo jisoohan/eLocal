@@ -33,3 +33,12 @@ class Store(models.Model):
 
     def __unicode__(self):
         return self.name
+
+class Product(models.Model):
+    store = models.ForeignKey(Store)
+    name = models.CharField(max_length=30)
+    description = models.CharField(max_length=1024)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+
+    def __unicode__(self):
+        return self.name

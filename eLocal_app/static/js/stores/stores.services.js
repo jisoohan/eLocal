@@ -15,15 +15,27 @@
     };
 
     service.createStore = function (merchant_id, data) {
-      return $http.post(API_SERVER + 'api/users/' + merchant_id + '/stores/', data);
+      return $http.post(API_SERVER + 'api/users/' + merchant_id + '/create_store/', data);
     };
 
     service.getStore = function (store_id) {
-      return $http.get(API_SERVER + 'api/users/' + store_id + '/store_info/');
+      return $http.get(API_SERVER + 'api/stores/' + store_id + '/store_info/');
     };
 
     service.deleteStore = function (store_id) {
       return $http.post(API_SERVER + 'api/users/' + store_id + '/delete_store/');
+    };
+
+    service.addProduct = function (store_id, data) {
+      return $http.post(API_SERVER + 'api/stores/' + store_id + '/add_product/', data);
+    };
+
+    service.deleteStoreProduct = function (productId) {
+      return $http.post(API_SERVER + 'api/stores/' + productId + '/delete_product/');
+    };
+
+    service.getStoreProducts = function (store_id) {
+      return $http.get(API_SERVER + 'api/stores/' + store_id + '/products/');
     };
 
     return service;

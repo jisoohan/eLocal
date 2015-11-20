@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Store, Address
+from .models import Store, Address, Product
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,5 +23,9 @@ class StoreSerializer(serializers.ModelSerializer):
         model = Store
         fields = ('id', 'user', 'address', 'name', 'has_card')
 
-    def create(self, validated_data):
-        return Store.objects.create(**validated_data)
+class ProductSerializer(serializers.ModelSerializer):
+    store = StoreSerializer()
+
+    class Meta:
+        model = Product
+        fields = ('id', 'store', 'name', 'description', 'price')

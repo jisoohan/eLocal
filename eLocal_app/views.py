@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from .models import Store, Address
-from .serializers import UserSerializer, StoreSerializer, AddressSerializer
+from .models import Store, Address, Product
+from .serializers import UserSerializer, StoreSerializer, AddressSerializer, ProductSerializer
 from .utils import json_response
 from rest_framework import permissions, viewsets, status, pagination
 from rest_framework.authtoken.models import Token
@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_extensions.mixins import DetailSerializerMixin
+from decimal import *
 
 @permission_classes([AllowAny, ])
 def base_render(request):
@@ -20,13 +21,16 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer = UserSerializer
 
-    @detail_route(methods=['get', 'post'], permission_classes=[IsAuthenticated])
+    @detail_route(methods=['get'], permission_classes=[IsAuthenticated])
     def stores(self, request, pk=None):
         if request.method == 'GET':
             user = User.objects.get(id=pk)
             stores = Store.objects.select_related('user').filter(user_id=user.id)
             serializer = StoreSerializer(stores, many=True)
             return Response(serializer.data)
+
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
+    def create_store(self, request, pk=None):
         if request.method == 'POST':
             user = User.objects.get(id=pk)
             address_data = {
@@ -48,7 +52,17 @@ class UserViewSet(viewsets.ModelViewSet):
             store_serializer = StoreSerializer(store)
             return Response(store_serializer.data)
 
-    @detail_route(methods=['get'], permission_classes=[IsAuthenticated])
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
+    def delete_store(self, request, pk=None):
+        if request.method == 'POST':
+            Store.objects.get(id=pk).delete()
+            return Response({'success': 'Store deleted'})
+
+class StoreViewSet(viewsets.ModelViewSet):
+    queryset = Store.objects.all()
+    serializer_class = StoreSerializer
+
+    @detail_route(methods=['get'], permission_classes=[AllowAny])
     def store_info(self, request, pk=None):
         if request.method == 'GET':
             store = Store.objects.get(id=pk)
@@ -58,23 +72,26 @@ class UserViewSet(viewsets.ModelViewSet):
                 store_serializer = StoreSerializer(store)
                 return Response(store_serializer.data)
 
-    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
-    def delete_store(self, request, pk=None):
+    @detail_route(methods=['post'], permission_classes=[AllowAny])
+    def add_product(self, request, pk=None):
         if request.method == 'POST':
-            if Store.objects.filter(id=pk).exists():
-                Store.objects.get(id=pk).delete()
-                return Response({'success': 'Store deleted'})
-            else:
-                return Response({'error': 'Error while deleting store'})
+            store = Store.objects.get(id=pk)
+            product = Product.objects.create(store=store, name=request.data['product_name'], description=request.data['description'], price=round(Decimal(request.data['price']), 2))
+            product_serializer = ProductSerializer(product)
+            return Response(product_serializer.data)
 
-class StoreViewSet(viewsets.ModelViewSet):
-    queryset = Store.objects.all()
-    serializer_class = StoreSerializer
+    @detail_route(methods=['post'], permission_classes=[AllowAny])
+    def delete_product(self, request, pk=None):
+        if request.method == 'POST':
+            Product.objects.get(id=pk).delete()
+            return Response({'success': 'Product Deleted'})
 
-    def get_permissions(self):
-        if self.request.method in permissions.SAFE_METHODS:
-            return (permissions.AllowAny(),)
-        return (permissions.IsAuthenticated(),)
+    @detail_route(methods=['get'], permission_classes=[AllowAny])
+    def products(self, request, pk=None):
+        if request.method == 'GET':
+            products = Product.objects.select_related('store').filter(store_id=pk)
+            product_serializer = ProductSerializer(products, many=True)
+            return Response(product_serializer.data)
 
 @api_view(['POST'])
 @permission_classes([AllowAny, ])

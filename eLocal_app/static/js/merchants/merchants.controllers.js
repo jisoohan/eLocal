@@ -113,6 +113,55 @@
     $scope.username = $window.localStorage.username;
     $scope.userId = $window.localStorage.userId;
 
+    $scope.productModel = {};
+    $scope.productFields = [
+      {
+        key: 'product_name',
+        type: 'input',
+        templateOptions: {
+          type: 'text',
+          placeholder: 'Product name',
+          required: true
+        }
+      },
+      {
+        key: 'description',
+        type: 'textarea',
+        templateOptions: {
+          placeholder: 'Description',
+          required: true
+        }
+      },
+      {
+        key: 'price',
+        type: 'input',
+        templateOptions: {
+          type: 'number',
+          placeholder: 'Price',
+          required: true
+        }
+      }
+    ];
+
+    $scope.addProduct = function () {
+      StoreService.addProduct($stateParams.storeId, $scope.productModel).then(
+        function (response) {
+          $scope.products.push(response.data);
+          $scope.options.resetModel();
+          ngToast.success({
+            content: 'Product added',
+            dismissButton: true
+          });
+        },
+        function (response) {
+          ngToast.danger({
+            content: 'Error while adding product',
+            dismissButton: true
+          });
+        }
+      );
+    };
+
     $scope.deleteStore = function () {
       StoreService.deleteStore($stateParams.storeId).then(
         function (response) {
@@ -131,10 +180,40 @@
       );
     };
 
+    $scope.deleteProduct = function (productId, index) {
+      StoreService.deleteStoreProduct(productId).then(
+        function (response) {
+          $scope.products.splice(index, 1);
+          ngToast.success({
+            content: "Deleted product",
+            dismissButton: true
+          });
+        },
+        function (response) {
+          ngToast.danger({
+            content: "Error while deleting product",
+            dismissButton: true
+          });
+        }
+      );
+    };
+
     function getStore() {
       StoreService.getStore($stateParams.storeId).then(
         function (response) {
           $scope.store = response.data;
+          StoreService.getStoreProducts($stateParams.storeId).then(
+            function (response) {
+              $scope.products = response.data;
+            },
+            function (response) {
+              $state.go('merchant.home');
+              ngToast.danger({
+                content: "Error while loading products",
+                dismissButton: true
+              });
+            }
+          );
         },
         function (response) {
           $state.go('merchant.home');

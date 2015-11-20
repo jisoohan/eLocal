@@ -19,9 +19,29 @@
 
     <button class="btn btn-danger" ng-click="deleteStore()">Delete Store</button>
 
+    <div class="row">
+      <h1>Add Product</h1>
+      <form ng-submit="addProduct()" name="productForm" role="form" novalidate>
+        <formly-form model="productModel" fields="productFields" form="productForm" options="options">
+          <button type="submit" ng-disabled="productForm.$invalid" class="btn btn-primary submit-button">Add Product</button>
+          <button type="button" class="btn btn-default" ng-click="options.resetModel()">Reset</button>
+        </formly-form>
+      </form>
+    </div>
+
   </div>
 
   <div class="col-sm-8">
+
+    <uib-accordion class="row col-sm-10 pull-right">
+      <uib-accordion-group heading="{{product.name}}" ng-repeat="product in products">
+        <div style="white-space:pre-line;">
+          <p>{{product.description}}</p>
+        </div>
+        <p class="">Price: {{product.price}}</p>
+        <button ng-click="deleteProduct(product.id, $index)" class="btn btn-danger pull-right">Delete</button>
+      </uib-accordion-group>
+    </uib-accordion>
 
   </div>
 

@@ -11,6 +11,8 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
         Token.objects.create(user=instance)
 
 class Address(models.Model):
+    class Meta:
+        unique_together = (("lat", "lng"),)
     st_number = models.CharField(max_length=10)
     st_name = models.CharField(max_length=60)
     city = models.CharField(max_length=60)

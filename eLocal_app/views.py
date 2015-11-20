@@ -36,25 +36,16 @@ class UserViewSet(viewsets.ModelViewSet):
                 'state': request.data['state'],
                 'zipcode': request.data['zipcode'],
                 'country': request.data['country'],
-                'lat': 0,
-                'lng': 0
+                'lat': request.data['lat'],
+                'lng': request.data['lng']
             }
             address_serializer = AddressSerializer(data=address_data)
             if address_serializer.is_valid():
                 address = address_serializer.save()
             else:
                 return Response({'error': 'Invalid address'}, status=status.HTTP_400_BAD_REQUEST)
-            store_data = {
-                'name': request.data['store_name'],
-                'user': user,
-                'address': address,
-                'has_card': request.data['has_card']
-            }
-            store_serializer = StoreSerializer(data=store_data)
-            if store_serializer.is_valid():
-                store = store_serializer.save()
-            else:
-                return Response({'error': 'Invalid store'}, status=status.HTTP_400_BAD_REQUEST)
+            store = Store.objects.create(user=user, address=address, name=request.data['store_name'], has_card=request.data['has_card'])
+            store_serializer = StoreSerializer(store)
             return Response(store_serializer.data)
 
 class StoreViewSet(viewsets.ModelViewSet):

@@ -12,6 +12,9 @@
     'ngSanitize',
     'dc.endlessScroll',
     'ngToast',
+    'formly',
+    'formlyBootstrap',
+    'ngMap',
     'Auth',
     'Merchant',
     'Store'

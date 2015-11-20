@@ -9,20 +9,67 @@
 
   function AuthController ($scope, $state, AuthService, ngToast) {
 
-    $scope.register = function () {
-      var username = $scope.registerUsername;
-      var password = $scope.registerPassword;
-      var checkpassword = $scope.registerCheckPassword;
-
-      if (username && password && checkpassword) {
-        if (password != checkpassword) {
-          ngToast.danger({
-            content: 'Passwords do not match',
-            dismissButton: true
-          });
-          return;
+    $scope.registerModel = {};
+    $scope.registerFields = [
+      {
+        key: 'username',
+        type: 'input',
+        templateOptions: {
+          type: 'text',
+          placeholder: 'Username',
+          required: true
         }
-        AuthService.register(username, password).then(
+      },
+      {
+        key: 'password',
+        type: 'input',
+        templateOptions: {
+          type: 'password',
+          placeholder: 'Password',
+          required: true
+        }
+      },
+      {
+        key: 'checkpw',
+        type: 'input',
+        templateOptions: {
+          type: 'password',
+          placeholder: 'Enter password again',
+          required: true
+        }
+      }
+    ];
+
+    $scope.loginModel = {};
+    $scope.loginFields = [
+      {
+        key: 'username',
+        type: 'input',
+        templateOptions: {
+          type: 'text',
+          placeholder: 'Username',
+          required: true
+        }
+      },
+      {
+        key: 'password',
+        type: 'input',
+        templateOptions: {
+          type: 'password',
+          placeholder: 'Password',
+          required: true
+        }
+      }
+    ];
+
+    $scope.register = function () {
+      if ($scope.registerModel.password != $scope.registerModel.checkpw) {
+        ngToast.danger({
+          content: 'Passwords do not match',
+          dismissButton: true
+        });
+      } else {
+        AuthService.register($scope.registerModel.username, $scope.registerModel.password).then(
           function () {
             $state.go('merchant.home');
           },
@@ -33,36 +80,22 @@
             });
           }
         );
-      } else {
-        ngToast.danger({
-          content: 'Username and password required',
-          dismissButton: true
-        });
       }
     };
 
     $scope.login = function () {
-      var username = $scope.loginUsername;
-      var password = $scope.loginPassword;
-
-      if (username && password) {
-        AuthService.login(username, password).then(
-          function () {
-            $state.go('merchant.home');
-          },
-          function (error) {
-            ngToast.danger({
-              content: error,
-              dismissButton: true
-            });
-          }
-        );
-      } else {
-        ngToast.danger({
-          content: 'Username and password required',
-          dismissButton: true
-        });
-      }
+      AuthService.login($scope.loginModel.username, $scope.loginModel.password).then(
+        function () {
+          $state.go('merchant.home');
+        },
+        function (error) {
+          ngToast.danger({
+            content: error,
+            dismissButton: true
+          });
+        }
+      );
     };
+
   }
 })();

@@ -1,24 +1,91 @@
 <div class="container">
 
-  <div class="col-sm-3">
+  <div class="col-sm-6">
 
     <div class="row">
       <h1>{{ username }}</h1>
+    </div>
+
+    <div class="row">
+      <form form="form" ng-submit="createStore()" class="form text-center">
+        <h1>Add Store</h1>
+        <div class="form-group col-xs-12">
+          <input places-auto-complete ng-model="address" component-restrictions="{country:'us'}" on-place-changed="placeChanged()"  class="form-control" placeholder="Enter store address" type="text" />
+        </div>
+        <div class="form-group col-xs-12">
+          <input ng-model="storeForm.store_name" class="form-control" placeholder="Store Name" type="text" required></input>
+        </div>
+        <div class="form-group col-xs-4">
+          <input ng-model="storeForm.st_number" id="st_number" class="form-control" placeholder="Street #" type="text" required></input>
+        </div>
+        <div class="form-group col-xs-8">
+          <input ng-model="storeForm.st_name" id="st_name" class="form-control" placeholder="Street Name" type="text" required></input>
+        </div>
+        <div class="form-group col-xs-8">
+          <input ng-model="storeForm.city" id="city" class="form-control" placeholder="City" type="text"></input required>
+        </div>
+        <div class="form-group col-xs-4">
+          <input ng-model="storeForm.state" id="state" class="form-control" placeholder="State" type="text"></input required>
+        </div>
+        <div class="form-group col-xs-8">
+          <input ng-model="storeForm.zipcode" id="zipcode" class="form-control" placeholder="Zipcode" type="text" required></input>
+        </div>
+        <div class="form-group col-xs-4">
+          <input ng-model="storeForm.country" id="country" class="form-control" placeholder="Country" type="text" required></input>
+        </div>
+        <div class="form-group col-xs-1">
+          <input ng-model="storeForm.has_card" id="has_card" class="form-control" type="checkbox"></input>
+        </div>
+        <div class="form-group col-xs-2">
+          <label for="has_card" class="control-label">Membership Card</label>
+        </div>
+        <div class="form-group col-xs-4">
+          <button type="reset" class="btn btn-primary pull-right">Reset</button>
+        </div>
+        <div class="form-group col-xs-4 col-xs-offset-1">
+          <button type="submit" class="btn btn-success pull-right">Add Store</button>
+        </div>
+      </form>
     </div>
 
   </div>
 
   <div class="col-sm-6">
 
-
-  </div>
-
-  <div class="col-sm-3">
-
     <div class="row">
       <toast></toast>
+    </div>
+
+    <div class="row list-group" ng-repeat="store in stores">
+      <div class="list-group-item">
+        <h4>{{store.name}}</h4>
+      </div>
     </div>
 
   </div>
 
 </div>
+
+<script type="text/javascript">
+  $(document).ready(function () {
+    $('#st_number').focus(function(e) {
+      $(this).blur();
+    });
+    $('#st_name').focus(function(e) {
+      $(this).blur();
+    });
+    $('#city').focus(function(e) {
+      $(this).blur();
+    });
+    $('#state').focus(function(e) {
+      $(this).blur();
+    });
+    $('#country').focus(function(e) {
+      $(this).blur();
+    });
+    $('#zipcode').focus(function(e) {
+      $(this).blur();
+    });
+  });
+
+</script>

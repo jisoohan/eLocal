@@ -12,30 +12,21 @@
 
     <div class="row">
       <h1>Create an account!</h1>
-      <form ng-submit="register()" role="form">
-        <div class="form-group">
-          <input type="text" class="form-control" ng-model="registerUsername" placeholder="Username">
-        </div>
-        <div class="form-group">
-          <input type="password" class="form-control" ng-model="registerPassword" placeholder="Password">
-        </div>
-        <div class="form-group">
-          <input type="password" class="form-control" ng-model="registerCheckPassword" placeholder="Check Password">
-        </div>
-        <input type="submit" class="btn btn-primary" value="Register">
+      <form ng-submit="register()" name="registerForm" role="form" novalidate>
+        <formly-form model="registerModel" fields="registerFields" form="registerForm" options="options">
+          <button type="submit" ng-disabled="registerForm.$invalid" class="btn btn-primary submit-button">Register</button>
+          <button type="button" class="btn btn-default" ng-click="options.resetModel()">Reset</button>
+        </formly-form>
       </form>
     </div>
 
     <div class="row">
-      <h1>Login!</h1>
-      <form ng-submit="login()" role="form">
-        <div class="form-group">
-          <input type="text" class="form-control" ng-model="loginUsername" placeholder="Username">
-        </div>
-        <div class="form-group">
-          <input type="password" class="form-control" ng-model="loginPassword" placeholder="Password">
-        </div>
-        <input type="submit" class="btn btn-primary" value="Login">
+      <h1>Login</h1>
+      <form ng-submit="login()" name="loginForm" role="form" novalidate>
+        <formly-form model="loginModel" fields="loginFields" form="loginForm" options="options">
+          <button type="submit" ng-disabled="loginForm.$invalid" class="btn btn-primary submit-button">Login</button>
+          <button type="button" class="btn btn-default" ng-click="options.resetModel()">Reset</button>
+        </formly-form>
       </form>
     </div>
 

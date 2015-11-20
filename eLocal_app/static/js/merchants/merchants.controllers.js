@@ -166,7 +166,7 @@
     $scope.editProduct = function (index, product_id, product_name, description, price) {
       var editProductModal = $uibModal.open({
         animation: true,
-        templateUrl: '/static/js/merchants/views/merchantEditProduct.html',
+        templateUrl: '/static/js/modals/views/editProduct.html',
         controller: 'MerchantEditProductController',
         size: 'md',
         resolve: {

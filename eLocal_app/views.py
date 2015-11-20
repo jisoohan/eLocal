@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from .models import Store, Address, Product
 from .serializers import UserSerializer, StoreSerializer, AddressSerializer, ProductSerializer
-from .utils import json_response
+from .utils import json_response, check_distance
 from rest_framework import permissions, viewsets, status, pagination
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
@@ -64,8 +64,14 @@ class StoreViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['post'], permission_classes=[AllowAny])
     def stores_in_zipcode(self, request):
-        return Response
-
+        lat = request.data['lat']
+        lng = request.data['lng']
+        stores = [];
+        for store in Store.objects.all():
+            if check_distance([lat, lng], [store.address.lat, store.address.lng], 10):
+                store_serializer = StoreSerializer(store)
+                stores.append(store_serializer.data)
+        return Response(stores)
 
     @detail_route(methods=['get'], permission_classes=[AllowAny])
     def store_info(self, request, pk=None):

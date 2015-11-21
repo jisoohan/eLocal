@@ -89,7 +89,8 @@ class StoreViewSet(viewsets.ModelViewSet):
                 products = Product.objects.select_related('store').filter(store_id=store_data['id'])
                 if len(products) != 0:
                     product_serializer = ProductSerializer(products, many=True)
-                    products_result.append(product_serializer.data)
+                    for product in product_serializer.data:
+                        products_result.append(product)
         return Response(products_result)
 
     @detail_route(methods=['get'], permission_classes=[AllowAny])

@@ -1,0 +1,16 @@
+<div class="container">
+
+  <div class="col-sm-8">
+
+    <uib-accordion class="row col-sm-10">
+      <uib-accordion-group heading="{{product.name}}" ng-repeat="product in products">
+        <div style="white-space:pre-line;">
+          <p>{{product.description}}</p>
+        </div>
+        <p>${{product.price}}</p>
+      </uib-accordion-group>
+    </uib-accordion>
+
+  </div>
+
+</div>

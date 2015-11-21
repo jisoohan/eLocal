@@ -1,20 +1,30 @@
+runtest  = python manage.py test
+root  = eLocal_app/tests
+model = $(root)/model_tests.py
+utils = $(root)/utils_tests.py
+views = $(root)/view_tests.py
+ui    = $(root)/ui_tests.py
+
 .PHONY: ALL
 
 clean:
 	rm -rf cover .coverage */*.pyc */__pycache__
 
 check: clean
-	python manage.py test
+	$(runtest)
 
-check-model: clean
-	python manage.py test eLocal_app/tests/model_tests.py
+check-unit check-units: clean
+	$(runtest) $(model) $(utils) $(views)
+
+check-model check-models: clean
+	$(runtest) $(model)
 
 check-ui: clean
-	python manage.py test eLocal_app/tests/ui_tests.py
+	$(runtest) $(ui)
 
-check-util: clean
-	python manage.py test eLocal_app/tests/utils_tests.py
+check-util check-utils: clean
+	$(runtest) $(utils)
 
-check-view: clean
-	python manage.py test eLocal_app/tests/view_tests.py
+check-view check-views: clean
+	$(runtest) $(views)
 

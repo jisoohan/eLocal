@@ -18,6 +18,10 @@
       return $http.post(API_SERVER + 'api/stores/stores_in_zipcode/', data);
     };
 
+    service.getZipcodeProducts = function (data) {
+      return $http.post(API_SERVER + 'api/stores/products_in_zipcode/', data);
+    };
+
     service.createStore = function (merchant_id, data) {
       return $http.post(API_SERVER + 'api/users/' + merchant_id + '/create_store/', data);
     };

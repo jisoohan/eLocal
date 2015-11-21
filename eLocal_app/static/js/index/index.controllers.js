@@ -6,7 +6,8 @@
   .controller('IndexNavController', IndexNavController)
   .controller('IndexStoreController', IndexStoreController)
   .controller('IndexAddProductController', IndexAddProductController)
-  .controller('IndexEditProductController', IndexEditProductController);
+  .controller('IndexEditProductController', IndexEditProductController)
+  .controller('IndexProductController', IndexProductController);
 
   IndexNavController.$inject = ['$scope', '$window', '$state', 'ngToast'];
 
@@ -208,6 +209,29 @@
     $scope.cancel = function () {
       $uibModalInstance.dismiss('cancel');
     };
+  }
+
+  IndexProductController.$inject = ['$scope', '$window', '$state', 'ngToast', 'StoreService'];
+
+  function IndexProductController ($scope, $window, $state, ngToast, StoreService) {
+    var zipcode = $window.localStorage.zipcode;
+    var lat = $window.localStorage.lat;
+    var lng = $window.localStorage.lng;
+
+    function getZipcodeProducts() {
+      StoreService.getZipcodeProducts({'lat': lat, 'lng': lng}).then(
+        function (response) {
+          $scope.products = response.data;
+        },
+        function (response) {
+          ngToast.danger({
+            content: "Error while loading products",
+            dismissButton: true
+          });
+        }
+      );
+    }
+    getZipcodeProducts();
   }
 
 })();

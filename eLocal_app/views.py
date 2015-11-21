@@ -77,6 +77,21 @@ class StoreViewSet(viewsets.ModelViewSet):
                 stores.append(store_data)
         return Response(stores)
 
+    @list_route(methods=['post'], permission_classes=[AllowAny])
+    def products_in_zipcode(self, request):
+        lat = request.data['lat']
+        lng = request.data['lng']
+        products_result = []
+        for store in Store.objects.all():
+            if check_distance([lat, lng], [store.address.lat, store.address.lng], 10):
+                store_serializer = StoreSerializer(store)
+                store_data = store_serializer.data
+                products = Product.objects.select_related('store').filter(store_id=store_data['id'])
+                if len(products) != 0:
+                    product_serializer = ProductSerializer(products, many=True)
+                    products_result.append(product_serializer.data)
+        return Response(products_result)
+
     @detail_route(methods=['get'], permission_classes=[AllowAny])
     def store_info(self, request, pk=None):
         if request.method == 'GET':

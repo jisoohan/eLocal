@@ -71,6 +71,7 @@
       StoreService.getMerchantStores($scope.userId).then(
         function (response) {
           $scope.stores = response.data;
+          $scope.displayedStores = [].concat($scope.stores);
         },
         function (response) {
           ngToast.danger({

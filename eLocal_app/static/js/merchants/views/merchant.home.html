@@ -52,13 +52,22 @@
       <toast></toast>
     </div>
 
-    <div class="row list-group" ng-repeat="store in stores">
-      <a ui-sref="merchant.store({'storeId': store.id})">
-        <div class="list-group-item">
-          <h4>{{store.name}}</h4>
-        </div>
-      </a>
-    </div>
+
+    <table st-table="displayedStores" st-safe-src="stores" class="table table-striped">
+      <thead>
+      <tr>
+        <th class="sortable" st-sort="name">Stores</th>
+      </tr>
+      <tr>
+        <th colspan="5"><input st-search="" class="form-control" placeholder="Search stores" type="text"/></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="store in displayedStores">
+        <td><a ui-sref="merchant.store({'storeId': store.id})">{{store.name}}</a></td>
+      </tr>
+      </tbody>
+    </table>
 
   </div>
 

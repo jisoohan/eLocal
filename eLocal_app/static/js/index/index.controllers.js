@@ -5,7 +5,8 @@
 
   .controller('IndexNavController', IndexNavController)
   .controller('IndexStoreController', IndexStoreController)
-  .controller('IndexProductController', IndexProductController);
+  .controller('IndexProductController', IndexProductController)
+  .controller('IndexSingleStoreController', IndexSingleStoreController);
 
   IndexNavController.$inject = ['$scope', '$window', '$state'];
 
@@ -62,6 +63,41 @@
       );
     }
     getZipcodeProducts();
+  }
+
+  IndexSingleStoreController.$inject = ['$scope', '$stateParams', 'StoreService', 'ngToast'];
+
+  function IndexSingleStoreController ($scope, $stateParams, StoreService, ngToast) {
+
+    function getStore() {
+      StoreService.getStore($stateParams.storeId).then(
+        function (response) {
+          $scope.store = response.data;
+          StoreService.getStoreProducts($stateParams.storeId).then(
+            function (response) {
+              $scope.products = response.data;
+              for (var i = 0; i < $scope.products.length; i++) {
+                $scope.products[i].price = Number($scope.products[i].price)
+              }
+              $scope.displayedProducts = [].concat($scope.products);
+            },
+            function (response) {
+              ngToast.danger({
+                content: "Error while loading products",
+                dismissButton: true
+              });
+            }
+          );
+        },
+        function (response) {
+          ngToast.danger({
+            content: "Error while loading store",
+            dismissButton: true
+          });
+        }
+      );
+    }
+    getStore();
   }
 
 })();

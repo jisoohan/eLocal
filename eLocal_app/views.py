@@ -97,7 +97,7 @@ class StoreViewSet(viewsets.ModelViewSet):
     def store_info(self, request, pk=None):
         if request.method == 'GET':
             store = Store.objects.get(id=pk)
-            if store.user.id != request.user.id:
+            if not request.user.is_anonymous() and store.user.id is not request.user.id:
                 return Response({'error': 'Cannot get store'}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 store_serializer = StoreSerializer(store)

@@ -65,9 +65,9 @@
     getZipcodeProducts();
   }
 
-  IndexSingleStoreController.$inject = ['$scope', '$stateParams', 'StoreService', 'ngToast'];
+  IndexSingleStoreController.$inject = ['$scope', '$stateParams', 'StoreService', 'ngToast', 'NgMap'];
 
-  function IndexSingleStoreController ($scope, $stateParams, StoreService, ngToast) {
+  function IndexSingleStoreController ($scope, $stateParams, StoreService, ngToast, NgMap) {
 
     function getStore() {
       StoreService.getStore($stateParams.storeId).then(

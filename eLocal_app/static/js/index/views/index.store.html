@@ -17,6 +17,10 @@
       </div>
     </div>
 
+    <ng-map center="{{store.address.lat}}, {{store.address.lng}}" zoom="15">
+      <marker position="{{store.address.lat}}, {{store.address.lng}}"></marker>
+    </ng-map>
+
   </div>
 
   <div class="col-sm-8">

@@ -147,6 +147,7 @@
     $scope.addProduct = function () {
       StoreService.addProduct($stateParams.storeId, $scope.productModel).then(
         function (response) {
+          response.data.price = Number(response.data.price)
           $scope.products.push(response.data);
           $scope.options.resetModel();
           ngToast.success({
@@ -163,43 +164,45 @@
       );
     };
 
-    $scope.editProduct = function (index, product_id, product_name, description, price) {
-      var editProductModal = $uibModal.open({
-        animation: true,
-        templateUrl: '/static/js/modals/views/editProduct.html',
-        controller: 'MerchantEditProductController',
-        size: 'md',
-        resolve: {
-          product_name: function () {
-            return product_name;
-          },
-          description: function () {
-            return description;
-          },
-          price: function () {
-            return price;
+    $scope.editProduct = function (product) {
+      var index = $scope.products.indexOf(product);
+      if (index !== -1) {
+        var editProductModal = $uibModal.open({
+          animation: true,
+          templateUrl: '/static/js/modals/views/editProduct.html',
+          controller: 'MerchantEditProductController',
+          size: 'md',
+          resolve: {
+            product: function () {
+              return product;
+            }
           }
-        }
-      });
-      editProductModal.result.then(function (productEditModel) {
-        StoreService.editStoreProduct(product_id, productEditModel).then(
-          function (response) {
-            $scope.products[index].name = response.data.name;
-            $scope.products[index].description = response.data.description;
-            $scope.products[index].price = response.data.price;
-            ngToast.success({
-              content: "Product updated",
-              dismissButton: true
-            });
-          },
-          function (response) {
-            ngToast.danger({
-              content: "Error while updating product",
-              dismissButton: true
-            });
-          }
-        );
-      });
+        });
+        editProductModal.result.then(function (productEditModel) {
+          StoreService.editStoreProduct(product.id, productEditModel).then(
+            function (response) {
+              $scope.products[index].name = response.data.name;
+              $scope.products[index].description = response.data.description;
+              $scope.products[index].price = Number(response.data.price);
+              ngToast.success({
+                content: "Product updated",
+                dismissButton: true
+              });
+            },
+            function (response) {
+              ngToast.danger({
+                content: "Error while updating product",
+                dismissButton: true
+              });
+            }
+          );
+        });
+      } else {
+        ngToast.danger({
+          content: "Error while updating product",
+          dismissButton: true
+        });
+      }
     };
 
     $scope.deleteStore = function () {
@@ -220,22 +223,30 @@
       );
     };
 
-    $scope.deleteProduct = function (productId, index) {
-      StoreService.deleteStoreProduct(productId).then(
-        function (response) {
-          $scope.products.splice(index, 1);
-          ngToast.success({
-            content: "Deleted product",
-            dismissButton: true
-          });
-        },
-        function (response) {
-          ngToast.danger({
-            content: "Error while deleting product",
-            dismissButton: true
-          });
-        }
-      );
+    $scope.deleteProduct = function (product) {
+      var index = $scope.products.indexOf(product);
+      if (index !== -1) {
+        StoreService.deleteStoreProduct(product.id).then(
+          function (response) {
+            $scope.products.splice(index, 1);
+            ngToast.success({
+              content: "Deleted product",
+              dismissButton: true
+            });
+          },
+          function (response) {
+            ngToast.danger({
+              content: "Error while deleting product",
+              dismissButton: true
+            });
+          }
+        );
+      } else {
+        ngToast.danger({
+          content: "Error while deleting product",
+          dismissButton: true
+        });
+      }
     };
 
     function getStore() {
@@ -245,6 +256,10 @@
           StoreService.getStoreProducts($stateParams.storeId).then(
             function (response) {
               $scope.products = response.data;
+              for (var i = 0; i < $scope.products.length; i++) {
+                $scope.products[i].price = Number($scope.products[i].price)
+              }
+              $scope.displayedProducts = [].concat($scope.products);
             },
             function (response) {
               $state.go('merchant.home');
@@ -269,14 +284,14 @@
 
   }
 
-  MerchantEditProductController.$inject = ['$scope', '$uibModalInstance', 'product_name', 'description', 'price'];
+  MerchantEditProductController.$inject = ['$scope', '$uibModalInstance', 'product'];
 
-  function MerchantEditProductController ($scope, $uibModalInstance, product_name, description, price) {
+  function MerchantEditProductController ($scope, $uibModalInstance, product) {
 
     $scope.productEditModel = {
-      'product_name': product_name,
-      'description': description,
-      'price': Number(price)
+      'product_name': product.name,
+      'description': product.description,
+      'price': product.price
     };
     $scope.productEditFields = [
       {

@@ -16,6 +16,8 @@
     'formly',
     'formlyBootstrap',
     'ngMap',
+    'ngCart',
+    'smart-table',
     'Auth',
     'Merchant',
     'Store',

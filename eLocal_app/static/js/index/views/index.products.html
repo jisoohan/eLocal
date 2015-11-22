@@ -3,11 +3,14 @@
   <div class="col-sm-8">
 
     <uib-accordion class="row col-sm-10">
-      <uib-accordion-group heading="{{product.name}}" ng-repeat="product in products">
+      <uib-accordion-group ng-repeat="product in products">
+        <uib-accordion-heading>
+          {{product.name}}
+          <p class="pull-right">${{product.price}}</p>
+        </uib-accordion-heading>
         <div style="white-space:pre-line;">
           <p>{{product.description}}</p>
         </div>
-        <p>${{product.price}}</p>
       </uib-accordion-group>
     </uib-accordion>
 

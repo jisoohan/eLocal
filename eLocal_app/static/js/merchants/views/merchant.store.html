@@ -33,16 +33,30 @@
 
   <div class="col-sm-8">
 
-    <uib-accordion class="row col-sm-10 pull-right">
-      <uib-accordion-group heading="{{product.name}}" ng-repeat="product in products">
-        <div style="white-space:pre-line;">
-          <p>{{product.description}}</p>
-        </div>
-        <p>${{product.price}}</p>
-        <button type="button" class="btn btn-primary" ng-click="editProduct($index, product.id, product.name, product.description, product.price)">Edit</button>
-        <button ng-click="deleteProduct(product.id, $index)" class="btn btn-danger pull-right">Delete</button>
-      </uib-accordion-group>
-    </uib-accordion>
+    <table st-table="displayedProducts" st-safe-src="products" class="table table-striped">
+      <thead>
+      <tr>
+        <th class="sortable" st-sort="name">Name</th>
+        <th>Description</th>
+        <th class="sortable" st-sort="price">Price</th>
+      </tr>
+      <tr>
+        <th colspan="5"><input st-search="" class="form-control" placeholder="Search product" type="text"/></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="product in displayedProducts">
+        <td><a href="" ng-click="editProduct(product)">{{product.name}}</a></td>
+        <td>{{product.description}}</td>
+        <td>{{product.price | currency}}</td>
+        <td>
+          <button type="button" ng-click="deleteProduct(product)" class="btn btn-sm btn-danger pull-right">
+            <span class="glyphicon glyphicon-remove"></span>
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
 
   </div>
 

@@ -25,7 +25,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def stores(self, request, pk=None):
         if request.method == 'GET':
             user = User.objects.get(id=pk)
-            stores = Store.objects.select_related('user').filter(user_id=user.id)
+            stores = Store.objects.select_related('user').filter(user_id=user.id).order_by('name')
             serializer = StoreSerializer(stores, many=True)
             return Response(serializer.data)
 
@@ -120,7 +120,7 @@ class StoreViewSet(viewsets.ModelViewSet):
     @detail_route(methods=['get'], permission_classes=[AllowAny])
     def products(self, request, pk=None):
         if request.method == 'GET':
-            products = Product.objects.select_related('store').filter(store_id=pk)
+            products = Product.objects.select_related('store').filter(store_id=pk).order_by('name')
             product_serializer = ProductSerializer(products, many=True)
             return Response(product_serializer.data)
 

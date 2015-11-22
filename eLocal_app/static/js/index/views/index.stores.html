@@ -1,33 +1,31 @@
 <div class="container">
 
-  <div class="col-sm-8">
-
-    <uib-accordion class="row">
-      <uib-accordion-group heading="{{store.name}}" ng-repeat="store in stores">
-        <p>{{store.address.st_number}} {{store.address.st_name}}, {{store.address.city}}, {{store.address.state}} {{store.address.zipcode}}</p>
-        <p>Membership card: {{store.has_card}}</p>
-        <h4>Products</h4>
-        <div class="list-group" ng-repeat="product in store.products">
-          <div class="list-group-item">
-            <h4 class="list-group-item-heading">
-              <a style="cursor:pointer;" ng-click="editProduct($parent.$index, $index, product.id, product.name, product.description, product.price)">{{product.name}}</a>
-              <p class="pull-right">${{product.price}}</p>
-            </h4>
-            <p class="list-group-item-text" style="white-space:pre-line;">{{product.description}}</p>
-            <div class="clearfix"></div>
-          </div>
-        </div>
-      </uib-accordion-group>
-    </uib-accordion>
-
-  </div>
-
-  <div class="col-sm-4">
+  <div class="col-sm-12">
 
     <div class="row">
       <toast></toast>
     </div>
 
-  </div>
+    <table st-table="displayedStores" st-safe-src="stores" class="table table-striped">
+      <thead>
+      <tr>
+        <th class="sortable" st-sort="name">Store</th>
+        <th>
+        <th>Address</th>
+      </tr>
+      <tr>
+        <th colspan="5"><input st-search="" class="form-control" placeholder="Search stores" type="text"/></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="store in displayedStores">
+        <td><a href="" ui-sref="index.store({'storeId': store.id})">{{store.name}}</a></td>
+        <td><span ng-show="{{store.has_card}}" class="glyphicon glyphicon-credit-card"></span></td>
+        <td>
+          {{store.address.st_number}} {{store.address.st_name}}, {{store.address.city}}, {{store.address.state}} {{store.address.zipcode}}
+        </td>
+      </tr>
+      </tbody>
+    </table>
 
 </div>

@@ -1,18 +1,32 @@
 <div class="container">
 
-  <div class="col-sm-8">
+  <div class="col-sm-12">
 
-    <uib-accordion class="row col-sm-10">
-      <uib-accordion-group ng-repeat="product in products">
-        <uib-accordion-heading>
-          {{product.name}}
-          <p class="pull-right">${{product.price}}</p>
-        </uib-accordion-heading>
-        <div style="white-space:pre-line;">
-          <p>{{product.description}}</p>
-        </div>
-      </uib-accordion-group>
-    </uib-accordion>
+    <div class="row">
+      <toast></toast>
+    </div>
+
+    <table st-table="displayedProducts" st-safe-src="products" class="table table-striped">
+      <thead>
+      <tr>
+        <th class="sortable" st-sort="name">Name</th>
+        <th>Description</th>
+        <th class="sortable" st-sort="price">Price</th>
+        <th class="sortable" st-sort="store.name">Store</th>
+      </tr>
+      <tr>
+        <th colspan="5"><input st-search="" class="form-control" placeholder="Search product" type="text"/></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="product in displayedProducts">
+        <td>{{product.name}}</td>
+        <td>{{product.description}}</td>
+        <td>{{product.price | currency}}</td>
+        <td><a href="" ui-sref="index.store({'storeId': product.store.id})">{{product.store.name}}</a></td>
+      </tr>
+      </tbody>
+    </table>
 
   </div>
 

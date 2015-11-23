@@ -6,7 +6,8 @@
   .controller('IndexNavController', IndexNavController)
   .controller('IndexStoreController', IndexStoreController)
   .controller('IndexProductController', IndexProductController)
-  .controller('IndexSingleStoreController', IndexSingleStoreController);
+  .controller('IndexSingleStoreController', IndexSingleStoreController)
+  .controller('IndexCartController', IndexCartController);
 
   IndexNavController.$inject = ['$scope', '$window', '$state'];
 
@@ -98,6 +99,12 @@
       );
     }
     getStore();
+  }
+
+  IndexCartController.$inject = ['$scope', 'ngToast', 'ngCart'];
+
+  function IndexCartController ($scope, ngToast, ngCart) {
+
   }
 
 })();

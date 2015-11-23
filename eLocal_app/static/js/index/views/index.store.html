@@ -31,6 +31,7 @@
         <th class="sortable" st-sort="name">Name</th>
         <th>Description</th>
         <th class="sortable" st-sort="price">Price</th>
+        <th></th>
       </tr>
       <tr>
         <th colspan="5"><input st-search="" class="form-control" placeholder="Search products" type="text"/></th>
@@ -41,6 +42,7 @@
         <td>{{product.name}}</td>
         <td>{{product.description}}</td>
         <td>{{product.price | currency}}</td>
+        <td><ngcart-addtocart id="{{product.id}}" name="{{product.name}}" price="{{product.price}}" quantity="1" class="pull-right">Add to Cart</ngcart-addtocart></td>
       </tr>
       </tbody>
     </table>

@@ -72,6 +72,11 @@
         url: 'store/:storeId',
         templateUrl: '/static/js/index/views/index.store.html',
         controller: 'IndexSingleStoreController'
+      })
+      .state('index.cart', {
+        url: 'cart',
+        templateUrl: '/static/js/index/views/index.cart.html',
+        controller: 'IndexCartController'
       });
 
       ngToast.configure({

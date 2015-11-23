@@ -39,8 +39,9 @@ class StoreSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     store = StoreSerializer()
+    image = Base64ImageField()
 
     class Meta:
         model = Product
-        fields = ('id', 'store', 'name', 'description', 'price')
+        fields = ('id', 'store', 'image', 'name', 'description', 'price')
 

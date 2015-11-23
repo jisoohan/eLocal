@@ -30,6 +30,7 @@
     <table st-table="displayedProducts" st-safe-src="products" class="table table-striped">
       <thead>
       <tr>
+        <th></th>
         <th class="sortable" st-sort="name">Name</th>
         <th>Description</th>
         <th class="sortable" st-sort="price">Price</th>
@@ -41,6 +42,10 @@
       </thead>
       <tbody>
       <tr ng-repeat="product in displayedProducts">
+        <td>
+          <img ng-if="product.image" ng-src="/static/images/uploads/{{product.image}}" />
+          <img ng-if="!product.image" ng-src="/static/images/no_image_available_64.svg" />
+        </td>
         <td>{{product.name}}</td>
         <td>{{product.description}}</td>
         <td><a href="" ng-click="editProduct(product)">{{product.price | currency}}</a></td>

@@ -115,42 +115,12 @@
     $scope.username = $window.localStorage.username;
     $scope.userId = $window.localStorage.userId;
 
-    $scope.productModel = {};
-    $scope.productFields = [
-      {
-        key: 'product_name',
-        type: 'input',
-        templateOptions: {
-          type: 'text',
-          placeholder: 'Product name',
-          required: true
-        }
-      },
-      {
-        key: 'description',
-        type: 'textarea',
-        templateOptions: {
-          placeholder: 'Description',
-          required: true
-        }
-      },
-      {
-        key: 'price',
-        type: 'input',
-        templateOptions: {
-          type: 'number',
-          placeholder: 'Price',
-          required: true
-        }
-      }
-    ];
-
     $scope.addProduct = function () {
-      StoreService.addProduct($stateParams.storeId, $scope.productModel).then(
+      StoreService.addProduct($stateParams.storeId, $scope.productForm).then(
         function (response) {
           response.data.price = Number(response.data.price)
           $scope.products.push(response.data);
-          $scope.options.resetModel();
+          $scope.productForm = {};
           ngToast.success({
             content: 'Product added',
             dismissButton: true

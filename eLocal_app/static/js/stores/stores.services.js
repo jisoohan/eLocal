@@ -24,9 +24,9 @@
 
     service.createStore = function (merchant_id, data) {
       return Upload.upload({
-            url: API_SERVER + 'api/users/' + merchant_id + '/create_store/',
-            data: data
-        });
+        url: API_SERVER + 'api/users/' + merchant_id + '/create_store/',
+        data: data
+      });
     };
 
     service.getStore = function (store_id) {
@@ -38,7 +38,10 @@
     };
 
     service.addProduct = function (store_id, data) {
-      return $http.post(API_SERVER + 'api/stores/' + store_id + '/add_product/', data);
+      return Upload.upload({
+        url: API_SERVER + 'api/stores/' + store_id + '/add_product/',
+        data: data
+      });
     };
 
     service.deleteStoreProduct = function (productId) {

@@ -119,6 +119,10 @@ class StoreViewSet(viewsets.ModelViewSet):
         if request.method == 'POST':
             store = Store.objects.get(id=pk)
             product = Product.objects.create(store=store, name=request.data['product_name'], description=request.data['description'], price=round(Decimal(request.data['price']), 2))
+            if 'file' in request.data:
+                image_file = request.data['file']
+                product.image = request.data['file']
+            product.save()
             product_serializer = ProductSerializer(product)
             return Response(product_serializer.data)
 

@@ -28,7 +28,7 @@ class Address(models.Model):
 class Store(models.Model):
     user = models.ForeignKey(User)
     name = models.CharField(max_length=128)
-    has_card = models.BooleanField()
+    has_card = models.BooleanField(default=False)
     address = models.OneToOneField(Address)
     image = models.ImageField(upload_to='stores/')
 

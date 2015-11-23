@@ -48,11 +48,15 @@ class UserViewSet(viewsets.ModelViewSet):
                 address = address_serializer.save()
             else:
                 return Response({'error': 'Invalid address'}, status=status.HTTP_400_BAD_REQUEST)
-            store = Store.objects.create(user=user, address=address, name=request.data['store_name'], has_card=request.data['has_card'])
+            store = Store.objects.create(user=user, address=address, name=request.data['store_name'])
+            if 'has_card' in request.data:
+                store.has_card = True
+            else:
+                store.has_card = False
             if 'file' in request.data:
                 image_file = request.data['file']
                 store.image = request.data['file']
-                store.save()
+            store.save()
             store_serializer = StoreSerializer(store)
             return Response(store_serializer.data)
 
@@ -103,6 +107,7 @@ class StoreViewSet(viewsets.ModelViewSet):
     def store_info(self, request, pk=None):
         if request.method == 'GET':
             store = Store.objects.get(id=pk)
+            print(store.has_card)
             if not request.user.is_anonymous() and store.user.id is not request.user.id:
                 return Response({'error': 'Cannot get store'}, status=status.HTTP_400_BAD_REQUEST)
             else:

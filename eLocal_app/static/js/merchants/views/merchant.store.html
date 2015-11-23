@@ -11,7 +11,8 @@
         <h1 class="panel-title">{{store.name}}</h1>
       </div>
       <div class="panel-body">
-        <img src="/static/images/uploads/{{store.image}}" />
+        <img ng-if="store.image" ng-src="/static/images/uploads/{{store.image}}" />
+        <img ng-if="!store.image" ng-src="/static/images/no_image_available.svg" />
         <p>{{store.address.st_number}} {{store.address.st_name}}</p>
         <p>{{store.address.city}}, {{store.address.state}} {{store.address.zipcode}}</p>
         <p>Membership card: {{store.has_card}}</p>

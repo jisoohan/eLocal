@@ -42,7 +42,7 @@
        $scope.storeModel = this.getPlace();
        $scope.storeForm = {};
        $scope.storeForm.store_name = $scope.storeModel.name;
-       $scope.storeForm.has_card = false;
+
        for (var i = 0; i < $scope.storeModel.address_components.length; i++) {
         if ($scope.storeModel.address_components[i].types.indexOf('street_number') != -1) {
           $scope.storeForm.st_number = $scope.storeModel.address_components[i].long_name;
@@ -86,7 +86,7 @@
       StoreService.createStore($scope.userId, $scope.storeForm).then(
         function (response) {
           $scope.stores.push(response.data);
-          $scope.storeForm = {};
+          $scope.storeForm = null;
           $scope.address = null;
           ngToast.success({
             content: "Created store",

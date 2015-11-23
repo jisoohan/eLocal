@@ -67,7 +67,7 @@ class StoreViewSet(viewsets.ModelViewSet):
         lat = request.data['lat']
         lng = request.data['lng']
         stores = [];
-        for store in Store.objects.all():
+        for store in Store.objects.all().order_by('name'):
             if check_distance([lat, lng], [store.address.lat, store.address.lng], 10):
                 store_serializer = StoreSerializer(store)
                 store_data = store_serializer.data

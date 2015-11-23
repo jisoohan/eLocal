@@ -106,9 +106,13 @@
     getZipcodeProducts();
   }
 
-  IndexSingleStoreController.$inject = ['$scope', '$stateParams', '$uibModal', 'StoreService', 'ngToast'];
+  IndexSingleStoreController.$inject = ['$scope', '$window', '$stateParams', '$uibModal', 'StoreService', 'ngToast'];
 
-  function IndexSingleStoreController ($scope, $stateParams, $uibModal, StoreService, ngToast) {
+  function IndexSingleStoreController ($scope, $window, $stateParams, $uibModal, StoreService, ngToast) {
+
+    var zipcode = $window.localStorage.zipcode;
+    var lat = $window.localStorage.lat;
+    var lng = $window.localStorage.lng;
 
     $scope.editProduct = function (product) {
       var index = $scope.products.indexOf(product);
@@ -180,10 +184,18 @@
     getStore();
   }
 
-  IndexCartController.$inject = ['$scope', 'ngToast', 'ngCart'];
+  IndexCartController.$inject = ['$scope', '$window', 'ngToast', 'ngCart', 'NgMap'];
 
-  function IndexCartController ($scope, ngToast, ngCart) {
+  function IndexCartController ($scope, $window, ngToast, ngCart, NgMap) {
 
+    var zipcode = $window.localStorage.zipcode;
+    $scope.lat = $window.localStorage.lat;
+    $scope.lng = $window.localStorage.lng;
+
+    $scope.wayPoints = [
+      {location: {lat:44.55916341529184, lng: -76.17919921875}, stopover: true},
+      {location: {lat:44.32384807250689, lng: -78.079833984375}, stopover: true},
+    ];
   }
 
   IndexEditProductController.$inject = ['$scope', '$uibModalInstance', 'price'];

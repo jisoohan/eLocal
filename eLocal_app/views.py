@@ -49,13 +49,17 @@ class UserViewSet(viewsets.ModelViewSet):
             else:
                 return Response({'error': 'Invalid address'}, status=status.HTTP_400_BAD_REQUEST)
             store = Store.objects.create(user=user, address=address, name=request.data['store_name'], has_card=request.data['has_card'])
+            if 'file' in request.data:
+                image_file = request.data['file']
+                store.image = request.data['file']
+                store.save()
             store_serializer = StoreSerializer(store)
             return Response(store_serializer.data)
 
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def delete_store(self, request, pk=None):
         if request.method == 'POST':
-            Store.objects.get(id=pk).delete()
+            Store.objects.get(id=pk).address.delete()
             return Response({'success': 'Store deleted'})
 
 class StoreViewSet(viewsets.ModelViewSet):

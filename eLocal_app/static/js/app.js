@@ -18,6 +18,7 @@
     'ngMap',
     'ngCart',
     'smart-table',
+    'ngFileUpload',
     'Auth',
     'Merchant',
     'Store',

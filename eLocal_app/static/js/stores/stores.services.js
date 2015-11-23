@@ -5,9 +5,9 @@
     .module('Store')
     .factory('StoreService', StoreService);
 
-  StoreService.$inject = ['$http', 'API_SERVER'];
+  StoreService.$inject = ['$http', 'API_SERVER', 'Upload'];
 
-  function StoreService ($http, API_SERVER) {
+  function StoreService ($http, API_SERVER, Upload) {
     var service = {};
 
     service.getMerchantStores = function (merchant_id) {
@@ -23,7 +23,10 @@
     };
 
     service.createStore = function (merchant_id, data) {
-      return $http.post(API_SERVER + 'api/users/' + merchant_id + '/create_store/', data);
+      return Upload.upload({
+            url: API_SERVER + 'api/users/' + merchant_id + '/create_store/',
+            data: data
+        });
     };
 
     service.getStore = function (store_id) {

@@ -30,6 +30,7 @@ class Store(models.Model):
     name = models.CharField(max_length=128)
     has_card = models.BooleanField()
     address = models.OneToOneField(Address)
+    image = models.ImageField(upload_to='stores/')
 
     def __unicode__(self):
         return self.name

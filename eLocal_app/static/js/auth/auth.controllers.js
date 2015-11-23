@@ -72,6 +72,39 @@
           placeholder: 'Zipcode',
           required: true
         }
+      },
+      {
+        key: 'radius',
+        type: 'select',
+        templateOptions: {
+          label: 'Radius',
+          options: [
+            {
+              name: "5 miles",
+              value: 5
+            },
+            {
+              name: "10 miles",
+              value: 10
+            },
+            {
+              name: "15 miles",
+              value: 15
+            },
+            {
+              name: "20 miles",
+              value: 20
+            },
+            {
+              name: "25 miles",
+              value: 25
+            },
+            {
+              name: "30 miles",
+              value: 30
+            }
+          ]
+        }
       }
     ];
 
@@ -84,6 +117,7 @@
             $window.localStorage.zipcode = $scope.zipcodeModel.zipcode;
             $window.localStorage.lat = lat;
             $window.localStorage.lng = lng;
+            $window.localStorage.radius = $scope.zipcodeModel.radius;
             $state.go('index.stores');
           },
           function (response) {

@@ -14,6 +14,7 @@
 
   function IndexNavController ($scope, $window, $state) {
     $scope.zipcode = $window.localStorage.zipcode;
+    $scope.radius = $window.localStorage.radius;
   }
 
   IndexStoreController.$inject = ['$scope', '$window', '$state', 'ngToast', 'StoreService', '$uibModal'];
@@ -22,9 +23,10 @@
     var zipcode = $window.localStorage.zipcode;
     var lat = $window.localStorage.lat;
     var lng = $window.localStorage.lng;
+    var radius = $window.localStorage.radius;
 
     function getZipcodeStores () {
-      StoreService.getZipcodeStores({'lat': lat, 'lng': lng}).then(
+      StoreService.getZipcodeStores({'lat': lat, 'lng': lng, 'radius': radius}).then(
         function (response) {
           $scope.stores = response.data;
           $scope.displayedStores = [].concat($scope.stores);
@@ -46,6 +48,7 @@
     var zipcode = $window.localStorage.zipcode;
     var lat = $window.localStorage.lat;
     var lng = $window.localStorage.lng;
+    var radius = $window.localStorage.radius;
 
     $scope.editProduct = function (product) {
       var index = $scope.products.indexOf(product);
@@ -87,7 +90,7 @@
     };
 
     function getZipcodeProducts() {
-      StoreService.getZipcodeProducts({'lat': lat, 'lng': lng}).then(
+      StoreService.getZipcodeProducts({'lat': lat, 'lng': lng, 'radius': radius}).then(
         function (response) {
           $scope.products = response.data;
           for (var i = 0; i < $scope.products.length; i++) {

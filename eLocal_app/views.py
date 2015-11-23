@@ -66,9 +66,10 @@ class StoreViewSet(viewsets.ModelViewSet):
     def stores_in_zipcode(self, request):
         lat = request.data['lat']
         lng = request.data['lng']
+        radius = float(request.data['radius'])
         stores = [];
         for store in Store.objects.all().order_by('name'):
-            if check_distance([lat, lng], [store.address.lat, store.address.lng], 10):
+            if check_distance([lat, lng], [store.address.lat, store.address.lng], radius):
                 store_serializer = StoreSerializer(store)
                 store_data = store_serializer.data
                 products = Product.objects.select_related('store').filter(store_id=store_data['id'])
@@ -81,9 +82,10 @@ class StoreViewSet(viewsets.ModelViewSet):
     def products_in_zipcode(self, request):
         lat = request.data['lat']
         lng = request.data['lng']
+        radius = float(request.data['radius'])
         products_result = []
         for store in Store.objects.all():
-            if check_distance([lat, lng], [store.address.lat, store.address.lng], 10):
+            if check_distance([lat, lng], [store.address.lat, store.address.lng], radius):
                 store_serializer = StoreSerializer(store)
                 store_data = store_serializer.data
                 products = Product.objects.select_related('store').filter(store_id=store_data['id'])

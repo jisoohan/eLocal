@@ -4,11 +4,11 @@
 </div>
 <div ng-show="attrs.id">
     <div>
-        <a class="btn btn-sm btn-primary"
+        <a class="btn btn-sm btn-primary pull-right"
            ng-click="ngCart.addItem(id, name, price, q, data)"
            ng-transclude></a>
     </div>
-    <mark  ng-show="inCart()">
-        This item is in your cart. <a ng-click="ngCart.removeItemById(id)" style="cursor: pointer;">Remove</a>
+    <mark ng-show="inCart()">
+        Product in cart. <a ng-click="ngCart.removeItemById(id)" style="cursor: pointer;">Remove</a>
     </mark>
 </div>

@@ -17,10 +17,9 @@ def check_distance(origin, destination, radius):
     lon1 = deg2rad(float(origin[1]))
     lat2 = deg2rad(float(destination[0]))
     lon2 = deg2rad(float(destination[1]))
-    r = 3958.8
+    r = 3958.8  # Radius of the Earth in miles
 
-    distance = 2*3958.8*asin(sqrt( haversin(lat2-lat1) + cos(lat1)*cos(lat2)*haversin(lon2-lon1) ))
-    print(distance <= radius)
+    distance = 2*r*asin(sqrt( haversin(lat2-lat1) + cos(lat1)*cos(lat2)*haversin(lon2-lon1) ))
     return distance <= radius
 
 def haversin(theta):

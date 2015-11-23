@@ -42,7 +42,7 @@
         <td>{{product.name}}</td>
         <td>{{product.description}}</td>
         <td>{{product.price | currency}}</td>
-        <td><ngcart-addtocart id="{{product.id}}" name="{{product.name}}" price="{{product.price}}" quantity="1" class="pull-right">Add to Cart</ngcart-addtocart></td>
+        <td><ngcart-addtocart id="{{product.id}}" name="{{product.name}}" price="{{product.price}}" data="product.store" quantity="1" class="pull-right">Add to Cart</ngcart-addtocart></td>
       </tr>
       </tbody>
     </table>

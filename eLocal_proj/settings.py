@@ -30,6 +30,7 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
     'corsheaders',
     'eLocal_app',
+    'django_cleanup',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -54,6 +55,11 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
     ),
 }
 
@@ -113,6 +119,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'eLocal_app/static/images/uploads/')
 
 STATIC_URL = '/static/'
 

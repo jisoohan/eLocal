@@ -4,13 +4,9 @@ from math import sin, cos, sqrt, asin, pi
 from decimal import *
 
 def json_response(response_dict, status=200):
-    print("RESPONSE DICT")
-    print(response_dict)
     response = HttpResponse(json.dumps(response_dict), content_type="application/json", status=status)
     response['Access-Control-Allow-Origin'] = '*'
     response['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-    print("RESPONSE")
-    print(response.status_code)
     #print(response.content_type)
     return response
 

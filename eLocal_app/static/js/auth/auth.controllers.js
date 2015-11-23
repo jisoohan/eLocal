@@ -62,7 +62,9 @@
       }
     ];
 
-    $scope.zipcodeModel = {};
+    $scope.zipcodeModel = {
+      'radius': 5
+    };
     $scope.zipcodeFields = [
       {
         key: 'zipcode',

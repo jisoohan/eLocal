@@ -41,7 +41,7 @@
       <tr ng-repeat="product in displayedProducts">
         <td>{{product.name}}</td>
         <td>{{product.description}}</td>
-        <td>{{product.price | currency}}</td>
+        <td><a href="" ng-click="editProduct(product)">{{product.price | currency}}</a></td>
         <td><ngcart-addtocart id="{{product.id}}" name="{{product.name}}" price="{{product.price}}" data="product.store" quantity="1" class="pull-right">Add to Cart</ngcart-addtocart></td>
       </tr>
       </tbody>

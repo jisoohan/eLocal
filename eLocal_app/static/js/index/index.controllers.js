@@ -7,7 +7,8 @@
   .controller('IndexStoreController', IndexStoreController)
   .controller('IndexProductController', IndexProductController)
   .controller('IndexSingleStoreController', IndexSingleStoreController)
-  .controller('IndexCartController', IndexCartController);
+  .controller('IndexCartController', IndexCartController)
+  .controller('IndexEditProductController', IndexEditProductController);
 
   IndexNavController.$inject = ['$scope', '$window', '$state'];
 
@@ -39,12 +40,51 @@
     getZipcodeStores();
   }
 
-  IndexProductController.$inject = ['$scope', '$window', '$state', 'ngToast', 'StoreService'];
+  IndexProductController.$inject = ['$scope', '$window', '$state', '$uibModal', 'ngToast', 'StoreService'];
 
-  function IndexProductController ($scope, $window, $state, ngToast, StoreService) {
+  function IndexProductController ($scope, $window, $state, $uibModal, ngToast, StoreService) {
     var zipcode = $window.localStorage.zipcode;
     var lat = $window.localStorage.lat;
     var lng = $window.localStorage.lng;
+
+    $scope.editProduct = function (product) {
+      var index = $scope.products.indexOf(product);
+      if (index !== -1) {
+        var editProductModal = $uibModal.open({
+          animation: true,
+          templateUrl: '/static/js/modals/views/editProduct.html',
+          controller: 'IndexEditProductController',
+          size: 'sm',
+          resolve: {
+            price: function () {
+              return product.price;
+            }
+          }
+        });
+        editProductModal.result.then(function (productEditModel) {
+          StoreService.editStoreProduct(product.id, productEditModel).then(
+            function (response) {
+              $scope.products[index].price = Number(response.data.price);
+              ngToast.success({
+                content: "Price updated",
+                dismissButton: true
+              });
+            },
+            function (response) {
+              ngToast.danger({
+                content: "Error while updating price",
+                dismissButton: true
+              });
+            }
+          );
+        });
+      } else {
+        ngToast.danger({
+          content: "Error while updating price",
+          dismissButton: true
+        });
+      }
+    };
 
     function getZipcodeProducts() {
       StoreService.getZipcodeProducts({'lat': lat, 'lng': lng}).then(
@@ -66,9 +106,48 @@
     getZipcodeProducts();
   }
 
-  IndexSingleStoreController.$inject = ['$scope', '$stateParams', 'StoreService', 'ngToast', 'NgMap'];
+  IndexSingleStoreController.$inject = ['$scope', '$stateParams', '$uibModal', 'StoreService', 'ngToast'];
 
-  function IndexSingleStoreController ($scope, $stateParams, StoreService, ngToast, NgMap) {
+  function IndexSingleStoreController ($scope, $stateParams, $uibModal, StoreService, ngToast) {
+
+    $scope.editProduct = function (product) {
+      var index = $scope.products.indexOf(product);
+      if (index !== -1) {
+        var editProductModal = $uibModal.open({
+          animation: true,
+          templateUrl: '/static/js/modals/views/editProduct.html',
+          controller: 'IndexEditProductController',
+          size: 'sm',
+          resolve: {
+            price: function () {
+              return product.price;
+            }
+          }
+        });
+        editProductModal.result.then(function (productEditModel) {
+          StoreService.editStoreProduct(product.id, productEditModel).then(
+            function (response) {
+              $scope.products[index].price = Number(response.data.price);
+              ngToast.success({
+                content: "Price updated",
+                dismissButton: true
+              });
+            },
+            function (response) {
+              ngToast.danger({
+                content: "Error while updating price",
+                dismissButton: true
+              });
+            }
+          );
+        });
+      } else {
+        ngToast.danger({
+          content: "Error while updating price",
+          dismissButton: true
+        });
+      }
+    };
 
     function getStore() {
       StoreService.getStore($stateParams.storeId).then(
@@ -105,6 +184,34 @@
 
   function IndexCartController ($scope, ngToast, ngCart) {
 
+  }
+
+  IndexEditProductController.$inject = ['$scope', '$uibModalInstance', 'price'];
+
+  function IndexEditProductController ($scope, $uibModalInstance, price) {
+
+    $scope.productEditModel = {
+      'price': price
+    };
+    $scope.productEditFields = [
+      {
+        key: 'price',
+        type: 'input',
+        templateOptions: {
+          type: 'number',
+          placeholder: 'Price',
+          required: true
+        }
+      }
+    ];
+
+    $scope.editProduct = function () {
+      $uibModalInstance.close($scope.productEditModel);
+    };
+
+    $scope.cancel = function () {
+      $uibModalInstance.dismiss('cancel');
+    };
   }
 
 })();

@@ -192,10 +192,25 @@
     $scope.lat = $window.localStorage.lat;
     $scope.lng = $window.localStorage.lng;
 
-    $scope.wayPoints = [
-      {location: {lat:44.55916341529184, lng: -76.17919921875}, stopover: true},
-      {location: {lat:44.32384807250689, lng: -78.079833984375}, stopover: true},
-    ];
+    $scope.routePath = function () {
+      $scope.wayPoints = [];
+      var seenStores = [];
+      var products = ngCart.getItems();
+      for (var i = 0; i < products.length; i++) {
+        var wayPoint = {
+          location: {
+            lat: products[i].getData().address.lat,
+            lng: products[i].getData().address.lng
+          },
+          stopover: true
+        };
+        var index = seenStores.indexOf(products[i].getData().id);
+        if (index == -1) {
+          seenStores.push(products[i].getData().id);
+          $scope.wayPoints.push(wayPoint);
+        }
+      }
+    };
   }
 
   IndexEditProductController.$inject = ['$scope', '$uibModalInstance', 'price'];

@@ -37,6 +37,13 @@
           placeholder: 'Enter password again',
           required: true
         }
+      },
+      {
+        key: 'is_staff',
+        type: 'checkbox',
+        templateOptions: {
+          label: 'Merchant'
+        }
       }
     ];
 
@@ -140,15 +147,18 @@
     };
 
     $scope.register = function () {
+      if ($scope.registerModel.is_staff == null) {
+        $scope.registerModel.is_staff = false;
+      }
       if ($scope.registerModel.password != $scope.registerModel.checkpw) {
         ngToast.danger({
           content: 'Passwords do not match',
           dismissButton: true
         });
       } else {
-        AuthService.register($scope.registerModel.username, $scope.registerModel.password).then(
+        AuthService.register($scope.registerModel).then(
           function () {
-            $state.go('merchant.home');
+            $state.go('index.stores');
           },
           function (error) {
             ngToast.danger({
@@ -161,9 +171,9 @@
     };
 
     $scope.login = function () {
-      AuthService.login($scope.loginModel.username, $scope.loginModel.password).then(
+      AuthService.login($scope.loginModel).then(
         function () {
-          $state.go('merchant.home');
+          $state.go('index.stores');
         },
         function (error) {
           ngToast.danger({

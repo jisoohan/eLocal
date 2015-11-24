@@ -2,7 +2,6 @@
   'use strict';
 
   angular.module('Auth', []);
-  angular.module('Merchant', []);
   angular.module('Store', []);
   angular.module('Index', []);
 
@@ -20,7 +19,6 @@
     'smart-table',
     'ngFileUpload',
     'Auth',
-    'Merchant',
     'Store',
     'Index'
   ])
@@ -37,27 +35,21 @@
         templateUrl: '/static/js/auth/views/auth.html',
         controller: 'AuthController'
       })
-      .state('merchant', {
-        abstract: true,
-        url: '/merchant',
-        templateUrl: '/static/js/merchants/views/merchant.html',
-        controller: 'MerchantNavController'
-      })
-      .state('merchant.home', {
-        url: '',
-        templateUrl: '/static/js/merchants/views/merchant.home.html',
-        controller: 'MerchantHomeController'
-      })
-      .state('merchant.store', {
-        url: '/store/:storeId',
-        templateUrl: '/static/js/merchants/views/merchant.store.html',
-        controller: 'MerchantStoreController'
-      })
       .state('index', {
         abstract: true,
         url: '/',
         templateUrl: '/static/js/index/views/index.html',
         controller: 'IndexNavController'
+      })
+      .state('index.merchant', {
+        url: 'merchant',
+        templateUrl: '/static/js/index/views/index.merchant.html',
+        controller: 'MerchantController'
+      })
+      .state('index.merchantStore', {
+        url: 'merchant/store/:storeId',
+        templateUrl: '/static/js/index/views/index.merchantStore.html',
+        controller: 'MerchantStoreController'
       })
       .state('index.stores', {
         url: 'stores',

@@ -3,19 +3,19 @@
 
   angular.module('Index')
 
-  .controller('IndexNavController', IndexNavController)
+  .controller('NavController', NavController)
   .controller('MerchantController', MerchantController)
   .controller('MerchantStoreController', MerchantStoreController)
   .controller('MerchantEditProductController', MerchantEditProductController)
-  .controller('IndexStoreController', IndexStoreController)
-  .controller('IndexProductController', IndexProductController)
-  .controller('IndexSingleStoreController', IndexSingleStoreController)
+  .controller('StoresController', StoresController)
+  .controller('ProductsController', ProductsController)
+  .controller('StoreController', StoreController)
   .controller('IndexCartController', IndexCartController)
-  .controller('IndexEditProductController', IndexEditProductController);
+  .controller('EditProductController', EditProductController);
 
-  IndexNavController.$inject = ['$scope', '$window', '$state', 'AuthService', 'ngToast'];
+  NavController.$inject = ['$scope', '$window', '$state', 'AuthService', 'ngToast'];
 
-  function IndexNavController ($scope, $window, $state, AuthService, ngToast) {
+  function NavController ($scope, $window, $state, AuthService, ngToast) {
     $scope.zipcode = $window.localStorage.zipcode;
     $scope.radius = $window.localStorage.radius;
     $scope.username = $window.localStorage.username;
@@ -275,9 +275,9 @@
 
   }
 
-  IndexStoreController.$inject = ['$scope', '$window', '$state', 'ngToast', 'StoreService', '$uibModal'];
+  StoresController.$inject = ['$scope', '$window', '$state', 'ngToast', 'StoreService', '$uibModal'];
 
-  function IndexStoreController ($scope, $window, $state, ngToast, StoreService, $uibModal) {
+  function StoresController ($scope, $window, $state, ngToast, StoreService, $uibModal) {
     var zipcode = $window.localStorage.zipcode;
     var lat = $window.localStorage.lat;
     var lng = $window.localStorage.lng;
@@ -300,9 +300,9 @@
     getZipcodeStores();
   }
 
-  IndexProductController.$inject = ['$scope', '$window', '$state', '$uibModal', 'ngToast', 'StoreService'];
+  ProductsController.$inject = ['$scope', '$window', '$state', '$uibModal', 'ngToast', 'StoreService'];
 
-  function IndexProductController ($scope, $window, $state, $uibModal, ngToast, StoreService) {
+  function ProductsController ($scope, $window, $state, $uibModal, ngToast, StoreService) {
     var zipcode = $window.localStorage.zipcode;
     var lat = $window.localStorage.lat;
     var lng = $window.localStorage.lng;
@@ -314,7 +314,7 @@
         var editProductModal = $uibModal.open({
           animation: true,
           templateUrl: '/static/js/modals/views/editProduct.html',
-          controller: 'IndexEditProductController',
+          controller: 'EditProductController',
           size: 'sm',
           resolve: {
             price: function () {
@@ -367,9 +367,9 @@
     getZipcodeProducts();
   }
 
-  IndexSingleStoreController.$inject = ['$scope', '$window', '$stateParams', '$uibModal', 'StoreService', 'ngToast'];
+  StoreController.$inject = ['$scope', '$window', '$stateParams', '$uibModal', 'StoreService', 'ngToast'];
 
-  function IndexSingleStoreController ($scope, $window, $stateParams, $uibModal, StoreService, ngToast) {
+  function StoreController ($scope, $window, $stateParams, $uibModal, StoreService, ngToast) {
 
     var zipcode = $window.localStorage.zipcode;
     var lat = $window.localStorage.lat;
@@ -381,7 +381,7 @@
         var editProductModal = $uibModal.open({
           animation: true,
           templateUrl: '/static/js/modals/views/editProduct.html',
-          controller: 'IndexEditProductController',
+          controller: 'EditProductController',
           size: 'sm',
           resolve: {
             price: function () {
@@ -449,7 +449,6 @@
 
   function IndexCartController ($scope, $window, ngToast, ngCart, NgMap) {
 
-    var zipcode = $window.localStorage.zipcode;
     $scope.lat = $window.localStorage.lat;
     $scope.lng = $window.localStorage.lng;
 
@@ -474,9 +473,9 @@
     };
   }
 
-  IndexEditProductController.$inject = ['$scope', '$uibModalInstance', 'price'];
+  EditProductController.$inject = ['$scope', '$uibModalInstance', 'price'];
 
-  function IndexEditProductController ($scope, $uibModalInstance, price) {
+  function EditProductController ($scope, $uibModalInstance, price) {
 
     $scope.productEditModel = {
       'price': price

@@ -39,7 +39,7 @@
         abstract: true,
         url: '/',
         templateUrl: '/static/js/index/views/index.html',
-        controller: 'IndexNavController'
+        controller: 'NavController'
       })
       .state('index.merchant', {
         url: 'merchant',
@@ -54,17 +54,17 @@
       .state('index.stores', {
         url: 'stores',
         templateUrl: '/static/js/index/views/index.stores.html',
-        controller: 'IndexStoreController'
+        controller: 'StoresController'
       })
       .state('index.products', {
         url: 'products',
         templateUrl: '/static/js/index/views/index.products.html',
-        controller: 'IndexProductController'
+        controller: 'ProductsController'
       })
       .state('index.store', {
         url: 'store/:storeId',
         templateUrl: '/static/js/index/views/index.store.html',
-        controller: 'IndexSingleStoreController'
+        controller: 'StoreController'
       })
       .state('index.cart', {
         url: 'cart',

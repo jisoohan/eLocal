@@ -84,6 +84,10 @@
           $window.localStorage.removeItem('username');
           $window.localStorage.removeItem('userId');
           $window.localStorage.removeItem('is_staff');
+          $window.localStorage.removeItem('zipcode');
+          $window.localStorage.removeItem('lat');
+          $window.localStorage.removeItem('lng');
+          $window.localStorage.removeItem('radius');
           deferred.resolve();
         },
         function (error) {

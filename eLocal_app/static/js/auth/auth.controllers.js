@@ -47,7 +47,9 @@
       }
     ];
 
-    $scope.loginModel = {};
+    $scope.loginModel = {
+      'radius': 5
+    };
     $scope.loginFields = [
       {
         key: 'username',
@@ -66,13 +68,7 @@
           placeholder: 'Password',
           required: true
         }
-      }
-    ];
-
-    $scope.zipcodeModel = {
-      'radius': 5
-    };
-    $scope.zipcodeFields = [
+      },
       {
         key: 'zipcode',
         type: 'input',
@@ -117,20 +113,20 @@
       }
     ];
 
-    $scope.enterZipcode = function () {
-      if ($scope.zipcodeModel.zipcode.length == 5 && $scope.zipcodeModel.zipcode.match(/^[0-9]+$/) != null) {
-        GeoCoder.geocode({address: $scope.zipcodeModel.zipcode}).then(
+    function enterZipcode () {
+      if ($scope.loginModel.zipcode.length == 5 && $scope.loginModel.zipcode.match(/^[0-9]+$/) != null) {
+        GeoCoder.geocode({address: $scope.loginModel.zipcode}).then(
           function (response) {
             var lat = response[0].geometry.location.lat();
             var lng = response[0].geometry.location.lng();
-            $window.localStorage.zipcode = $scope.zipcodeModel.zipcode;
+            $window.localStorage.zipcode = $scope.loginModel.zipcode;
             $window.localStorage.lat = lat;
             $window.localStorage.lng = lng;
-            $window.localStorage.radius = $scope.zipcodeModel.radius;
+            $window.localStorage.radius = $scope.loginModel.radius;
             $state.go('index.stores');
           },
           function (response) {
-            $scope.zipcodeFormOptions.resetModel();
+            $scope.loginFormOptions.resetModel();
             ngToast.danger({
               content: 'Enter a valid zipcode',
               dismissButton: true
@@ -138,13 +134,13 @@
           }
         );
       } else {
-        $scope.zipcodeFormOptions.resetModel();
+        $scope.loginFormOptions.resetModel();
         ngToast.danger({
           content: 'Enter a valid zipcode',
           dismissButton: true
         });
       }
-    };
+    }
 
     $scope.register = function () {
       if ($scope.registerModel.is_staff == null) {
@@ -173,7 +169,7 @@
     $scope.login = function () {
       AuthService.login($scope.loginModel).then(
         function () {
-          $state.go('index.stores');
+          enterZipcode();
         },
         function (error) {
           ngToast.danger({

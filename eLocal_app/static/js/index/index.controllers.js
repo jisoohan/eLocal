@@ -278,10 +278,17 @@
   StoresController.$inject = ['$scope', '$window', '$state', 'ngToast', 'StoreService', '$uibModal'];
 
   function StoresController ($scope, $window, $state, ngToast, StoreService, $uibModal) {
+    if (!$window.localStorage.token) {
+      $state.go('auth');
+      return;
+    }
     var zipcode = $window.localStorage.zipcode;
     var lat = $window.localStorage.lat;
     var lng = $window.localStorage.lng;
     var radius = $window.localStorage.radius;
+
+    $scope.username = $window.localStorage.username;
+    $scope.userId = $window.localStorage.userId;
 
     function getZipcodeStores () {
       StoreService.getZipcodeStores({'lat': lat, 'lng': lng, 'radius': radius}).then(
@@ -370,10 +377,17 @@
   StoreController.$inject = ['$scope', '$window', '$stateParams', '$uibModal', 'StoreService', 'ngToast'];
 
   function StoreController ($scope, $window, $stateParams, $uibModal, StoreService, ngToast) {
+    if (!$window.localStorage.token) {
+      $state.go('auth');
+      return;
+    }
 
     var zipcode = $window.localStorage.zipcode;
     var lat = $window.localStorage.lat;
     var lng = $window.localStorage.lng;
+
+    $scope.username = $window.localStorage.username;
+    $scope.userId = $window.localStorage.userId;
 
     $scope.editProduct = function (product) {
       var index = $scope.products.indexOf(product);
@@ -448,6 +462,10 @@
   IndexCartController.$inject = ['$scope', '$window', 'ngToast', 'ngCart', 'NgMap'];
 
   function IndexCartController ($scope, $window, ngToast, ngCart, NgMap) {
+    if (!$window.localStorage.token) {
+      $state.go('auth');
+      return;
+    }
 
     $scope.lat = $window.localStorage.lat;
     $scope.lng = $window.localStorage.lng;

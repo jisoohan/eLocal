@@ -12,16 +12,6 @@
       </form>
     </div>
 
-    <div class="row col-sm-12">
-      <h1>Enter Zipcode</h1>
-      <form ng-submit="enterZipcode()" name="zipcodeForm" role="form" novalidate>
-        <formly-form model="zipcodeModel" fields="zipcodeFields" form="zipcodeForm" options="zipcodeFormOptions">
-          <button id="zipcode_submit" type="submit" ng-disabled="zipcodeForm.$invalid" class="btn btn-primary submit-button">Enter</button>
-          <button id="zipcode_reset" type="button" class="btn btn-warning" ng-click="zipcodeFormOptions.resetModel()">Reset</button>
-        </formly-form>
-      </form>
-    </div>
-
   </div>
 
   <div class="col-sm-6">
@@ -36,7 +26,7 @@
       </form>
     </div>
 
-    <div class="row">
+    <div class="row col-sm-8">
       <toast></toast>
     </div>
 

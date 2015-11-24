@@ -5,8 +5,8 @@
   <form ng-submit="editProduct()" name="productEditForm" role="form" novalidate>
     <formly-form model="productEditModel" fields="productEditFields" form="productEditForm">
       <div class="modal-footer">
-        <button type="submit" ng-disabled="productEditForm.$invalid" class="btn btn-primary submit-button pull-right">Edit</button>
-        <button class="btn btn-danger pull-left" type="button" ng-click="cancel()">Cancel</button>
+        <button id="editProduct_submit" type="submit" ng-disabled="productEditForm.$invalid" class="btn btn-primary submit-button pull-right">Edit</button>
+        <button id="editProduct_cancel" class="btn btn-danger pull-left" type="button" ng-click="cancel()">Cancel</button>
       </div>
     </formly-form>
   </form>

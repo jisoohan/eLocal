@@ -27,7 +27,7 @@
             </tfoot>
             <tbody>
             <tr ng-repeat="item in ngCart.getCart().items track by $index">
-                <td><span ng-click="ngCart.removeItemById(item.getId())" class="glyphicon glyphicon-remove"></span></td>
+                <td><span id="removeCart" ng-click="ngCart.removeItemById(item.getId())" class="glyphicon glyphicon-remove"></span></td>
                 <td>{{ item.getName() }}</td>
                 <td>{{item.getData().name}}</td>
                 <td>

@@ -12,6 +12,20 @@
 .st-sort-descent:after {
     content: '\25BC';
 }
+.thumb {
+    width: 150px;
+    height: 150px;
+    float: none;
+    position: relative;
+    top: 7px;
+}
+.thumb-product {
+    width: 64;
+    height: 64;
+    float: none;
+    position: relative;
+    top: 7px;
+}
 </style>
 
 <header>
@@ -24,10 +38,12 @@
     </div>
 
     <ul class="nav navbar-nav navbar-right">
-      <li><a ui-sref="auth">Home</a></li>
+      <li><a class="navbar-brand" href="">{{username}}</a></li>
       <li><a ui-sref="index.stores">Stores</a></li>
       <li><a ui-sref="index.products">Products</a></li>
-      <li><a id="cart" href="" ui-sref="index.cart" style="padding: 7px 0 0 0; width:145px;"><ngcart-summary></ngcart-summary></a></li>
+      <li><a ui-sref="index.merchant" ng-show="is_staff">Merchant</a></li>
+      <li><a href="" ui-sref="index.cart" style="padding: 7px 0 0 0; width:145px;"><ngcart-summary></ngcart-summary></a></li>
+      <li><a href="" ng-click="logout()">Logout</a></li>
     </ul>
   </div>
   </nav>

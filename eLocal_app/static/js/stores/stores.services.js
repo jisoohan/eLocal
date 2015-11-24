@@ -29,6 +29,10 @@
       });
     };
 
+    service.getMerchantStore = function (store_id) {
+      return $http.get(API_SERVER + 'api/stores/' + store_id + '/merchant_store_info/');
+    };
+
     service.getStore = function (store_id) {
       return $http.get(API_SERVER + 'api/stores/' + store_id + '/store_info/');
     };

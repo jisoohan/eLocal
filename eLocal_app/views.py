@@ -7,7 +7,7 @@ from rest_framework import permissions, viewsets, status, pagination
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.decorators import api_view, permission_classes, detail_route, list_route
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_extensions.mixins import DetailSerializerMixin
@@ -21,7 +21,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer = UserSerializer
 
-    @detail_route(methods=['get'], permission_classes=[IsAuthenticated])
+    @detail_route(methods=['get'], permission_classes=[IsAuthenticated, IsAdminUser])
     def stores(self, request, pk=None):
         if request.method == 'GET':
             user = User.objects.get(id=pk)
@@ -29,7 +29,7 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer = StoreSerializer(stores, many=True)
             return Response(serializer.data)
 
-    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser])
     def create_store(self, request, pk=None):
         if request.method == 'POST':
             user = User.objects.get(id=pk)
@@ -60,7 +60,7 @@ class UserViewSet(viewsets.ModelViewSet):
             store_serializer = StoreSerializer(store)
             return Response(store_serializer.data)
 
-    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser])
     def delete_store(self, request, pk=None):
         if request.method == 'POST':
             Store.objects.get(id=pk).address.delete()
@@ -70,7 +70,7 @@ class StoreViewSet(viewsets.ModelViewSet):
     queryset = Store.objects.all()
     serializer_class = StoreSerializer
 
-    @list_route(methods=['post'], permission_classes=[AllowAny])
+    @list_route(methods=['post'], permission_classes=[IsAuthenticated])
     def stores_in_zipcode(self, request):
         lat = request.data['lat']
         lng = request.data['lng']
@@ -86,7 +86,7 @@ class StoreViewSet(viewsets.ModelViewSet):
                 stores.append(store_data)
         return Response(stores)
 
-    @list_route(methods=['post'], permission_classes=[AllowAny])
+    @list_route(methods=['post'], permission_classes=[IsAuthenticated])
     def products_in_zipcode(self, request):
         lat = request.data['lat']
         lng = request.data['lng']
@@ -103,18 +103,24 @@ class StoreViewSet(viewsets.ModelViewSet):
                         products_result.append(product)
         return Response(products_result)
 
-    @detail_route(methods=['get'], permission_classes=[AllowAny])
-    def store_info(self, request, pk=None):
+    @detail_route(methods=['get'], permission_classes=[IsAuthenticated, IsAdminUser])
+    def merchant_store_info(self, request, pk=None):
         if request.method == 'GET':
             store = Store.objects.get(id=pk)
-            print(store.has_card)
-            if not request.user.is_anonymous() and store.user.id is not request.user.id:
+            if store.user.id is not request.user.id:
                 return Response({'error': 'Cannot get store'}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 store_serializer = StoreSerializer(store)
                 return Response(store_serializer.data)
 
-    @detail_route(methods=['post'], permission_classes=[AllowAny])
+    @detail_route(methods=['get'], permission_classes=[IsAuthenticated])
+    def store_info(self, request, pk=None):
+        if request.method == 'GET':
+            store = Store.objects.get(id=pk)
+            store_serializer = StoreSerializer(store)
+            return Response(store_serializer.data)
+
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser])
     def add_product(self, request, pk=None):
         if request.method == 'POST':
             store = Store.objects.get(id=pk)
@@ -126,20 +132,20 @@ class StoreViewSet(viewsets.ModelViewSet):
             product_serializer = ProductSerializer(product)
             return Response(product_serializer.data)
 
-    @detail_route(methods=['post'], permission_classes=[AllowAny])
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser])
     def delete_product(self, request, pk=None):
         if request.method == 'POST':
             Product.objects.get(id=pk).delete()
             return Response({'success': 'Product Deleted'})
 
-    @detail_route(methods=['get'], permission_classes=[AllowAny])
+    @detail_route(methods=['get'], permission_classes=[IsAuthenticated])
     def products(self, request, pk=None):
         if request.method == 'GET':
             products = Product.objects.select_related('store').filter(store_id=pk).order_by('name')
             product_serializer = ProductSerializer(products, many=True)
             return Response(product_serializer.data)
 
-    @detail_route(methods=['post'], permission_classes=[AllowAny])
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def edit_product(self, request, pk=None):
         if request.method == 'POST':
             if ('product_name' not in request.data and 'description' not in request.data):
@@ -156,17 +162,21 @@ def register(request):
     if request.method == 'POST':
         username = request.data['username']
         password = request.data['password']
+        is_staff = request.data['is_staff']
+        if is_staff == 'true':
+            staff = True
+        else:
+            staff = False
         if User.objects.filter(username__iexact=username).exists():
             return json_response({'error': 'Username already exists'}, status=400)
         else:
             user = User.objects.create_user(username, email=None, password=password)
+            user.is_staff = staff
+            user.save()
             auth_serializer = AuthTokenSerializer(data={'username': username, 'password': password})
             if auth_serializer.is_valid():
                 token, created = Token.objects.get_or_create(user=user)
-                print(token.key)
-                print(user.username)
-                print(user.id)
-                return json_response({'token': token.key, 'username': user.username, 'userId': user.id})
+                return json_response({'token': token.key, 'username': user.username, 'userId': user.id, 'is_staff': user.is_staff})
             else:
                 return json_response({'error': 'Register failed'}, status=400)
     elif request.method == 'OPTIONS':
@@ -185,7 +195,8 @@ def login(request):
             token, created = Token.objects.get_or_create(user=user)
             return json_response({'token': token.key,
                                  'username': user_serializer.data['username'],
-                                 'userId': user_serializer.data['id']})
+                                 'userId': user_serializer.data['id'],
+                                 'is_staff': user_serializer.data['is_staff']})
         else:
             return json_response({'error': 'Invalid Username/Password'}, status=400)
     elif request.method == 'OPTIONS':

@@ -37,10 +37,19 @@
           placeholder: 'Enter password again',
           required: true
         }
+      },
+      {
+        key: 'is_staff',
+        type: 'checkbox',
+        templateOptions: {
+          label: 'Merchant'
+        }
       }
     ];
 
-    $scope.loginModel = {};
+    $scope.loginModel = {
+      'radius': 5
+    };
     $scope.loginFields = [
       {
         key: 'username',
@@ -59,13 +68,7 @@
           placeholder: 'Password',
           required: true
         }
-      }
-    ];
-
-    $scope.zipcodeModel = {
-      'radius': 5
-    };
-    $scope.zipcodeFields = [
+      },
       {
         key: 'zipcode',
         type: 'input',
@@ -110,20 +113,20 @@
       }
     ];
 
-    $scope.enterZipcode = function () {
-      if ($scope.zipcodeModel.zipcode.length == 5 && $scope.zipcodeModel.zipcode.match(/^[0-9]+$/) != null) {
-        GeoCoder.geocode({address: $scope.zipcodeModel.zipcode}).then(
+    function enterZipcode () {
+      if ($scope.loginModel.zipcode.length == 5 && $scope.loginModel.zipcode.match(/^[0-9]+$/) != null) {
+        GeoCoder.geocode({address: $scope.loginModel.zipcode}).then(
           function (response) {
             var lat = response[0].geometry.location.lat();
             var lng = response[0].geometry.location.lng();
-            $window.localStorage.zipcode = $scope.zipcodeModel.zipcode;
+            $window.localStorage.zipcode = $scope.loginModel.zipcode;
             $window.localStorage.lat = lat;
             $window.localStorage.lng = lng;
-            $window.localStorage.radius = $scope.zipcodeModel.radius;
+            $window.localStorage.radius = $scope.loginModel.radius;
             $state.go('index.stores');
           },
           function (response) {
-            $scope.zipcodeFormOptions.resetModel();
+            $scope.loginFormOptions.resetModel();
             ngToast.danger({
               content: 'Enter a valid zipcode',
               dismissButton: true
@@ -131,24 +134,27 @@
           }
         );
       } else {
-        $scope.zipcodeFormOptions.resetModel();
+        $scope.loginFormOptions.resetModel();
         ngToast.danger({
           content: 'Enter a valid zipcode',
           dismissButton: true
         });
       }
-    };
+    }
 
     $scope.register = function () {
+      if ($scope.registerModel.is_staff == null) {
+        $scope.registerModel.is_staff = false;
+      }
       if ($scope.registerModel.password != $scope.registerModel.checkpw) {
         ngToast.danger({
           content: 'Passwords do not match',
           dismissButton: true
         });
       } else {
-        AuthService.register($scope.registerModel.username, $scope.registerModel.password).then(
+        AuthService.register($scope.registerModel).then(
           function () {
-            $state.go('merchant.home');
+            $state.go('index.stores');
           },
           function (error) {
             ngToast.danger({
@@ -161,9 +167,9 @@
     };
 
     $scope.login = function () {
-      AuthService.login($scope.loginModel.username, $scope.loginModel.password).then(
+      AuthService.login($scope.loginModel).then(
         function () {
-          $state.go('merchant.home');
+          enterZipcode();
         },
         function (error) {
           ngToast.danger({

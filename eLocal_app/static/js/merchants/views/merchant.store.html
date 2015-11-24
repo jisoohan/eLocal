@@ -25,13 +25,13 @@
       <form form="form" class="form text-center">
         <h1>Add Product</h1>
         <div class="form-group col-xs-12">
-          <input ng-model="productForm.product_name" class="form-control" placeholder="Product Name" type="text" required></input>
+          <input id='addProduct_name' ng-model="productForm.product_name" class="form-control" placeholder="Product Name" type="text" required></input>
         </div>
         <div class="form-group col-xs-12">
-          <textarea ng-model="productForm.description" class="form-control" placeholder="Description" type="textarea" required></textarea>
+          <textarea id='addProduct_description' ng-model="productForm.description" class="form-control" placeholder="Description" type="textarea" required></textarea>
         </div>
         <div class="form-group col-xs-12">
-          <input ng-model="productForm.price" class="form-control" placeholder="Price" min="0.01" max="9999.99" type="number" required></input>
+          <input id='addProduct_price' ng-model="productForm.price" class="form-control" placeholder="Price" min="0.01" max="9999.99" type="number" required></input>
         </div>
         <div class="form-group col-xs-12">
           <input class="form-control" type="file" ngf-select ng-model="productForm.file" name="file" ngf-pattern="'image/*'" accept="image/*" ngf-max-size="5MB" ngf-min-height="64" ngf-resize="{width: 64, height: 64}" />
@@ -39,10 +39,10 @@
           <img ngf-thumbnail="productForm.file" class="thumb-product" />
         </div>
         <div class="form-group col-xs-4">
-          <button type="reset" ng-click="productForm.file = null" class="btn btn-warning pull-left">Reset</button>
+          <button id='addProduct_reset' type="reset" ng-click="productForm.file = null" class="btn btn-warning pull-left">Reset</button>
         </div>
         <div class="form-group col-xs-4 col-xs-offset-4">
-          <button ng-click="addProduct()" type="submit" class="btn btn-success pull-right">Add Product</button>
+          <button id='addProduct_submit' ng-click="addProduct()" type="submit" class="btn btn-success pull-right">Add Product</button>
         </div>
       </form>
     </div>

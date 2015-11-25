@@ -142,25 +142,33 @@
     }
     $scope.username = $window.localStorage.username;
     $scope.userId = $window.localStorage.userId;
+    $scope.productForm = {};
 
     $scope.addProduct = function () {
-      ProductService.addProduct($stateParams.storeId, $scope.productForm).then(
-        function (response) {
-          response.data.price = Number(response.data.price)
-          $scope.products.push(response.data);
-          $scope.productForm = {};
-          ngToast.success({
-            content: 'Product added',
-            dismissButton: true
-          });
-        },
-        function (response) {
-          ngToast.danger({
-            content: 'Error while adding product',
-            dismissButton: true
-          });
-        }
-      );
+      if ($scope.productForm.product_name && $scope.productForm.description && $scope.productForm.price) {
+        ProductService.addProduct($stateParams.storeId, $scope.productForm).then(
+          function (response) {
+            response.data.price = Number(response.data.price)
+            $scope.products.push(response.data);
+            $scope.productForm = {};
+            ngToast.success({
+              content: 'Product added',
+              dismissButton: true
+            });
+          },
+          function (response) {
+            ngToast.danger({
+              content: 'Error while adding product',
+              dismissButton: true
+            });
+          }
+        );
+      } else {
+        ngToast.warning({
+          content: 'Fill out all form fields',
+          dismissButton: true
+        });
+      }
     };
 
     $scope.editProduct = function (product) {

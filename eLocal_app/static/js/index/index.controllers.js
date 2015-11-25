@@ -53,6 +53,7 @@
 
     $scope.username = $window.localStorage.username;
     $scope.userId = $window.localStorage.userId;
+    $scope.storeForm = {};
 
     $scope.placeChanged = function() {
        $scope.storeModel = this.getPlace();
@@ -99,23 +100,30 @@
     }
 
     $scope.createStore = function () {
-      StoreService.createStore($scope.userId, $scope.storeForm).then(
-        function (response) {
-          $scope.stores.push(response.data);
-          $scope.storeForm = null;
-          $scope.address = null;
-          ngToast.success({
-            content: "Created store",
-            dismissButton: true
-          });
-        },
-        function (response) {
-          ngToast.danger({
-            content: "Error while creating store",
-            dismissButton: true
-          });
-        }
-      );
+      if ($scope.storeForm.store_name && $scope.storeForm.st_number && $scope.storeForm.st_name && $scope.storeForm.city && $scope.storeForm.state && $scope.storeForm.country && $scope.storeForm.zipcode && $scope.storeForm.lat && $scope.storeForm.lng) {
+        StoreService.createStore($scope.userId, $scope.storeForm).then(
+          function (response) {
+            $scope.stores.push(response.data);
+            $scope.storeForm = null;
+            $scope.address = null;
+            ngToast.success({
+              content: "Created store",
+              dismissButton: true
+            });
+          },
+          function (response) {
+            ngToast.danger({
+              content: "Error while creating store",
+              dismissButton: true
+            });
+          }
+        );
+      } else {
+        ngToast.warning({
+          content: "Fill out all form fields",
+          dismissButton: true
+        });
+      }
     };
 
     getMerchantStores();

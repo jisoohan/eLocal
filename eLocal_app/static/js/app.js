@@ -3,6 +3,7 @@
 
   angular.module('Auth', []);
   angular.module('Store', []);
+  angular.module('Product', []);
   angular.module('Index', []);
 
   angular.module('udekApp', [
@@ -20,6 +21,7 @@
     'ngFileUpload',
     'Auth',
     'Store',
+    'Product',
     'Index'
   ])
 

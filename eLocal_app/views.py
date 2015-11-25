@@ -21,70 +21,9 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer = UserSerializer
 
-    @detail_route(methods=['get'], permission_classes=[IsAuthenticated, IsAdminUser])
-    def stores(self, request, pk=None):
-        if request.method == 'GET':
-            user = User.objects.get(id=pk)
-            stores = Store.objects.select_related('user').filter(user_id=user.id).order_by('name')
-            serializer = StoreSerializer(stores, many=True)
-            return Response(serializer.data)
-
-    @detail_route(methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser])
-    def create_store(self, request, pk=None):
-        if request.method == 'POST':
-            user = User.objects.get(id=pk)
-            address_data = {
-                'st_number': request.data['st_number'],
-                'st_name': request.data['st_name'],
-                'city': request.data['city'],
-                'state': request.data['state'],
-                'zipcode': request.data['zipcode'],
-                'country': request.data['country'],
-                'lat': request.data['lat'],
-                'lng': request.data['lng']
-            }
-            address_serializer = AddressSerializer(data=address_data)
-            if address_serializer.is_valid():
-                address = address_serializer.save()
-            else:
-                return Response({'error': 'Invalid address'}, status=status.HTTP_400_BAD_REQUEST)
-            store = Store.objects.create(user=user, address=address, name=request.data['store_name'])
-            if 'has_card' in request.data:
-                store.has_card = True
-            else:
-                store.has_card = False
-            if 'file' in request.data:
-                image_file = request.data['file']
-                store.image = request.data['file']
-            store.save()
-            store_serializer = StoreSerializer(store)
-            return Response(store_serializer.data)
-
-    @detail_route(methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser])
-    def delete_store(self, request, pk=None):
-        if request.method == 'POST':
-            Store.objects.get(id=pk).address.delete()
-            return Response({'success': 'Store deleted'})
-
-class StoreViewSet(viewsets.ModelViewSet):
-    queryset = Store.objects.all()
-    serializer_class = StoreSerializer
-
-    @list_route(methods=['post'], permission_classes=[IsAuthenticated])
-    def stores_in_zipcode(self, request):
-        lat = request.data['lat']
-        lng = request.data['lng']
-        radius = float(request.data['radius'])
-        stores = [];
-        for store in Store.objects.all().order_by('name'):
-            if check_distance([lat, lng], [store.address.lat, store.address.lng], radius):
-                store_serializer = StoreSerializer(store)
-                store_data = store_serializer.data
-                products = Product.objects.select_related('store').filter(store_id=store_data['id'])
-                product_serializer = ProductSerializer(products, many=True)
-                store_data['products'] = product_serializer.data
-                stores.append(store_data)
-        return Response(stores)
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
 
     @list_route(methods=['post'], permission_classes=[IsAuthenticated])
     def products_in_zipcode(self, request):
@@ -103,58 +42,114 @@ class StoreViewSet(viewsets.ModelViewSet):
                         products_result.append(product)
         return Response(products_result)
 
-    @detail_route(methods=['get'], permission_classes=[IsAuthenticated, IsAdminUser])
-    def merchant_store_info(self, request, pk=None):
-        if request.method == 'GET':
-            store = Store.objects.get(id=pk)
-            if store.user.id is not request.user.id:
-                return Response({'error': 'Cannot get store'}, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                store_serializer = StoreSerializer(store)
-                return Response(store_serializer.data)
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser])
+    def add(self, request, pk=None):
+        store = Store.objects.get(id=pk)
+        product = Product.objects.create(store=store, name=request.data['product_name'], description=request.data['description'], price=round(Decimal(request.data['price']), 2))
+        if 'file' in request.data:
+            image_file = request.data['file']
+            product.image = request.data['file']
+        product.save()
+        product_serializer = ProductSerializer(product)
+        return Response(product_serializer.data)
+
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
+    def edit(self, request, pk=None):
+        if ('product_name' not in request.data and 'description' not in request.data):
+            Product.objects.filter(id=pk).update(price=round(Decimal(request.data['price']), 2))
+        else:
+            Product.objects.filter(id=pk).update(name=request.data['product_name'], description=request.data['description'], price=round(Decimal(request.data['price']), 2))
+        product = Product.objects.get(id=pk)
+        product_serializer = ProductSerializer(product)
+        return Response(product_serializer.data)
 
     @detail_route(methods=['get'], permission_classes=[IsAuthenticated])
-    def store_info(self, request, pk=None):
-        if request.method == 'GET':
-            store = Store.objects.get(id=pk)
-            store_serializer = StoreSerializer(store)
-            return Response(store_serializer.data)
-
-    @detail_route(methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser])
-    def add_product(self, request, pk=None):
-        if request.method == 'POST':
-            store = Store.objects.get(id=pk)
-            product = Product.objects.create(store=store, name=request.data['product_name'], description=request.data['description'], price=round(Decimal(request.data['price']), 2))
-            if 'file' in request.data:
-                image_file = request.data['file']
-                product.image = request.data['file']
-            product.save()
-            product_serializer = ProductSerializer(product)
-            return Response(product_serializer.data)
+    def store_products(self, request, pk=None):
+        products = Product.objects.select_related('store').filter(store_id=pk).order_by('name')
+        product_serializer = ProductSerializer(products, many=True)
+        return Response(product_serializer.data)
 
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser])
     def delete_product(self, request, pk=None):
-        if request.method == 'POST':
-            Product.objects.get(id=pk).delete()
-            return Response({'success': 'Product Deleted'})
+        Product.objects.get(id=pk).delete()
+        return Response({'success': 'Product Deleted'})
+
+class StoreViewSet(viewsets.ModelViewSet):
+    queryset = Store.objects.all()
+    serializer_class = StoreSerializer
+
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser])
+    def create_store(self, request, pk=None):
+        user = User.objects.get(id=pk)
+        address_data = {
+            'st_number': request.data['st_number'],
+            'st_name': request.data['st_name'],
+            'city': request.data['city'],
+            'state': request.data['state'],
+            'zipcode': request.data['zipcode'],
+            'country': request.data['country'],
+            'lat': request.data['lat'],
+            'lng': request.data['lng']
+        }
+        address_serializer = AddressSerializer(data=address_data)
+        if address_serializer.is_valid():
+            address = address_serializer.save()
+        else:
+            return Response({'error': 'Invalid address'}, status=status.HTTP_400_BAD_REQUEST)
+        store = Store.objects.create(user=user, address=address, name=request.data['store_name'])
+        if 'has_card' in request.data:
+            store.has_card = True
+        else:
+            store.has_card = False
+        if 'file' in request.data:
+            image_file = request.data['file']
+            store.image = request.data['file']
+        store.save()
+        store_serializer = StoreSerializer(store)
+        return Response(store_serializer.data)
+
+    @detail_route(methods=['get'], permission_classes=[IsAuthenticated, IsAdminUser])
+    def merchant_stores(self, request, pk=None):
+        user = User.objects.get(id=pk)
+        stores = Store.objects.select_related('user').filter(user_id=user.id).order_by('name')
+        serializer = StoreSerializer(stores, many=True)
+        return Response(serializer.data)
+
+    @detail_route(methods=['get'], permission_classes=[IsAuthenticated, IsAdminUser])
+    def merchant_store(self, request, pk=None):
+        store = Store.objects.get(id=pk)
+        if store.user.id is not request.user.id:
+            return Response({'error': 'Cannot get store'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            store_serializer = StoreSerializer(store)
+            return Response(store_serializer.data)
+
+    @list_route(methods=['post'], permission_classes=[IsAuthenticated])
+    def stores_in_zipcode(self, request):
+        lat = request.data['lat']
+        lng = request.data['lng']
+        radius = float(request.data['radius'])
+        stores = [];
+        for store in Store.objects.all().order_by('name'):
+            if check_distance([lat, lng], [store.address.lat, store.address.lng], radius):
+                store_serializer = StoreSerializer(store)
+                store_data = store_serializer.data
+                products = Product.objects.select_related('store').filter(store_id=store_data['id'])
+                product_serializer = ProductSerializer(products, many=True)
+                store_data['products'] = product_serializer.data
+                stores.append(store_data)
+        return Response(stores)
 
     @detail_route(methods=['get'], permission_classes=[IsAuthenticated])
-    def products(self, request, pk=None):
-        if request.method == 'GET':
-            products = Product.objects.select_related('store').filter(store_id=pk).order_by('name')
-            product_serializer = ProductSerializer(products, many=True)
-            return Response(product_serializer.data)
+    def store(self, request, pk=None):
+        store = Store.objects.get(id=pk)
+        store_serializer = StoreSerializer(store)
+        return Response(store_serializer.data)
 
-    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
-    def edit_product(self, request, pk=None):
-        if request.method == 'POST':
-            if ('product_name' not in request.data and 'description' not in request.data):
-                Product.objects.filter(id=pk).update(price=round(Decimal(request.data['price']), 2))
-            else:
-                Product.objects.filter(id=pk).update(name=request.data['product_name'], description=request.data['description'], price=round(Decimal(request.data['price']), 2))
-            product = Product.objects.get(id=pk)
-            product_serializer = ProductSerializer(product)
-            return Response(product_serializer.data)
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser])
+    def delete_store(self, request, pk=None):
+        Store.objects.get(id=pk).address.delete()
+        return Response({'success': 'Store deleted'})
 
 @api_view(['POST'])
 @permission_classes([AllowAny, ])

@@ -121,9 +121,9 @@
     getMerchantStores();
   }
 
-  MerchantStoreController.$inject = ['$scope', '$window', '$state', '$uibModal', '$stateParams', 'StoreService', 'ngToast'];
+  MerchantStoreController.$inject = ['$scope', '$window', '$state', '$uibModal', '$stateParams', 'StoreService', 'ngToast', 'ProductService'];
 
-  function MerchantStoreController ($scope, $window, $state, $uibModal, $stateParams, StoreService, ngToast) {
+  function MerchantStoreController ($scope, $window, $state, $uibModal, $stateParams, StoreService, ngToast, ProductService) {
     if ($window.localStorage.is_staff == 'false') {
       $state.go('index.stores');
       return;
@@ -136,7 +136,7 @@
     $scope.userId = $window.localStorage.userId;
 
     $scope.addProduct = function () {
-      StoreService.addProduct($stateParams.storeId, $scope.productForm).then(
+      ProductService.addProduct($stateParams.storeId, $scope.productForm).then(
         function (response) {
           response.data.price = Number(response.data.price)
           $scope.products.push(response.data);
@@ -170,7 +170,7 @@
           }
         });
         editProductModal.result.then(function (productEditModel) {
-          StoreService.editStoreProduct(product.id, productEditModel).then(
+          ProductService.editProduct(product.id, productEditModel).then(
             function (response) {
               $scope.products[index].name = response.data.name;
               $scope.products[index].description = response.data.description;
@@ -217,7 +217,7 @@
     $scope.deleteProduct = function (product) {
       var index = $scope.products.indexOf(product);
       if (index !== -1) {
-        StoreService.deleteStoreProduct(product.id).then(
+        ProductService.deleteProduct(product.id).then(
           function (response) {
             $scope.products.splice(index, 1);
             ngToast.success({
@@ -244,7 +244,7 @@
       StoreService.getMerchantStore($stateParams.storeId).then(
         function (response) {
           $scope.store = response.data;
-          StoreService.getStoreProducts($stateParams.storeId).then(
+          ProductService.getStoreProducts($stateParams.storeId).then(
             function (response) {
               $scope.products = response.data;
               for (var i = 0; i < $scope.products.length; i++) {
@@ -307,9 +307,9 @@
     getZipcodeStores();
   }
 
-  ProductsController.$inject = ['$scope', '$window', '$state', '$uibModal', 'ngToast', 'StoreService'];
+  ProductsController.$inject = ['$scope', '$window', '$state', '$uibModal', 'ngToast', 'ProductService'];
 
-  function ProductsController ($scope, $window, $state, $uibModal, ngToast, StoreService) {
+  function ProductsController ($scope, $window, $state, $uibModal, ngToast, ProductService) {
     var zipcode = $window.localStorage.zipcode;
     var lat = $window.localStorage.lat;
     var lng = $window.localStorage.lng;
@@ -330,7 +330,7 @@
           }
         });
         editProductModal.result.then(function (productEditModel) {
-          StoreService.editStoreProduct(product.id, productEditModel).then(
+          ProductService.editProduct(product.id, productEditModel).then(
             function (response) {
               $scope.products[index].price = Number(response.data.price);
               ngToast.success({
@@ -355,7 +355,7 @@
     };
 
     function getZipcodeProducts() {
-      StoreService.getZipcodeProducts({'lat': lat, 'lng': lng, 'radius': radius}).then(
+      ProductService.getZipcodeProducts({'lat': lat, 'lng': lng, 'radius': radius}).then(
         function (response) {
           $scope.products = response.data;
           for (var i = 0; i < $scope.products.length; i++) {
@@ -374,9 +374,9 @@
     getZipcodeProducts();
   }
 
-  StoreController.$inject = ['$scope', '$window', '$stateParams', '$uibModal', 'StoreService', 'ngToast'];
+  StoreController.$inject = ['$scope', '$window', '$stateParams', '$uibModal', 'StoreService', 'ngToast', 'ProductService'];
 
-  function StoreController ($scope, $window, $stateParams, $uibModal, StoreService, ngToast) {
+  function StoreController ($scope, $window, $stateParams, $uibModal, StoreService, ngToast, ProductService) {
     if (!$window.localStorage.token) {
       $state.go('auth');
       return;
@@ -404,7 +404,7 @@
           }
         });
         editProductModal.result.then(function (productEditModel) {
-          StoreService.editStoreProduct(product.id, productEditModel).then(
+          ProductService.editProduct(product.id, productEditModel).then(
             function (response) {
               $scope.products[index].price = Number(response.data.price);
               ngToast.success({
@@ -432,7 +432,7 @@
       StoreService.getStore($stateParams.storeId).then(
         function (response) {
           $scope.store = response.data;
-          StoreService.getStoreProducts($stateParams.storeId).then(
+          ProductService.getStoreProducts($stateParams.storeId).then(
             function (response) {
               $scope.products = response.data;
               for (var i = 0; i < $scope.products.length; i++) {

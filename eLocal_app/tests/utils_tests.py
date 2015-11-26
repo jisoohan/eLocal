@@ -25,5 +25,10 @@ class UtilTest(TestCase):
 		response = json_response(fakeResponseDict, 200)
 		self.assertEquals(200, response.status_code, "Issue with json_response utility in utils.py")
 		
-
+	def testCheckDistance(self):
+		origin = ['37.86373760000001', '-122.26822449999997']
+		destination = [37.847046, -122.26122700000002]
+		radius = 5.0
+		check = check_distance(origin, destination, radius)
+		self.assertEquals(True, check, "Problem with check_distance util")
 	

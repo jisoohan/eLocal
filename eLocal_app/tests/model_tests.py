@@ -1,5 +1,5 @@
 from django.test import TestCase
-from eLocal_app.models import Item, Store, Inventory, OpenHour
+from eLocal_app.models import Address, Store, Product
 from django.core.exceptions import ValidationError
 from datetime import time as TimeOfDay
 # Create your tests here.
@@ -7,78 +7,78 @@ from datetime import time as TimeOfDay
 class InventoryTest(TestCase):
     def setUp(self):
         Inventory.objects.all().delete()
-        Item.objects.all().delete()
+        Product.objects.all().delete()
         Store.objects.all().delete()
     
     def tearDown(self):
         Inventory.objects.all().delete()
-        Item.objects.all().delete()
+        Product.objects.all().delete()
         Store.objects.all().delete()
     
-    def testSearchInvalidItemId(self):
-        with self.assertRaises(Item.DoesNotExist, msg="Getting stores for invalid item ID should fail"):
-            result = Inventory.getStoresForItem(-1)
+    def testSearchInvalidProductId(self):
+        with self.assertRaises(Product.DoesNotExist, msg="Getting stores for invalid Product ID should fail"):
+            result = Inventory.getStoresForProduct(-1)
      
     def testSearchInvalidStoreId(self):
-        with self.assertRaises(Store.DoesNotExist, msg="Getting items for invalid store ID should fail"):
-            result = Inventory.getItemsForStore(-1)
+        with self.assertRaises(Store.DoesNotExist, msg="Getting Products for invalid store ID should fail"):
+            result = Inventory.getProductsForStore(-1)
     
-    def testCreateInvalidItem(self):
+    def testCreateInvalidProduct(self):
         store1 = Store.create("Test store 1", "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
         with self.assertRaises(ValueError, msg="Creating inventory with invalid store should fail"):
             Inventory.create(store1, None, 3.0)
     
     def testCreateInvalidPrice(self):
         store1 = Store.create("Test store 1", "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
-        item1 = Item.create("Test item 1", "Test description")
+        Product1 = Product.create("Test Product 1", "Test description")
         for arg, msg in ((None, "null"),
                               (0.0, "zero"),
                               (1000000.0, "overly large")):
             with self.assertRaises(ValidationError, msg="Creating inventory with {0} price should fail".format(msg)):
-                Inventory.create(store1, item1, arg)
+                Inventory.create(store1, Product1, arg)
     
-    def testHasDuplicateItem(self):
-        item1 = Item.create("Test item 1", "Test description")
-        item2 = Item.create("Another thing", "Test description")
+    def testHasDuplicateProduct(self):
+        Product1 = Product.create("Test Product 1", "Test description")
+        Product2 = Product.create("Another thing", "Test description")
         store1 = Store.create("Test store 1", "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
-        Inventory.create(store1, item1, 3.0)
-        self.assertTrue(Inventory.hasDuplicateItem(item1.name, store1.id), "Inventory does not properly detect duplicate items")
-        self.assertFalse(Inventory.hasDuplicateItem(item2.name, store1.id), "Inventory falsely detects duplicate items")
+        Inventory.create(store1, Product1, 3.0)
+        self.assertTrue(Inventory.hasDuplicateProduct(Product1.name, store1.id), "Inventory does not properly detect duplicate Products")
+        self.assertFalse(Inventory.hasDuplicateProduct(Product2.name, store1.id), "Inventory falsely detects duplicate Products")
         
     
-class ItemTest(TestCase):
+class ProductTest(TestCase):
     def setUp(self):
-        Item.objects.all().delete()
+        Product.objects.all().delete()
     
     def tearDown(self):
-        Item.objects.all().delete()
+        Product.objects.all().delete()
     
-    def testSearchItem(self):
-        item1 = Item.create("Test item 1", "Test description")
-        item2 = Item.create("Another thing", "Test description")
-        item3 = Item.create("Third itEm", "Test description")
-        search_1 = Item.getItems("Test item 1")
-        self.assertEqual(len(search_1), 1, "Item search with full string should return one item")
-        self.assertEqual(item1.id, search_1[0].id, "Item search returned irrelevant item")
-        search_2 = Item.getItems("iTeM 1")
-        self.assertEqual(len(search_2), 1, "Item search should be case-insensitive and should return one item")
-        self.assertEqual(item1.id, search_2[0].id, "Item search returned irrelevant item")
-        result = Item.getItems('HUi887zu8HDzdKNNarDXujvvkzE')
+    def testSearchProduct(self):
+        Product1 = Product.create("Test Product 1", "Test description")
+        Product2 = Product.create("Another thing", "Test description")
+        Product3 = Product.create("Third Product", "Test description")
+        search_1 = Product.getProducts("Test Product 1")
+        self.assertEqual(len(search_1), 1, "Product search with full string should return one Product")
+        self.assertEqual(Product1.id, search_1[0].id, "Product search returned irrelevant Product")
+        search_2 = Product.getProducts("Product 1")
+        self.assertEqual(len(search_2), 1, "Product search should be case-insensitive and should return one Product")
+        self.assertEqual(Product1.id, search_2[0].id, "Product search returned irrelevant Product")
+        result = Product.getProducts('HUi887zu8HDzdKNNarDXujvvkzE')
         self.assertEqual(0, len(result), "Store queries with non-matching keyword should return 0 results")
     
-    def testSearchInvalidItem(self):
+    def testSearchInvalidProduct(self):
         for arg, msg in ((None, "null"),
                               ("", "empty"),
                               ("A"*129, "overly long"),
                               (1, "non-string")):
-            with self.assertRaises(ValidationError, msg="Item search with {0} keyword should fail".format(msg)):
-                Item.getItems(arg)
+            with self.assertRaises(ValidationError, msg="Product search with {0} keyword should fail".format(msg)):
+                Product.getProducts(arg)
     
-    def testCreateItem(self):
-        item1 = Item.create("Test item 1", "Test description")
-        self.assertEqual("Test item 1", item1.name, "Item name is not correctly stored")
+    def testCreateProduct(self):
+        Product1 = Product.create("Test Product 1", "Test description")
+        self.assertEqual("Test Product 1", Product1.name, "Product name is not correctly stored")
     
-    def testCreateInvalidItem(self):
+    def testCreateInvalidProduct(self):
         i = 0
         for min_len, max_len, field in ((1, 128, "name"),
                                         (1, 1024, "description")):
@@ -90,20 +90,20 @@ class ItemTest(TestCase):
                 i += 1
                 with self.assertRaises(ValidationError, msg="Creating store with {0} {1} should fail".format(msg, field)):
                     if field == "name":
-                        Item.create(arg, "Test description")
+                        Product.create(arg, "Test description")
                     elif field == "description":
-                        Item.create("Test item " + str(i), arg)
+                        Product.create("Test Product " + str(i), arg)
     
     def testAddInvalidStore(self):
-        item = Item.create("Test item", "Test description")
-        with self.assertRaises(ValidationError, msg="Adding item to invalid store should fail"):
-            item.addToStore(-1, 3.0)
+        Product = Product.create("Test Product", "Test description")
+        with self.assertRaises(ValidationError, msg="Adding Product to invalid store should fail"):
+            Product.addToStore(-1, 3.0)
     
     def testAddToStore(self):
-        item = Item.create("Test item", "Test description")
+        Product = Product.create("Test Product", "Test description")
         store = Store.create("Test store", "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
-        item.addToStore(store.id, 3.0)
-        self.assertEquals(1, len(item.store_set.all()), "Item does not properly record its stores")
+        Product.addToStore(store.id, 3.0)
+        self.assertEquals(1, len(Product.store_set.all()), "Product does not properly record its stores")
         
     
 class StoreTest(TestCase):
@@ -113,10 +113,10 @@ class StoreTest(TestCase):
     def tearDown(self):
         Store.objects.all().delete()
     
-    def testAddInvalidItem(self):
+    def testAddInvalidProduct(self):
         store1 = Store.create("Test store", "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
-        with self.assertRaises(ValidationError, msg="Adding invalid item to store should fail"):
-            store1.addItem(-1, 3.0)
+        with self.assertRaises(ValidationError, msg="Adding invalid Product to store should fail"):
+            store1.addProduct(-1, 3.0)
     
     def testCreateStore(self):
         store1 = Store.create("Test store 1", "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
@@ -245,18 +245,18 @@ class OpenHourTest(TestCase):
 class ModelFunctionalTest(TestCase):
     def setUp(self):
         Inventory.objects.all().delete()
-        Item.objects.all().delete()
+        Product.objects.all().delete()
         Store.objects.all().delete()
     
     def tearDown(self):
         Inventory.objects.all().delete()
-        Item.objects.all().delete()
+        Product.objects.all().delete()
         Store.objects.all().delete()
 
     def testAddInventory(self):
-        item = Item.create("Test item", "Test description")
+        Product = Product.create("Test Product", "Test description")
         store = Store.create("Test store", "Test address", "Test city", "CA", "12345", "US", False, 1.0, -2.0)
-        inventory = store.addItem(item.id, 12345.67)
-        self.assertEqual(1, len(Inventory.getStoresForItem(item.id)), "Item should remember the store that it is added to")
-        self.assertEqual(1, len(Inventory.getItemsForStore(store.id)), "Store should remember the item that it has")
-        self.assertEqual(12345.67, Inventory.getPrice(store.id, item.id), "Inventory should remember a store's price for an item")
+        inventory = store.addProduct(Product.id, 12345.67)
+        self.assertEqual(1, len(Inventory.getStoresForProduct(Product.id)), "Product should remember the store that it is added to")
+        self.assertEqual(1, len(Inventory.getProductsForStore(store.id)), "Store should remember the Product that it has")
+        self.assertEqual(12345.67, Inventory.getPrice(store.id, Product.id), "Inventory should remember a store's price for an Product")

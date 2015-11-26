@@ -106,8 +106,9 @@ class StoreViewSet(viewsets.ModelViewSet):
     @detail_route(methods=['get'], permission_classes=[IsAuthenticated, IsAdminUser])
     def merchant_store_info(self, request, pk=None):
         if request.method == 'GET':
-            store = Store.objects.get(id=pk)
-            if store.user.id is not request.user.id:
+            store = Store.objects.filter(id=pk)
+            store = store[0] if len(store) > 0 else None
+            if store is None or store.user.id is not request.user.id:
                 return Response({'error': 'Cannot get store'}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 store_serializer = StoreSerializer(store)
@@ -148,6 +149,8 @@ class StoreViewSet(viewsets.ModelViewSet):
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def edit_product(self, request, pk=None):
         if request.method == 'POST':
+            if len(Product.objects.filter(id=pk)) == 0:
+                return Response({'error': 'Cannot get product'}, status=status.HTTP_400_BAD_REQUEST)
             if ('product_name' not in request.data and 'description' not in request.data):
                 Product.objects.filter(id=pk).update(price=round(Decimal(request.data['price']), 2))
             else:

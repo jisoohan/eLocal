@@ -1,0 +1,31 @@
+<div class="container">
+
+  <div class="col-sm-12">
+
+    <div class="row">
+      <toast></toast>
+    </div>
+
+    <table st-table="displayedStores" st-safe-src="stores" class="table table-striped">
+      <thead>
+      <tr>
+        <th class="sortable" st-sort="name">Store</th>
+        <th>
+        <th>Address</th>
+      </tr>
+      <tr>
+        <th colspan="5"><input id="storeSearch" st-search="" class="form-control" placeholder="Search stores" type="text"/></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="store in displayedStores">
+        <td><a href="" ui-sref="index.store({'storeId': store.id})">{{store.name}}</a></td>
+        <td><span ng-show="{{store.has_card}}" class="glyphicon glyphicon-credit-card"></span></td>
+        <td>
+          {{store.address.st_number}} {{store.address.st_name}}, {{store.address.city}}, {{store.address.state}} {{store.address.zipcode}}
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+</div>

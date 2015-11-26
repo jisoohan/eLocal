@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import NoSuchElementException
 # eLocal_app import utils, views
 
 class UITest(unittest.TestCase):
@@ -18,289 +19,237 @@ class UITest(unittest.TestCase):
         driver = self.driver
         wait = WebDriverWait(self.driver, 10)
         sec = 0.5
-        invalid_zipCode = ['1', '12', '123', '1234', 'a', 'aa', 'aaa', 'aaaa', '@/abc', '1234@', '@1234', '!@123', '!@a12']
+        invalid_zipCode = ['1', '12', '123', '1234', 'a', 'aa', 'aaa', 
+                            'aaaa', '@/abc', '1234@', '@1234', '!@123', '!@a12']
+
+        storeName = ["Trader Joe's", "Walgreens", "Safeway"]
+        storeName_dropdown = {0: 4, 1: 2, 2: 1}
+        storeName_place = {0: " on College Ave", 1: " on Shattuck Ave", 2: " on Shattuck Place"}
+        storeName_membership = {0: True, 1: True, 2: True}
+        productName = {0: ["Campbell's Soup", "Ribeye Steak", "Garbanzo Beans"], 
+                        1: ["Garnier's Shampoo", "Dawn Hand Soap", "Sports Sunscreen"], 
+                         2: ["Aspirin", "Cough Drops", "Vicks NyQuil"]}
+        productDescription = {0: ["Tomato Soup sponsored by Campbell's.", "Tender slice of beef.", "Light brown beans used mainly for soups and dips."], 
+                            1: ["Grapefruit antioxidant fortifying shampoo and conditioner.", "Antibacterial hand or dishwasher soap.", "SPF of 70+, dry-touch sunscreen lotion."], 
+                            2: ["Pain reliever Tablets 325 mg.", "Honey-lemon flavored, ideal for sore throat.", "Cold and flu relief liquid, original, 12 oz. 2 pk."]}
+        productPrice = {0: ["1.10", "3.30", "0.50"], 
+                        1: ["2.50", "2.00", "5.50"], 
+                         2: ["7.80", "3.50", "8.00"]}  
 
         print("\ntest_HomePage\n")
-        #self.driver.get('http://localhost:8000')
-        self.driver.get("http://elocalshops.herokuapp.com")
-        print("\ntest_Invalid_Zipcodes\n")
-        for i in range(len(invalid_zipCode)):
-            inputElement_ZipCode = driver.find_element_by_id("zip_code")
-            inputElement_ZipCode.send_keys(invalid_zipCode[i])
-            inputElement_Radius = driver.find_element_by_id("radius")
-            inputElement_Radius.send_keys("0")
-            submit = driver.find_element_by_id("submitForm")
-            submit.submit()
-            inputElement_ZipCode = driver.find_element_by_id("zip_code")
-            inputElement_ZipCode.clear()
-            bodyText = self.driver.find_element_by_tag_name('body').text 
-            self.assertIn('Must be a valid zipcode', bodyText)
-            print(invalid_zipCode[i] + " No")
+        self.driver.get('http://localhost:8000')
+        #self.driver.get("http://elocalshops.herokuapp.com")
 
-        inputElement_ZipCode = driver.find_element_by_id("zip_code")
+        print("\ntest_Create_Account\n")
+        time.sleep(3)
+        inputElement_CreateUsername = driver.find_element_by_id("registerForm_input_username_0")
+        inputElement_CreateUsername.send_keys("Michael")
+        time.sleep(sec)
+        inputElement_CreatePassword = driver.find_element_by_id("registerForm_input_password_1")
+        inputElement_CreatePassword.send_keys("1234")
+        time.sleep(sec)
+        inputElement_CreatePasswordAgain = driver.find_element_by_id("registerForm_input_checkpw_2")
+        inputElement_CreatePasswordAgain.send_keys("1234")
+        time.sleep(sec)
+        inputElement_Merchant = driver.find_element_by_id("registerForm_checkbox_is_staff_3")
+        inputElement_Merchant.click()
+        time.sleep(sec)
+        submit = driver.find_element_by_id("account_submit")
+        submit.submit()
+        time.sleep(5)
+        try:
+            driver.find_element(By.LINK_TEXT, "Logout").click()
+        except NoSuchElementException:
+            print("\nAlready Created Account\n")
+
+        print("\ntest_Invalid_Zipcodes\n")
+        time.sleep(2)
+        for i in range(len(invalid_zipCode)):
+            inputElement_LoginUsername = driver.find_element_by_id("loginForm_input_username_0")
+            inputElement_LoginUsername.send_keys("Michael")
+            time.sleep(sec)
+            inputElement_LoginPassword = driver.find_element_by_id("loginForm_input_password_1")
+            inputElement_LoginPassword.send_keys("1234")
+            time.sleep(sec)
+            inputElement_ZipCode = driver.find_element_by_id("loginForm_input_zipcode_2")
+            inputElement_ZipCode.send_keys(invalid_zipCode[i])
+            time.sleep(sec)
+            inputElement_Radius = driver.find_element_by_id("loginForm_select_radius_3")
+            inputElement_Radius.send_keys("1")
+            time.sleep(sec)
+            submit = driver.find_element_by_id("login_submit")
+            submit.submit()
+            time.sleep(1)
+
+        inputElement_LoginUsername = driver.find_element_by_id("loginForm_input_username_0")
+        inputElement_LoginUsername.send_keys("Michael")
+        time.sleep(sec)
+        inputElement_LoginPassword = driver.find_element_by_id("loginForm_input_password_1")
+        inputElement_LoginPassword.send_keys("1234")
+        time.sleep(sec)
+        inputElement_ZipCode = driver.find_element_by_id("loginForm_input_zipcode_2")
         inputElement_ZipCode.send_keys("94704")
         time.sleep(sec)
-        inputElement_Radius = driver.find_element_by_id("radius")
-        inputElement_Radius.send_keys("0")
+        inputElement_Radius = driver.find_element_by_id("loginForm_select_radius_3")
+        inputElement_Radius.send_keys("1")
         time.sleep(sec)
-        submit = driver.find_element_by_id("submitForm")
+        submit = driver.find_element_by_id("login_submit")
         submit.submit()
+        time.sleep(1)
 
-        print("\ntest_Navbar_Add_Store\n")
+        driver.find_element(By.LINK_TEXT, "Merchant").click()
+
+
+        print("\ntest_Add_Stores\n")
+        #driver.implicitly_wait(3)
+        time.sleep(5)
+        for i in range(len(storeName)):
+            input_storeAddress = driver.find_element_by_id("store_address")
+            try:
+                driver.find_element(By.LINK_TEXT, storeName[i]+storeName_place[i])
+            except NoSuchElementException:
+                input_storeAddress.send_keys(storeName[i])
+                time.sleep(2)
+                for num in range(storeName_dropdown[i]):
+                    input_storeAddress.send_keys(Keys.ARROW_DOWN)
+                    time.sleep(sec)
+                input_storeAddress.send_keys(Keys.ENTER)
+                time.sleep(sec)
+                input_storeName = driver.find_element_by_id("store_name")
+                input_storeName.send_keys(storeName_place[i])
+                time.sleep(sec)
+                membership_card = driver.find_element_by_id("has_card")
+                if storeName_membership[i]:
+                    membership_card.click()
+                time.sleep(sec)
+                submit = driver.find_element_by_id("addStore_submit")
+                submit.click()
+                time.sleep(5)
+                continue
+            print("\nAlready Created " + storeName[i]+storeName_place[i])
+
+        print("\ntest_Add_Products\n")     
+
+        for i in range(len(storeName)):
+            time.sleep(sec)
+            driver.find_element(By.LINK_TEXT, storeName[i]+storeName_place[i]).click()
+            time.sleep(1)
+            for j in range(len(productName[i])):
+                input_productName = driver.find_element_by_id("addProduct_name")
+                try:
+                    driver.find_element(By.LINK_TEXT, productName[i][j])
+                except NoSuchElementException:
+                    input_productName.send_keys(productName[i][j])
+                    time.sleep(sec)
+                    input_productDescription = driver.find_element_by_id("addProduct_description")
+                    input_productDescription.send_keys(productDescription[i][j])
+                    time.sleep(sec)
+                    input_productPrice = driver.find_element_by_id("addProduct_price")
+                    input_productPrice.send_keys(productPrice[i][j])
+                    time.sleep(sec)
+                    submit = driver.find_element_by_id("addProduct_submit")
+                    submit.click()
+                    time.sleep(sec)
+                    continue
+                print("\nAlready Created " + productName[i][j])
+            driver.find_element(By.LINK_TEXT, "Merchant").click()
+
+        print("\ntest_Edit_Products\n") 
+        editDescription = [" Espanol: Sopa de tomate patrocinado por Campbell.", 
+                            " Espanol: Rebanada de licitación de carne de vacuno.",
+                            " Espanol: Habas marrones claros utilizan principalmente para sopas y salsas.",]
+        editPrice = ['11.10', '33.30', '5.50']
+        driver.find_element(By.LINK_TEXT, storeName[0]+storeName_place[0]).click()
+        for i in range(len(productName[0])):
+            time.sleep(sec)
+            driver.find_element(By.LINK_TEXT, productName[0][i]).click()
+            time.sleep(3)
+            edit_productPrice = driver.find_element_by_id("productEditForm_textarea_description_1")
+            edit_productPrice.send_keys(editDescription[i])
+            time.sleep(sec)
+            edit_productPrice = driver.find_element_by_id("productEditForm_input_price_2")
+            edit_productPrice.clear()
+            edit_productPrice.send_keys(editPrice[i])
+            time.sleep(sec)
+            submit = driver.find_element_by_id("editProduct_submit")
+            submit.click()
+            time.sleep(sec)
+
+        print("\ntest_Delete_Products\n")  
+        delete_product = driver.find_element_by_id("deleteProduct")
+        delete_product.click()
+        time.sleep(sec)
+
+
+        print("\ntest_AddCart\n")
+        time.sleep(1)
+        driver.find_element(By.LINK_TEXT, "Products").click()
         time.sleep(sec)
         driver.find_element(By.PARTIAL_LINK_TEXT, "Add").click()
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Store").click()
-
-        print("\ntest_Add_Store_Form\n")
-        driver.implicitly_wait(3)
-        storeName = driver.find_element_by_id("storeName")
-        storeName.send_keys("Trader's Joe")
+        time.sleep(2)
+        driver.find_element_by_id("cart").click()
+        time.sleep(2)
+        select_travel = driver.find_element_by_id("travel_mode")
+        select_travel.click()
         time.sleep(sec)
-        street_number = driver.find_element_by_id("street_number")
-        street_number.send_keys("1885")
+        select_travel.send_keys(Keys.ARROW_DOWN)
         time.sleep(sec)
-        address = driver.find_element_by_id("route")
-        address.send_keys("University Avenue")
+        select_travel.send_keys(Keys.ENTER)
         time.sleep(sec)
-        city = driver.find_element_by_id("locality")
-        city.send_keys("Berkeley")
+        input_startAddress = driver.find_element_by_id("start_address")
+        input_startAddress.send_keys("UC Berkeley")
         time.sleep(sec)
-        state = driver.find_element_by_id("administrative_area_level_1")
-        state.send_keys("CA")
+        input_startAddress.send_keys(Keys.ARROW_DOWN)
         time.sleep(sec)
-        zipcode = driver.find_element_by_id("postal_code")
-        zipcode.send_keys("94703")
+        input_startAddress.send_keys(Keys.ENTER)
         time.sleep(sec)
-        country = driver.find_element_by_id("country")
-        country.send_keys("US")
+        input_endAddress = driver.find_element_by_id("end_address")
+        input_endAddress.send_keys("Trader Joe's")
         time.sleep(sec)
-        membership_card = driver.find_element_by_id("has_card")
-        membership_card.click()
+        input_endAddress.send_keys(Keys.ARROW_DOWN)
         time.sleep(sec)
-        addStore_submit = driver.find_element_by_id("submitAddStore")
-        addStore_submit.click()
-
-        print("\ntest_Navbar_Add_Product\n")
+        input_endAddress.send_keys(Keys.ARROW_DOWN)
         time.sleep(sec)
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Add").click()
+        input_endAddress.send_keys(Keys.ARROW_DOWN)
         time.sleep(sec)
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Product").click()
-
-        print("\ntest_Add_Product_Form\n")
+        input_endAddress.send_keys(Keys.ARROW_DOWN)
         time.sleep(sec)
-        productName = driver.find_element_by_id("productName")
-        productName.send_keys("Orange")
-        time.sleep(sec)
-        productDescription = driver.find_element_by_id("description")
-        productDescription.send_keys("Fruit that is a good source of vitamin C, and not to mention a very nice ingredient for orange juice.")
-        time.sleep(sec)
-        productPrice = driver.find_element_by_id("productPrice")
-        productPrice.send_keys("0.30")
-        time.sleep(sec)
-        addProduct_submit = driver.find_element_by_id("submitAddProduct")
-        addProduct_submit.click()
-
-        print("\ntest_ProductSearch_Orange\n")
-        time.sleep(sec)
-        product = driver.find_element_by_id("id_name")
-        product.send_keys("orange")
-        time.sleep(sec)
-        productSearch =driver.find_element_by_id("productSearch")
-        productSearch.submit()
-
-        print("\ntest_Assert_Orange_Exists\n")
-        time.sleep(sec)
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Orange").click()
-
-        print("\ntest_ShoppingCart_Add_Orange\n")
-        time.sleep(sec)
-        driver.find_element(By.LINK_TEXT, "Add").click()
-       
-        print("\ntest_ShoppingCart_Remove_Form\n")
-        time.sleep(sec)
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Remove").click()
-
-        print("\ntest_Navbar_Search_Product\n")
-        time.sleep(sec)
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Search").click()
-        time.sleep(sec)
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Product").click()
-
-        print("\ntest_Navbar_Add_Product\n")
-        time.sleep(sec)
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Add").click()
-        time.sleep(sec)
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Product").click()
-
-        print("\ntest_Add_Product_Form\n")
-        time.sleep(sec)
-        productName = driver.find_element_by_id("productName")
-        productName.send_keys("Watermelon")
-        time.sleep(sec)
-        productDescription = driver.find_element_by_id("description")
-        productDescription.send_keys("Fruit that consists mostly of water. An ideal food in the summer and in picnics.")
-        time.sleep(sec)
-        productPrice = driver.find_element_by_id("productPrice")
-        productPrice.send_keys("0.50")
-        time.sleep(sec)
-        addProduct_submit = driver.find_element_by_id("submitAddProduct")
-        addProduct_submit.click()
-
-        print("\ntest_ProductSearch_Watermelon\n")
-        time.sleep(sec)
-        product = driver.find_element_by_id("id_name")
-        product.send_keys("Watermelon")
-        time.sleep(sec)
-        productSearch =driver.find_element_by_id("productSearch")
-        productSearch.submit()
-
-        print("\ntest_Assert_Watermelon_Exists\n")
-        time.sleep(sec)
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Watermelon").click()
-
-        print("\ntest_Assert_Orange_NotExists\n")
-        time.sleep(sec)
-        driver.find_element_by_id("productClose").click()
-        bodyText = self.driver.find_element_by_tag_name('body').text 
-        self.assertNotIn('Orange', bodyText)
-        
-        print("\ntest_EditPriceForm_Watermelon\n")
-        #driver.implicitly_wait(10)
-        #actions = ActionChains(driver)
-        #actions.move_to_element(reset)
-        #actions.click_and_hold(reset)
-        #actions.release(reset)
-        #actions.perform()
-        time.sleep(sec)
-        reset = driver.find_element_by_id("productSearchReset")
-        #reset = driver.find_element(By.LINK_TEXT, "Reset")
-        time.sleep(sec)
-        reset.click()
-        #reset.click()
-        time.sleep(sec)
-        
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Watermelon").click()
-        time.sleep(sec)
-        
-        
-        #watermelon = driver.find_element(By.PARTIAL_LINK_TEXT, "Watermelon")
-        #watermelon.click()
-        #time.sleep(sec)
-        #editPrice = wait.until(EC.presence_of_element_located((By.LINK_TEXT, "Edit")))
-        editPrice = driver.find_element(By.LINK_TEXT, "Edit")
-        time.sleep(sec)
-        editPrice.click()
-        #time.sleep(sec)
-        #editPrice.click()
+        input_endAddress.send_keys(Keys.ENTER)
+        time.sleep(5)
+        driver.find_element_by_id("route").click()
+        time.sleep(10)
+        driver.find_element_by_id("removeCart").click()
         time.sleep(sec)
 
-        #driver.implicitly_wait(10)
-        #price = driver.find_element_by_xpath('//input[@id="price"]')
-        #price = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@id="price"]')))
-        #time.sleep(sec)
-        #price.send_keys("1.00")
-        #time.sleep(sec)
+        print("\ntest_ProductSearch\n")
+        productSearches = ['soup', 'soap', 'beans', 'garnier', 'beef', 'cold', 'sunscreen']
+        driver.find_element(By.LINK_TEXT, "Products").click()
+        time.sleep(sec)
+        productSearch = driver.find_element_by_id("productSearch")
+        for i in range(len(productSearches)):
+             time.sleep(1.5)
+             productSearch.send_keys(productSearches[i])
+             time.sleep(1.5)
+             productSearch.clear()
 
-        updatePrice = driver.find_element_by_xpath('//button[@id="editProductPriceSubmit"]')
+        print("\ntest_StoreSearch\n")
+        storeSearches = ['way', 'safe', 'safeway', 'shattuck', 'joe', 'trader', 'green', 'walgreens']
         time.sleep(sec)
-        updatePrice.submit()
+        driver.find_element(By.LINK_TEXT, "Stores").click()
+        time.sleep(sec)
+        productSearch = driver.find_element_by_id("storeSearch")
+        for i in range(len(productSearches)):
+             time.sleep(1.5)
+             productSearch.send_keys(storeSearches[i])
+             time.sleep(1.5)
+             productSearch.clear()
 
-        #productName = driver.find_element_by_id("productName")
-        #productName = wait.until(EC.visibility_of_element_located((By.ID, "productName")))
-        #updatePrice = wait.until(EC.presence_of_element_located((By.XPATH, '//button[@id="editProductPriceSubmit"]')))
-        
-        print("\ntest_Delete_Watermelon\n")
-        time.sleep(sec)
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Search").click()
-        time.sleep(sec)
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Product").click()
-        time.sleep(sec)
-        product = driver.find_element_by_id("id_name")
-        product.send_keys("Watermelon")
-        time.sleep(sec)
-        productSearch =driver.find_element_by_id("productSearch")
-        productSearch.submit()
-        time.sleep(sec)
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Watermelon").click()
-        time.sleep(sec)
-        delete = driver.find_element(By.LINK_TEXT, "Delete")
-        time.sleep(3)
-        delete.click()
-        driver.find_element(By.LINK_TEXT, "Yes").click()
-        time.sleep(3)
-
-        print("\ntest_Assert_Watermelon_NotExists\n")
-        time.sleep(sec)
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Search").click()
-        time.sleep(sec)
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Product").click()
-        time.sleep(sec)
-        product = driver.find_element_by_id("id_name")
-        product.send_keys("Watermelon")
-        time.sleep(sec)
-        productSearch =driver.find_element_by_id("productSearch")
-        productSearch.submit()
-        time.sleep(sec)
-        reset = driver.find_element_by_id("productSearchReset")
-        time.sleep(sec)
-        reset.click()
-        time.sleep(sec)
-        #bodyText = self.driver.find_element_by_tag_name('body').text 
-        #self.assertNotIn('Orange', bodyText)
-
-        print("\ntest_Delete_Trader'sJoe\n")
-        time.sleep(sec)
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Search").click()
-        time.sleep(sec)
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Store").click()
-        time.sleep(sec)
-        store = driver.find_element_by_id("id_name")
-        store.send_keys("Trader's Joe")
-        time.sleep(sec)
-        storeSearch =driver.find_element_by_id("storeSearch")
-        storeSearch.submit()
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Trader's Joe").click()
-        time.sleep(sec)
-        delete = driver.find_element(By.LINK_TEXT, "Delete Store")
-        time.sleep(sec)
-        delete.click()
-        driver.find_element(By.LINK_TEXT, "Yes").click()
-        time.sleep(sec)
-
-        print("\ntest_Assert_Trader'sJoe_NotExists\n")
-        store = driver.find_element_by_id("id_name")
-        store.send_keys("Trader's Joe")
-        time.sleep(sec)
-        storeSearch =driver.find_element_by_id("storeSearch")
-        storeSearch.submit()
-        time.sleep(sec)
-        reset = driver.find_element_by_id("storeSearchReset")
-        time.sleep(sec)
-        reset.click()
-        time.sleep(sec)
-
-        print("\ntest_Assert_Trader'sJoe_Products_NotExists\n")
-        time.sleep(sec)
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Search").click()
-        time.sleep(sec)
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Product").click()
-        time.sleep(sec)
-        product = driver.find_element_by_id("id_name")
-        product.send_keys("Watermelon")
-        time.sleep(sec)
-        productSearch =driver.find_element_by_id("productSearch")
-        productSearch.submit()
-        time.sleep(sec)
-        reset = driver.find_element_by_id("productSearchReset")
-        time.sleep(sec)
-        reset.click()
-
-        print("\ntest_Go_Back_To_HomePage\n")
-        time.sleep(sec)
-        driver.find_element(By.PARTIAL_LINK_TEXT, "Home").click()
+        print("\ntest_Logout\n")
+        time.sleep(2)
+        driver.find_element(By.LINK_TEXT, "Logout").click()
 
     def tearDown(self):
-        time.sleep(3)
+        time.sleep(1)
         self.driver.close()
 
 
@@ -309,3 +258,4 @@ if __name__ == '__main__':
 
     suite = unittest.TestLoader().loadTestsFromTestCase(UITest)
     unittest.TextTestRunner(verbosity=2).run(suite)
+

@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" ng-app="udekApp">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>eLocal</title>
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+    <script type="text/css" src="{% static 'lib/ngToast.min.css' %}"></script>
+  </head>
+
+  <body>
+
+    <div ui-view></div>
+
+    <script type="text/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=AIzaSyD_eOeXynkGshNoWp8mNgec-RxEeV8U9vk&libraries=places"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-cookies.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-sanitize.js"></script>
+    <script type="text/javascript" src="{% static 'lib/ui-bootstrap-tpls-0.14.3.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/ngToast.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/angular-endless-scroll.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/api-check.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/formly.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/ng-map.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/ngCart.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/smart-table.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/ng-file-upload.min.js' %}"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular-formly-templates-bootstrap/6.1.5/angular-formly-templates-bootstrap.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/app.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/auth/auth.controllers.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/auth/auth.services.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/stores/stores.services.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/index/index.controllers.js' %}"></script>
+
+  </body>
+</html>

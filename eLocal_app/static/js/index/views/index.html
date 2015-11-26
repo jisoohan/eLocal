@@ -1,0 +1,51 @@
+<style>
+.sortable {
+    cursor: pointer;
+}
+.sortable:after {
+    content: url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIUnC2nKLnT4or00PvyrQwrPzUZshQAOw==);
+    padding-left: 1em;
+}
+.st-sort-ascent:after {
+    content: '\25B2';
+}
+.st-sort-descent:after {
+    content: '\25BC';
+}
+.thumb {
+    width: 150px;
+    height: 150px;
+    float: none;
+    position: relative;
+    top: 7px;
+}
+.thumb-product {
+    width: 64;
+    height: 64;
+    float: none;
+    position: relative;
+    top: 7px;
+}
+</style>
+
+<header>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="">eLocal</a>
+      <a class="navbar-brand" href="">Zipcode: {{zipcode}}</a>
+      <a class="navbar-brand" href="">Radius: {{radius}} miles</a>
+    </div>
+
+    <ul class="nav navbar-nav navbar-right">
+      <li><a class="navbar-brand" href="">{{username}}</a></li>
+      <li><a ui-sref="index.stores">Stores</a></li>
+      <li><a ui-sref="index.products">Products</a></li>
+      <li><a ui-sref="index.merchant" ng-show="is_staff">Merchant</a></li>
+      <li><a id="cart" href="" ui-sref="index.cart" style="padding: 7px 0 0 0; width:145px;"><ngcart-summary></ngcart-summary></a></li>
+      <li><a href="" ng-click="logout()">Logout</a></li>
+    </ul>
+  </div>
+  </nav>
+</header>
+<div style="padding-top:70px;" ui-view></div>

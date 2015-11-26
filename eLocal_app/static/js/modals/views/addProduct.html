@@ -1,0 +1,14 @@
+<div class="modal-header">
+  <h3 class="modal-title">Add Product</h3>
+</div>
+<div class="modal-body">
+  <form ng-submit="addProduct()" name="productAddForm" role="form" novalidate>
+    <formly-form model="productAddModel" fields="productAddFields" form="productAddForm">
+      <div class="modal-footer">
+        <button type="submit" ng-disabled="productAddForm.$invalid" class="btn btn-success submit-button pull-right">Add</button>
+        <button class="btn btn-danger pull-left" type="button" ng-click="cancel()">Cancel</button>
+      </div>
+    </formly-form>
+  </form>
+</div>
+

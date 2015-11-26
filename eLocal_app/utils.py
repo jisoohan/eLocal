@@ -1,244 +1,26 @@
-from .models import Inventory, Item, Store
-from django.forms.models import model_to_dict
+import json
+from django.http import HttpResponse
 from math import sin, cos, sqrt, asin, pi
-from operator import itemgetter
-import googlemaps
+from decimal import *
 
-class ElocalUtils:
-    googleAPIKey = 'AIzaSyD_eOeXynkGshNoWp8mNgec-RxEeV8U9vk'
-    def getClient(key= googleAPIKey):
-        return googlemaps.Client(key)
+def json_response(response_dict, status=200):
+    response = HttpResponse(json.dumps(response_dict), content_type="application/json", status=status)
+    response['Access-Control-Allow-Origin'] = '*'
+    response['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    return response
 
-    def getLocation(zip_code, client):
-        return client.geocode(components={'postal_code': zip_code, 'country': 'US'})
+def check_distance(origin, destination, radius):
+    print(origin)
+    print(destination)
+    print(radius)
+    lat1 = deg2rad(float(origin[0]))
+    lon1 = deg2rad(float(origin[1]))
+    lat2 = deg2rad(float(destination[0]))
+    lon2 = deg2rad(float(destination[1]))
+    r = 3958.8  # Radius of the Earth in miles
 
-    @staticmethod
-    def getCoorFromZipcode(zip_code):
-        client = ElocalUtils.getClient()
-        location = ElocalUtils.getLocation(zip_code, client)
-        if len(location) == 0:
-            origin = []
-        else:
-            origin = [(location[0]['geometry']['location']['lat'], location[0]['geometry']['location']['lng'])]
-        return origin
-
-    @staticmethod
-    def checkDistance(origin, destination, radius):
-        lat1 = deg2rad(origin[0][0])
-        lon1 = deg2rad(origin[0][1])
-        lat2 = deg2rad(destination[0][0])
-        lon2 = deg2rad(destination[0][1])
-        r = 3958.8
-
-        distance = 2*3958.8*asin(sqrt( haversin(lat2-lat1) + cos(lat1)*cos(lat2)*haversin(lon2-lon1) ))
-        return distance <= radius
-
-    @staticmethod
-    def isValidZipcode(zip_code):
-        client = googlemaps.Client(key=ElocalUtils.googleAPIKey)
-        location = client.geocode(components={'postal_code': zip_code})
-        if len(location) == 0:
-            return False
-        else:
-            return True
-
-    @staticmethod
-    def geolocateStores(origin, radius):
-        stores = Store.objects.all()
-        results = []
-        for store in stores:
-            destination = [(store.latitude, store.longitude)]
-            if ElocalUtils.checkDistance(origin, destination, radius):
-                store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
-                products = Inventory.getItemsForStore(store.id)
-                product_list = []
-                for product in products:
-                    price = Inventory.getPrice(store.id, product.id)
-                    product_dict = model_to_dict(product, fields=[field.name for field in product._meta.fields])
-                    product_dict['price'] = price
-                    product_list.append(product_dict)
-                sorted_product_list = sorted(product_list, key=itemgetter('price'))
-                store_dict['product_list'] = sorted_product_list
-                results.append(store_dict)
-        return results
-
-    @staticmethod
-    def geolocateProducts(stores):
-        seen_products = set()
-        results = []
-        for store in stores:
-            products = Inventory.getItemsForStore(store['id'])
-            for product in products:
-                if product.id not in seen_products:
-                    seen_products.add(product.id)
-                    product_dict = model_to_dict(product, fields=[field.name for field in product._meta.fields])
-                    stores = Inventory.getStoresForItem(product.id)
-                    store_list = []
-                    for store in stores:
-                        store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
-                        price = Inventory.getPrice(store.id, product.id)
-                        store_dict['price'] = price
-                        store_list.append(store_dict)
-                    sorted_store_list = sorted(store_list, key=itemgetter('price'))
-                    product_dict['store_list'] = sorted_store_list
-                    results.append(product_dict)
-        return results
-
-    @staticmethod
-    def getCoorFromAddress(address, city, state, zip_code, country):
-        client = googlemaps.Client(key=ElocalUtils.googleAPIKey)
-        location = client.geocode(address + ', ' + city + ', ' + state + ', ' + zip_code + ', ' + country)
-        coordinates = (location[0]['geometry']['location']['lat'], location[0]['geometry']['location']['lng'])
-        return coordinates
-
-    @staticmethod
-    def getStoreChoices(origin, radius):
-        stores = Store.objects.all()
-        results = []
-        for store in stores:
-            destination = [(store.latitude, store.longitude)]
-            if ElocalUtils.checkDistance(origin, destination, radius):
-                results.append((store.id, store.name))
-        return results
-
-    @staticmethod
-    def parseStore(store):
-        store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
-        products = Inventory.getItemsForStore(store.id)
-        product_list = []
-        for product in products:
-            price = Inventory.getPrice(store.id, product.id)
-            product_dict = model_to_dict(product, fields=[field.name for field in product._meta.fields])
-            product_dict['price'] = price
-            product_list.append(product_dict)
-        sorted_product_list = sorted(product_list, key=itemgetter('price'))
-        store_dict['product_list'] = sorted_product_list
-        return store_dict
-
-    @staticmethod
-    def parseProductAddStore(product_list, product, store_id, price):
-        results = product_list
-        for p in results:
-            if p['id'] == product.id:
-                store_list = p['store_list']
-                store = Store.objects.get(id=store_id)
-                store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
-                store_dict['price'] = price
-                store_list.append(store_dict)
-                sorted_store_list = sorted(store_list, key=itemgetter('price'))
-                p['store_list'] = sorted_store_list
-        return results
-
-    @staticmethod
-    def searchStore(name, stores):
-        results = []
-        for store in stores:
-            if name.lower() in store['name'].lower():
-                results.append(store)
-        return results
-
-    @staticmethod
-    def searchProduct(name, products):
-        results = []
-        for product in products:
-            if name.lower() in product['name'].lower():
-                results.append(product)
-        return results
-
-    @staticmethod
-    def getInfoFromProductStore(product, store):
-        price = Inventory.getPrice(store.id, product.id)
-        product_dict = model_to_dict(product, fields=[field.name for field in product._meta.fields])
-        store_dict = model_to_dict(store, fields=[field.name for field in store._meta.fields])
-        return {'product': product_dict, 'store': store_dict, 'price': price, 'quantity': 1}
-
-    @staticmethod
-    def getHash(product_id, store_id):
-        hashCode = str(product_id) + str(store_id)
-        return hashCode
-
-    @staticmethod
-    def addCart(hashCode, old_cart):
-        found = False
-        cart = old_cart
-        for item in cart:
-            item_hash = ElocalUtils.getHash(item['product']['id'], item['store']['id'])
-            if hashCode == item_hash:
-                item['quantity'] = item['quantity'] + 1
-                found = True
-        if found:
-            return cart
-        else:
-            return None
-
-    @staticmethod
-    def removeCart(hashCode, old_cart):
-        cart = old_cart
-        count = 0
-        for item in cart:
-            item_hash = ElocalUtils.getHash(item['product']['id'], item['store']['id'])
-            if hashCode == item_hash:
-                if item['quantity'] > 1:
-                    item['quantity'] = item['quantity'] - 1
-                else:
-                    cart.remove(item)
-        return cart
-
-    @staticmethod
-    def getProductFromSession(product_name, products):
-        for product in products:
-            if product_name.lower() == product['name'].lower():
-                return Item.objects.get(id=product['id'])
-        return None
-
-    @staticmethod
-    def updateCartProduct(cart, product):
-        new_cart = cart
-        for cart_item in new_cart:
-            if product.id == cart_item['product']['id']:
-                cart_item['product']['name'] = product.name
-                cart_item['product']['description'] = product.description
-        return new_cart
-
-    @staticmethod
-    def updateCartStore(cart, store):
-        new_cart = cart
-        for cart_item in new_cart:
-            if store.id == cart_item['store']['id']:
-                cart_item['store']['name'] = store.name
-                cart_item['store']['address'] = store.address
-                cart_item['store']['city'] = store.city
-                cart_item['store']['state'] = store.state
-                cart_item['store']['zip_code'] = store.zip_code
-                cart_item['store']['country'] = store.country
-                cart_item['store']['has_card'] = store.has_card
-                cart_item['store']['latitude'] = store.latitude
-                cart_item['store']['longitude'] = store.longitude
-        return new_cart
-
-    @staticmethod
-    def updateCartPrice(cart, product_id, store_id, price):
-        new_cart = cart
-        for cart_item in new_cart:
-            if int(product_id) == int(cart_item['product']['id']) and int(store_id) == int(cart_item['store']['id']):
-                cart_item['price'] = price
-        return new_cart
-
-    @staticmethod
-    def deleteCartProductFromStore(cart, product_id, store_id):
-        new_cart = cart
-        for cart_item in new_cart:
-            if int(product_id) == int(cart_item['product']['id']) and int(store_id) == int(cart_item['store']['id']):
-                new_cart.remove(cart_item)
-        return new_cart
-
-    @staticmethod
-    def deleteCartStore(cart, store_id):
-        new_cart = cart
-        for cart_item in new_cart:
-            if int(store_id) == int(cart_item['store']['id']):
-                new_cart.remove(cart_item)
-        return new_cart
+    distance = 2*r*asin(sqrt( haversin(lat2-lat1) + cos(lat1)*cos(lat2)*haversin(lon2-lon1) ))
+    return distance <= radius
 
 def haversin(theta):
     return sin(theta/2)**2

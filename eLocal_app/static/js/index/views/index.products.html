@@ -1,0 +1,40 @@
+<div class="container">
+
+  <div class="col-sm-12">
+
+    <div class="row">
+      <toast></toast>
+    </div>
+
+    <table st-table="displayedProducts" st-safe-src="products" class="table table-striped">
+      <thead>
+      <tr>
+        <th></th>
+        <th class="sortable" st-sort="name">Name</th>
+        <th>Description</th>
+        <th class="sortable" st-sort="price">Price</th>
+        <th class="sortable" st-sort="store.name">Store</th>
+        <th></th>
+      </tr>
+      <tr>
+        <th colspan="5"><input id="productSearch" st-search="" class="form-control" placeholder="Search products" type="text"/></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="product in displayedProducts">
+        <td>
+          <img ng-if="product.image" ng-src="/static/images/uploads/{{product.image}}" />
+          <img ng-if="!product.image" ng-src="/static/images/no_image_available_64.svg" />
+        </td>
+        <td>{{product.name}}</td>
+        <td>{{product.description}}</td>
+        <td><a href="" ng-click="editProduct(product)">{{product.price | currency}}</a></td>
+        <td><a href="" ui-sref="index.store({'storeId': product.store.id})">{{product.store.name}}</a></td>
+        <td><ngcart-addtocart id="{{product.id}}" name="{{product.name}}" price="{{product.price}}" data="product.store" quantity="1" class="pull-right">Add to Cart</ngcart-addtocart></td>
+      </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+</div>

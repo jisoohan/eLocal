@@ -1,322 +1,219 @@
-from django.contrib import messages
-from django.shortcuts import render, render_to_response
-from django.http import HttpResponseRedirect, HttpResponse
-from .forms import ZipcodeForm, ProductSearchForm, StoreSearchForm, ProductAddForm, StoreAddForm, ProductUpdateForm, PriceUpdateForm
-from .models import Store, Item, Inventory
-from .utils import ElocalUtils
-from decimal import Decimal
+from django.shortcuts import render
+from django.contrib.auth.models import User
+from .models import Store, Address, Product
+from .serializers import UserSerializer, StoreSerializer, AddressSerializer, ProductSerializer
+from .utils import json_response, check_distance
+from rest_framework import permissions, viewsets, status, pagination
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.decorators import api_view, permission_classes, detail_route, list_route
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework_extensions.mixins import DetailSerializerMixin
+from decimal import *
 
-def homePage(request):
-    if request.method == 'GET':
-        form = ZipcodeForm()
-    else:
-        form = ZipcodeForm(request.POST)
-        if form.is_valid():
-            zip_code    = form.cleaned_data['zip_code']
-            radius      = form.cleaned_data['radius']
-            coordinates = ElocalUtils.getCoorFromZipcode(zip_code)
-            if len(coordinates) != 0:
-                request.session['zip_code']    = zip_code
-                request.session['coordinates'] = coordinates
-                request.session['radius']      = int(radius)
-                request.session['cart']        = []
-                request.session['stores']      = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
-                request.session['products']    = ElocalUtils.geolocateProducts(request.session['stores'])
-                searchForm     = StoreSearchForm()
-                addProductForm = ProductAddForm(request.session['coordinates'], request.session['radius'])
-                addStoreForm   = StoreAddForm()
-                return HttpResponseRedirect('/stores')
+@permission_classes([AllowAny, ])
+def base_render(request):
+    return render(request, 'base.html')
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer = UserSerializer
+
+    @detail_route(methods=['get'], permission_classes=[IsAuthenticated, IsAdminUser])
+    def stores(self, request, pk=None):
+        if request.method == 'GET':
+            user = User.objects.get(id=pk)
+            stores = Store.objects.select_related('user').filter(user_id=user.id).order_by('name')
+            serializer = StoreSerializer(stores, many=True)
+            return Response(serializer.data)
+
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser])
+    def create_store(self, request, pk=None):
+        if request.method == 'POST':
+            user = User.objects.get(id=pk)
+            address_data = {
+                'st_number': request.data['st_number'],
+                'st_name': request.data['st_name'],
+                'city': request.data['city'],
+                'state': request.data['state'],
+                'zipcode': request.data['zipcode'],
+                'country': request.data['country'],
+                'lat': request.data['lat'],
+                'lng': request.data['lng']
+            }
+            address_serializer = AddressSerializer(data=address_data)
+            if address_serializer.is_valid():
+                address = address_serializer.save()
             else:
-                messages.error(request, 'Not a valid zipcode.')
+                return Response({'error': 'Invalid address'}, status=status.HTTP_400_BAD_REQUEST)
+            store = Store.objects.create(user=user, address=address, name=request.data['store_name'])
+            if 'has_card' in request.data:
+                store.has_card = True
+            else:
+                store.has_card = False
+            if 'file' in request.data:
+                image_file = request.data['file']
+                store.image = request.data['file']
+            store.save()
+            store_serializer = StoreSerializer(store)
+            return Response(store_serializer.data)
+
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser])
+    def delete_store(self, request, pk=None):
+        if request.method == 'POST':
+            Store.objects.get(id=pk).address.delete()
+            return Response({'success': 'Store deleted'})
+
+class StoreViewSet(viewsets.ModelViewSet):
+    queryset = Store.objects.all()
+    serializer_class = StoreSerializer
+
+    @list_route(methods=['post'], permission_classes=[IsAuthenticated])
+    def stores_in_zipcode(self, request):
+        lat = request.data['lat']
+        lng = request.data['lng']
+        radius = float(request.data['radius'])
+        stores = [];
+        for store in Store.objects.all().order_by('name'):
+            if check_distance([lat, lng], [store.address.lat, store.address.lng], radius):
+                store_serializer = StoreSerializer(store)
+                store_data = store_serializer.data
+                products = Product.objects.select_related('store').filter(store_id=store_data['id'])
+                product_serializer = ProductSerializer(products, many=True)
+                store_data['products'] = product_serializer.data
+                stores.append(store_data)
+        return Response(stores)
+
+    @list_route(methods=['post'], permission_classes=[IsAuthenticated])
+    def products_in_zipcode(self, request):
+        lat = request.data['lat']
+        lng = request.data['lng']
+        radius = float(request.data['radius'])
+        products_result = []
+        for store in Store.objects.all():
+            if check_distance([lat, lng], [store.address.lat, store.address.lng], radius):
+                store_serializer = StoreSerializer(store)
+                store_data = store_serializer.data
+                products = Product.objects.select_related('store').filter(store_id=store_data['id'])
+                if len(products) != 0:
+                    product_serializer = ProductSerializer(products, many=True)
+                    for product in product_serializer.data:
+                        products_result.append(product)
+        return Response(products_result)
+
+    @detail_route(methods=['get'], permission_classes=[IsAuthenticated, IsAdminUser])
+    def merchant_store_info(self, request, pk=None):
+        if request.method == 'GET':
+            store = Store.objects.filter(id=pk)
+            store = store[0] if len(store) > 0 else None
+            if store is None or store.user.id is not request.user.id:
+                return Response({'error': 'Cannot get store'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                store_serializer = StoreSerializer(store)
+                return Response(store_serializer.data)
+
+    @detail_route(methods=['get'], permission_classes=[IsAuthenticated])
+    def store_info(self, request, pk=None):
+        if request.method == 'GET':
+            store = Store.objects.get(id=pk)
+            store_serializer = StoreSerializer(store)
+            return Response(store_serializer.data)
+
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser])
+    def add_product(self, request, pk=None):
+        if request.method == 'POST':
+            store = Store.objects.get(id=pk)
+            product = Product.objects.create(store=store, name=request.data['product_name'], description=request.data['description'], price=round(Decimal(request.data['price']), 2))
+            if 'file' in request.data:
+                image_file = request.data['file']
+                product.image = request.data['file']
+            product.save()
+            product_serializer = ProductSerializer(product)
+            return Response(product_serializer.data)
+
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser])
+    def delete_product(self, request, pk=None):
+        if request.method == 'POST':
+            Product.objects.get(id=pk).delete()
+            return Response({'success': 'Product Deleted'})
+
+    @detail_route(methods=['get'], permission_classes=[IsAuthenticated])
+    def products(self, request, pk=None):
+        if request.method == 'GET':
+            products = Product.objects.select_related('store').filter(store_id=pk).order_by('name')
+            product_serializer = ProductSerializer(products, many=True)
+            return Response(product_serializer.data)
+
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
+    def edit_product(self, request, pk=None):
+        if request.method == 'POST':
+            if len(Product.objects.filter(id=pk)) == 0:
+                return Response({'error': 'Cannot get product'}, status=status.HTTP_400_BAD_REQUEST)
+            if ('product_name' not in request.data and 'description' not in request.data):
+                Product.objects.filter(id=pk).update(price=round(Decimal(request.data['price']), 2))
+            else:
+                Product.objects.filter(id=pk).update(name=request.data['product_name'], description=request.data['description'], price=round(Decimal(request.data['price']), 2))
+            product = Product.objects.get(id=pk)
+            product_serializer = ProductSerializer(product)
+            return Response(product_serializer.data)
+
+@api_view(['POST'])
+@permission_classes([AllowAny, ])
+def register(request):
+    if request.method == 'POST':
+        username = request.data['username']
+        password = request.data['password']
+        is_staff = request.data['is_staff']
+        if is_staff == 'true':
+            staff = True
         else:
-            messages.error(request, 'Must enter a zipcode.')
-    return render(request, 'eLocal_app/homePage.html', {'form': form})
-
-def productSearchPage(request):
-    if request.method == 'GET':
-        if 'zip_code' not in request.session:
-            return HttpResponseRedirect('/')
-        zip_code         = request.session['zip_code']
-        radius           = request.session['radius']
-        searchForm       = ProductSearchForm()
-        addProductForm   = ProductAddForm(request.session['coordinates'], request.session['radius'])
-        addStoreForm     = StoreAddForm()
-        products         = request.session['products']
-        editProductForms = []
-        editPriceForms   = []
-        for product in products:
-            editProductForm = ProductUpdateForm(initial={'product_name': product['name'],'description': product['description']})
-            editProductForms.append((product['id'], editProductForm))
-            for store in product['store_list']:
-                editPriceForm = PriceUpdateForm(initial={'price': store['price']})
-                editPriceForms.append([product['id'], store['id'], editPriceForm])
-        return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm,
-                                                                        'addProductForm': addProductForm,
-                                                                        'addStoreForm': addStoreForm,
-                                                                        'products': products,
-                                                                        'editProductForms': editProductForms,
-                                                                        'editPriceForms': editPriceForms,
-                                                                        'zip_code': zip_code,
-                                                                        'radius': radius})
-
-def storeSearchPage(request):
-    if request.method == 'GET':
-        if 'zip_code' not in request.session:
-            return HttpResponseRedirect('/')
-        zip_code       = request.session['zip_code']
-        radius         = request.session['radius']
-        searchForm     = StoreSearchForm()
-        addProductForm = ProductAddForm(request.session['coordinates'], request.session['radius'])
-        addStoreForm   = StoreAddForm()
-        stores         = request.session['stores']
-        editStoreForms = []
-        editPriceForms = []
-        for store in stores:
-            editStoreForm = StoreAddForm(initial={
-                                         'store_name':     store['name'],
-                                         'street_number':  store['address'].split()[0],
-                                         'street_address': ' '.join(store['address'].split()[1:]),
-                                         'city':           store['city'],
-                                         'state':          store['state'],
-                                         'zip_code':       store['zip_code'],
-                                         'country':        store['country'],
-                                         'has_card':       store['has_card']})
-            editStoreForms.append((store['id'], editStoreForm))
-            for product in store['product_list']:
-                editPriceForm = PriceUpdateForm(initial={'price': product['price']})
-                editPriceForms.append([product['id'], store['id'], editPriceForm])
-        return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm,
-                                                                    'addProductForm': addProductForm,
-                                                                    'addStoreForm': addStoreForm,
-                                                                    'stores': stores,
-                                                                    'editStoreForms': editStoreForms,
-                                                                    'editPriceForms': editPriceForms,
-                                                                    'zip_code': zip_code,
-                                                                    'radius': radius})
-
-def shoppingPage(request):
-    if request.method == 'GET':
-        if 'zip_code' not in request.session:
-            return HttpResponseRedirect('/')
-        zip_code       = request.session['zip_code']
-        radius         = request.session['radius']
-        addProductForm = ProductAddForm(request.session['coordinates'], request.session['radius'])
-        addStoreForm   = StoreAddForm()
-        results        = request.session['cart']
-        return render(request, 'eLocal_app/shoppingPage.html', {'addProductForm': addProductForm, 'addStoreForm': addStoreForm,
-                                                                'products': results, 'zip_code': zip_code, 'radius': radius})
-
-def updateStore(request, store_id):
-    if request.method == 'POST':
-        form = StoreAddForm(request.POST)
-        if form.is_valid():
-            store_name = form.cleaned_data['store_name']
-            address    = form.cleaned_data['street_number'] + ' ' + form.cleaned_data['street_address']
-            city       = form.cleaned_data['city']
-            state      = form.cleaned_data['state']
-            zip_code   = form.cleaned_data['zip_code']
-            country    = form.cleaned_data['country']
-            has_card   = form.cleaned_data['has_card']
-            store      = Store.objects.get(id=store_id)
-            if Store.updateStoreCheck(store, store_name, address, city, state, zip_code, country, has_card):
-                coordinates = ElocalUtils.getCoorFromAddress(address, city, state, zip_code, country)
-                Store.objects.filter(id=store_id).update(name=store_name, address=address, city=city, state=state,
-                                                         zip_code=zip_code, country=country, has_card=has_card,
-                                                         latitude=coordinates[0], longitude=coordinates[1])
-                request.session['stores']   = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
-                request.session['products'] = ElocalUtils.geolocateProducts(request.session['stores'])
-                cart                        = request.session['cart']
-                request.session['cart']     = ElocalUtils.updateCartStore(cart, Store.objects.get(id=store_id))
-        return HttpResponseRedirect('/stores')
-
-def updateProduct(request, product_id):
-    if request.method == 'POST':
-        form = ProductUpdateForm(request.POST)
-        if form.is_valid():
-            product_name = form.cleaned_data['product_name']
-            description  = form.cleaned_data['description']
-            product      = Item.objects.get(id=product_id)
-            product_list = request.session['products']
-            if Item.updateProductCheck(product, product_list, product_name, description):
-                Item.objects.filter(id=product_id).update(name=product_name, description=description)
-                request.session['stores']   = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
-                request.session['products'] = ElocalUtils.geolocateProducts(request.session['stores'])
-                cart                        = request.session['cart']
-                request.session['cart']     = ElocalUtils.updateCartProduct(cart, Item.objects.get(id=product_id))
-        return HttpResponseRedirect('/stores')
-
-def updatePrice(request, product_id, store_id):
-    if request.method == 'POST':
-        form = PriceUpdateForm(request.POST)
-        if form.is_valid():
-            price = form.cleaned_data['price']
-            if price != Inventory.getPrice(store_id, product_id):
-                Inventory.objects.filter(store=Store.objects.get(id=store_id), item=Item.objects.get(id=product_id)).update(price=price)
-                request.session['stores']   = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
-                request.session['products'] = ElocalUtils.geolocateProducts(request.session['stores'])
-                cart                        = request.session['cart']
-                request.session['cart']     = ElocalUtils.updateCartPrice(cart, product_id, store_id, price)
-        return HttpResponseRedirect('/stores')
-
-def addStore(request):
-    if request.method == 'POST':
-        form = StoreAddForm(request.POST)
-        if form.is_valid():
-            store_name = form.cleaned_data['store_name']
-            address    = form.cleaned_data['street_number'] + ' ' + form.cleaned_data['street_address']
-            city       = form.cleaned_data['city']
-            state      = form.cleaned_data['state']
-            zip_code   = form.cleaned_data['zip_code']
-            country    = form.cleaned_data['country']
-            has_card   = form.cleaned_data['has_card']
-            if not Store.hasDuplicate(store_name, address, city, state, zip_code, country, has_card):
-                coordinates    = ElocalUtils.getCoorFromAddress(address, city, state, zip_code, country)
-                store          = Store.create(store_name, address, city, state, zip_code, country, has_card, coordinates[0], coordinates[1])
-                if ElocalUtils.checkDistance(request.session['coordinates'], [(store.latitude, store.longitude)], request.session['radius']):
-                    store_list = request.session['stores']
-                    store_list.append(ElocalUtils.parseStore(store))
-                    request.session['stores'] = store_list
-        return HttpResponseRedirect('/stores')
-
-def addProduct(request):
-    if request.method == 'POST':
-        zip_code = request.session['zip_code']
-        form = ProductAddForm(request.session['coordinates'], request.session['radius'], request.POST)
-        if form.is_valid():
-            product_name = form.cleaned_data['product_name']
-            description  = form.cleaned_data['description']
-            price        = Decimal(form.cleaned_data['price'])
-            store_id     = form.cleaned_data['store_name']
-            if not Inventory.hasDuplicateItem(product_name, store_id):
-                product_list = request.session['products']
-                item         = ElocalUtils.getProductFromSession(product_name, product_list)
-                if item is None:
-                    item = Item.create(product_name, description)
-                item.addToStore(store_id, price)
-                request.session['stores']   = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
-                request.session['products'] = ElocalUtils.geolocateProducts(request.session['stores'])
-        return HttpResponseRedirect('/products')
-
-def deleteProductFromStore(request, product_id, store_id):
-    product = Item.objects.get(id=product_id)
-    Inventory.objects.filter(store=Store.objects.get(id=store_id), item=product).delete()
-    if len(product.store_set.all()) == 0:
-        product.delete()
-    request.session['stores']   = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
-    request.session['products'] = ElocalUtils.geolocateProducts(request.session['stores'])
-    cart                        = request.session['cart']
-    request.session['cart']     = ElocalUtils.deleteCartProductFromStore(cart, product_id, store_id)
-    return HttpResponseRedirect('/stores')
-
-def deleteStore(request, store_id):
-    store    = Store.objects.get(id=store_id)
-    products = Inventory.getItemsForStore(store_id)
-    for product in products:
-        Inventory.objects.filter(store=store, item=product).delete()
-        if len(product.store_set.all()) == 0:
-            product.delete()
-    store.delete()
-    request.session['stores']   = ElocalUtils.geolocateStores(request.session['coordinates'], request.session['radius'])
-    request.session['products'] = ElocalUtils.geolocateProducts(request.session['stores'])
-    cart                        = request.session['cart']
-    request.session['cart']     = ElocalUtils.deleteCartStore(cart, store_id)
-    return HttpResponseRedirect('/stores')
-
-def searchProduct(request):
-    if request.method == 'GET':
-        if 'zip_code' not in request.session:
-            return HttpResponseRedirect('/')
-        zip_code         = request.session['zip_code']
-        radius           = request.session['radius']
-        searchForm       = ProductSearchForm(request.GET)
-        addProductForm   = ProductAddForm(request.session['coordinates'], request.session['radius'])
-        addStoreForm     = StoreAddForm()
-        products         = request.session['products']
-        editProductForms = []
-        editPriceForms   = []
-        if searchForm.is_valid():
-            name = searchForm.cleaned_data['name']
-            products = ElocalUtils.searchProduct(name, products)
-            if len(products) == 0:
-                messages.error(request, 'No matching products.')
+            staff = False
+        if User.objects.filter(username__iexact=username).exists():
+            return json_response({'error': 'Username already exists'}, status=400)
         else:
-            messages.error(request, 'Must input a product.')
-        for product in products:
-            editProductForm = ProductUpdateForm(initial={'product_name': product['name'],'description': product['description']})
-            editProductForms.append((product['id'], editProductForm))
-            for store in product['store_list']:
-                editPriceForm = PriceUpdateForm(initial={'price': store['price']})
-                editPriceForms.append([product['id'], store['id'], editPriceForm])
-        return render(request, 'eLocal_app/productSearchPage.html', {'searchForm': searchForm,
-                                                                        'addProductForm': addProductForm,
-                                                                        'addStoreForm': addStoreForm,
-                                                                        'products': products,
-                                                                        'editProductForms': editProductForms,
-                                                                        'editPriceForms': editPriceForms,
-                                                                        'zip_code': zip_code,
-                                                                        'radius': radius})
+            user = User.objects.create_user(username, email=None, password=password)
+            user.is_staff = staff
+            user.save()
+            auth_serializer = AuthTokenSerializer(data={'username': username, 'password': password})
+            if auth_serializer.is_valid():
+                token, created = Token.objects.get_or_create(user=user)
+                return json_response({'token': token.key, 'username': user.username, 'userId': user.id, 'is_staff': user.is_staff})
+            else:
+                return json_response({'error': 'Register failed'}, status=400)
+    elif request.method == 'OPTIONS':
+        return json_response({})
+    else:
+        return json_response({'error': 'Invalid Call'}, status=405)
 
-def searchStore(request):
-    if request.method == 'GET':
-        if 'zip_code' not in request.session:
-            return HttpResponseRedirect('/')
-        zip_code       = request.session['zip_code']
-        radius         = request.session['radius']
-        searchForm     = StoreSearchForm(request.GET)
-        addProductForm = ProductAddForm(request.session['coordinates'], request.session['radius'])
-        addStoreForm   = StoreAddForm()
-        stores         = request.session['stores']
-        editStoreForms = []
-        editPriceForms = []
-        if searchForm.is_valid():
-            name = searchForm.cleaned_data['name']
-            stores = ElocalUtils.searchStore(name, stores)
-            if len(stores) == 0:
-                messages.error(request, 'No matching stores.')
+@api_view(['POST'])
+@permission_classes([AllowAny, ])
+def login(request):
+    if request.method == 'POST':
+        auth_serializer = AuthTokenSerializer(data=request.data)
+        if auth_serializer.is_valid():
+            user = auth_serializer.validated_data['user']
+            user_serializer = UserSerializer(user)
+            token, created = Token.objects.get_or_create(user=user)
+            return json_response({'token': token.key,
+                                 'username': user_serializer.data['username'],
+                                 'userId': user_serializer.data['id'],
+                                 'is_staff': user_serializer.data['is_staff']})
         else:
-            messages.error(request, 'Must input a store.')
-        for store in stores:
-            editStoreForm = StoreAddForm(initial={
-                                         'store_name':     store['name'],
-                                         'street_number':  store['address'].split()[0],
-                                         'street_address': ' '.join(store['address'].split()[1:]),
-                                         'city':           store['city'],
-                                         'state':          store['state'],
-                                         'zip_code':       store['zip_code'],
-                                         'country':        store['country'],
-                                         'has_card':       store['has_card']})
-            editStoreForms.append((store['id'], editStoreForm))
-            for product in store['product_list']:
-                editPriceForm = PriceUpdateForm(initial={'price': product['price']})
-                editPriceForms.append([product['id'], store['id'], editPriceForm])
-        return render(request, 'eLocal_app/storeSearchPage.html', {'searchForm': searchForm,
-                                                                    'addProductForm': addProductForm,
-                                                                    'addStoreForm': addStoreForm,
-                                                                    'stores': stores,
-                                                                    'editStoreForms': editStoreForms,
-                                                                    'editPriceForms': editPriceForms,
-                                                                    'zip_code': zip_code,
-                                                                    'radius': radius})
+            return json_response({'error': 'Invalid Username/Password'}, status=400)
+    elif request.method == 'OPTIONS':
+        return json_response({})
+    else:
+        return json_response({'error': 'Invalid Call'}, status=405)
 
-def addCart(request, product_id, store_id):
-    if 'cart' in request.session:
-        hashCode     = ElocalUtils.getHash(product_id, store_id)
-        cart         = request.session['cart']
-        updated_cart = ElocalUtils.addCart(hashCode, cart)
-        if updated_cart is not None:
-            cart = updated_cart
-        else:
-            product   = Item.objects.get(id=product_id)
-            store     = Store.objects.get(id=store_id)
-            cart_item = ElocalUtils.getInfoFromProductStore(product, store)
-            cart.append(cart_item)
-        request.session['cart'] = cart
-    return HttpResponseRedirect('/cart')
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, ])
+def logout(request):
+    if request.method == 'POST':
+        return json_response({'status': 'success'})
+    elif request.method == 'OPTIONS':
+        return json_response({})
+    else:
+        return json_response({'error': 'Invalid Call'}, status=405)
 
-def removeCart(request, product_id, store_id):
-    if 'cart' in request.session:
-        hashCode     = ElocalUtils.getHash(product_id, store_id)
-        cart         = request.session['cart']
-        updated_cart = ElocalUtils.removeCart(hashCode, cart)
-        request.session['cart'] = updated_cart
-    return HttpResponseRedirect('/cart')

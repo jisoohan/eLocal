@@ -37,8 +37,8 @@ class UITest(unittest.TestCase):
                          2: ["7.80", "3.50", "8.00"]}  
 
         print("\ntest_HomePage\n")
-        self.driver.get('http://localhost:8000')
-        #self.driver.get("http://elocalshops.herokuapp.com")
+        #self.driver.get('http://localhost:8000')
+        self.driver.get("http://elocalshops.herokuapp.com")
 
         print("\ntest_Create_Account\n")
         time.sleep(3)

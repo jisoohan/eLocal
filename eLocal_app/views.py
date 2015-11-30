@@ -59,7 +59,10 @@ class ProductViewSet(viewsets.ModelViewSet):
             Product.objects.filter(id=pk).update(price=round(Decimal(request.data['price']), 2))
         else:
             Product.objects.filter(id=pk).update(name=request.data['product_name'], description=request.data['description'], price=round(Decimal(request.data['price']), 2))
-        product = Product.objects.get(id=pk)
+        product = Product.objects.filter(id=pk)
+        product = product[0] if len(product) > 0 else None
+        if product is None:
+            return Response({'error': 'Cannot get product'}, status=status.HTTP_400_BAD_REQUEST)
         product_serializer = ProductSerializer(product)
         return Response(product_serializer.data)
 
@@ -110,7 +113,10 @@ class StoreViewSet(viewsets.ModelViewSet):
 
     @detail_route(methods=['get'], permission_classes=[IsAuthenticated, IsAdminUser])
     def merchant_stores(self, request, pk=None):
-        user = User.objects.get(id=pk)
+        user = User.objects.filter(id=pk)
+        user = user[0] if len(user) > 0 else None
+        if user is None:
+            return Response({'error': 'Cannot get user'}, status=status.HTTP_400_BAD_REQUEST)
         stores = Store.objects.select_related('user').filter(user_id=user.id).order_by('name')
         serializer = StoreSerializer(stores, many=True)
         return Response(serializer.data)

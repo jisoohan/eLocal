@@ -10,6 +10,7 @@ class ViewTest(TestCase):
         self.factory = RequestFactory()
         self.uvs = UserViewSet()
         self.svs = StoreViewSet()
+        self.pvs = ProductViewSet()
         
         user_data = {"username":"testuser1", "password":"password1", "is_staff":True}
         user_req = self.factory.post("/auth/register/", data=user_data)
@@ -20,13 +21,13 @@ class ViewTest(TestCase):
                           "zipcode":94709, "country":"US", "lat":37.871799, "lng":-122.273206, "store_name":"Trader Joe's"}
         store_req = self.factory.post("/stores/create_store/", data=store_data)
         store_req.data = store_data
-        self.uvs.create_store(store_req, self.user.id)
+        self.svs.create_store(store_req, self.user.id)
         self.store = Store.objects.get(address__lat=37.871799, address__lng=-122.273206)
         
         product_data = {"product_name":"Cookie butter", "description":"Cookiez!!!", "price":3.99}
-        product_req = self.factory.post("/stores/add_product", data=product_data)
+        product_req = self.factory.post("/stores/add", data=product_data)
         product_req.data = product_data
-        self.svs.add_product(product_req, self.store.id)
+        self.pvs.add(product_req, self.store.id)
         self.product = Product.objects.get(name="Cookie butter", description="Cookiez!!!")
     
     def tearDown(self):
@@ -50,14 +51,14 @@ class ViewTest(TestCase):
                           "zipcode":94709, "country":"US", "lat":37.871779, "lng":-122.273226, "store_name":"Trader Joe's 2"}
         good_req = self.factory.post("/stores/create_store/", data=good_data)
         good_req.data = good_data
-        good_resp = self.uvs.create_store(good_req, self.user.id)
+        good_resp = self.svs.create_store(good_req, self.user.id)
         self.assertEquals(200, good_resp.status_code, "Creating a valid store should return status 200")
         
         dup_data = {"st_number":"1885", "st_name":"University Avenue", "city":"Berkeley", "state":"CA", "has_card":True,
                           "zipcode":94709, "country":"US", "lat":37.871799, "lng":-122.273206, "store_name":"Trader Joe's"}
         dup_req = self.factory.post("/stores/create_store/", data=dup_data)
         dup_req.data = dup_data
-        dup_resp = self.uvs.create_store(dup_req, self.user.id)
+        dup_resp = self.svs.create_store(dup_req, self.user.id)
         self.assertEquals(400, dup_resp.status_code, "Creating a duplicate store should return status 400")
     
     def testStoresInZipcode(self):
@@ -77,16 +78,16 @@ class ViewTest(TestCase):
         
     def testProductsInZipcode(self):
         good_data = {"lat":37.871729, "lng":-122.273323, "radius":5}
-        good_req = self.factory.post("/stores/products_in_zipcode", data=good_data)
+        good_req = self.factory.post("/products/products_in_zipcode", data=good_data)
         good_req.data = good_data
-        good_resp = self.svs.products_in_zipcode(good_req)
+        good_resp = self.pvs.products_in_zipcode(good_req)
         self.assertEquals(200, good_resp.status_code, "Valid store search should return status 200")
         self.assertEquals(1, len(good_resp.data), "Valid store search should return stores in range")
         
         bad_data = {"lat":37.0, "lng":-122.9, "radius":5}
-        bad_req = self.factory.post("/stores/stores_in_zipcode", data=bad_data)
+        bad_req = self.factory.post("/products/stores_in_zipcode", data=bad_data)
         bad_req.data = bad_data
-        bad_resp = self.svs.products_in_zipcode(bad_req)
+        bad_resp = self.pvs.products_in_zipcode(bad_req)
         self.assertEquals(200, bad_resp.status_code, "Out-of-range store search should return status 200")
         self.assertEquals(0, len(bad_resp.data), "Out-of-range store search should return zero stores")
     
@@ -112,32 +113,32 @@ class ViewTest(TestCase):
         self.assertEquals(405, bad_resp3.status_code, "GET request to login URL should return status 405")
     
     def testMerchantStoreInfo(self):
-        good_req = self.factory.get("/stores/merchant_store_info")
+        good_req = self.factory.get("/stores/merchant_stores")
         good_req.user = self.user
-        good_resp = self.svs.merchant_store_info(good_req, pk=good_req.user.id)
+        good_resp = self.svs.merchant_stores(good_req, pk=good_req.user.id)
         self.assertEquals(200, good_resp.status_code, "Valid merchant getting store info should return status 200")
         
-        bad_req = self.factory.get("/stores/merchant_store_info")
+        bad_req = self.factory.get("/stores/merchant_stores")
         bad_req.user = self.user
-        bad_resp = self.svs.merchant_store_info(bad_req, pk=-1)
+        bad_resp = self.svs.merchant_stores(bad_req, pk=-1)
         self.assertEquals(400, bad_resp.status_code, "Merchant getting info for other user's store should return status 400")
     
     
     def testEditProduct(self):
         good_data1 = {"price":3.49}
-        good_req1 = self.factory.post("/stores/edit_product", data=good_data1)
+        good_req1 = self.factory.post("/products/edit", data=good_data1)
         good_req1.data = good_data1
-        good_resp1 = self.svs.edit_product(good_req1, pk=self.product.id)
+        good_resp1 = self.pvs.edit(good_req1, pk=self.product.id)
         self.assertEquals(200, good_resp1.status_code, "Updating price of valid item should return status 200")
         
         good_data2 = {"product_name":"NEW cookie butter", "description":"It's new!", "price":3.49}
-        good_req2 = self.factory.post("/stores/edit_product", data=good_data2)
+        good_req2 = self.factory.post("/products/edit", data=good_data2)
         good_req2.data = good_data2
-        good_resp2 = self.svs.edit_product(good_req2, pk=self.product.id)
+        good_resp2 = self.pvs.edit(good_req2, pk=self.product.id)
         self.assertEquals(200, good_resp2.status_code, "Updating name, description, and price of valid item should return status 200")
         
         bad_data = {"price":3.49}
-        bad_req = self.factory.post("/stores/edit_product", data=bad_data)
+        bad_req = self.factory.post("/products/edit", data=bad_data)
         bad_req.data = bad_data
-        bad_resp = self.svs.edit_product(bad_req, pk=-1)
+        bad_resp = self.pvs.edit(bad_req, pk=-1)
         self.assertEquals(400, bad_resp.status_code, "Updating price of invalid item should return status 400")

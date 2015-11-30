@@ -1,6 +1,5 @@
 runtest  = python manage.py test
 root  = eLocal_app/tests
-model = $(root)/model_tests.py
 utils = $(root)/utils_tests.py
 views = $(root)/view_tests.py
 ui    = $(root)/ui_tests.py
@@ -14,10 +13,7 @@ check: clean
 	$(runtest)
 
 check-unit check-units: clean
-	$(runtest) $(model) $(utils) $(views)
-
-check-model check-models: clean
-	$(runtest) $(model)
+	$(runtest) $(utils) $(views)
 
 check-ui: clean
 	$(runtest) $(ui)

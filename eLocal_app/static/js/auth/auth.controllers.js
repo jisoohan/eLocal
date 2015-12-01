@@ -226,9 +226,8 @@
         });
       } else {
         AuthService.register($scope.registerModel).then(
-          function () {
+          function (response) {
             registerZipcode();
-            $state.go('index.stores');
           },
           function (error) {
             ngToast.danger({

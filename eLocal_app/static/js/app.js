@@ -80,7 +80,7 @@
 
   }])
 
-  .constant('API_SERVER', 'https://elocalshops.herokuapp.com/')
+  .constant('API_SERVER', 'http://127.0.0.1:8000/')
 
   .run(['$http', function ($http) {
     $http.defaults.xsrfHeaderName = 'X-CSRFToken';

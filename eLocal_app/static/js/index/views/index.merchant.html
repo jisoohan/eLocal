@@ -30,7 +30,7 @@
           <input ng-model="storeForm.country" id="country" class="form-control" placeholder="Country" type="text" required></input>
         </div>
         <div class="form-group col-xs-12">
-          <input class="form-control" type="file" ngf-select ng-model="storeForm.file" name="file" ngf-pattern="'image/*'" accept="image/*" ngf-max-size="5MB" ngf-min-height="100" ngf-resize="{width: 250, height: 250}" />
+          <input class="form-control" type="file" ngf-select ng-model="storeForm.file" name="file" ngf-pattern="'image/*'" accept="image/*" ngf-max-size="5MB" ngf-min-height="100" ngf-resize="{width: 250, height: 250}"/>
           <button class="btn btn-warning" ng-click="storeForm.file = null" ng-show="storeForm.file">Remove</button>
           <img ngf-thumbnail="storeForm.file" class="thumb" />
         </div>

@@ -11,11 +11,14 @@
         <h1 class="panel-title">{{store.name}}</h1>
       </div>
       <div class="panel-body">
-        <img ng-if="store.image" ng-src="/static/images/uploads/{{store.image}}" />
-        <img ng-if="!store.image" ng-src="/static/images/no_image_available.svg" />
-        <p>{{store.address.st_number}} {{store.address.st_name}}</p>
-        <p>{{store.address.city}}, {{store.address.state}} {{store.address.zipcode}}</p>
-        <p>Membership card: {{store.has_card}}</p>
+        <img class="center-block" ng-if="store.image" ng-src="/static/images/uploads/{{store.image}}" />
+        <img class="center-block" ng-if="!store.image" ng-src="/static/images/no_image_available.svg" />
+        <address class="text-center"> 
+          {{store.address.st_number}} {{store.address.st_name}} <br>
+          {{store.address.city}}, {{store.address.state}} {{store.address.zipcode}} <br>
+        </address>
+        <p class="text-center bg-info" ng-if="store.has_card">We have a Membership Card!</p>
+        <p class="text-center bg-warning" ng-if="!store.has_card">No Membership Card</p>
       </div>
     </div>
 

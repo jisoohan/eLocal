@@ -32,19 +32,22 @@
   <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <a class="navbar-brand" href="">eLocal</a>
-      <a class="navbar-brand" href="">Zipcode: {{zipcode}}</a>
-      <a class="navbar-brand" href="">Radius: {{radius}} miles</a>
+      <p class="navbar-brand glyphicon glyphicon-shopping-cart" href="">eLocal</p>
     </div>
-
-    <ul class="nav navbar-nav navbar-right">
-      <li><a class="navbar-brand" href="">{{username}}</a></li>
-      <li><a ui-sref="index.stores">Stores</a></li>
-      <li><a ui-sref="index.products">Products</a></li>
-      <li><a ui-sref="index.merchant" ng-show="is_staff">Merchant</a></li>
-      <li><a id="cart" href="" ui-sref="index.cart" style="padding: 7px 0 0 0; width:145px;"><ngcart-summary></ngcart-summary></a></li>
-      <li><a href="" ng-click="logout()">Logout</a></li>
-    </ul>
+    <div>
+      <ul class="nav navbar-nav">
+        <li><p class="navbar-text" href="">Zipcode: {{zipcode}}</p></li>
+        <li><p class="navbar-text" href="">Radius: {{radius}} miles</p></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><p class="navbar-brand" href="">{{username}}</p></li>
+        <li><a ui-sref="index.stores">Stores</a></li>
+        <li><a ui-sref="index.products">Products</a></li>
+        <li><a ui-sref="index.merchant" ng-show="is_staff">Merchant</a></li>
+        <li><a id="cart" href="" ui-sref="index.cart" style="padding: 7px 0 0 0; width:145px;"><ngcart-summary></ngcart-summary></a></li>
+        <li><a href="" ng-click="logout()">Logout</a></li>
+      </ul>
+    </div>
   </div>
   </nav>
 </header>

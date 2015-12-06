@@ -1,8 +1,7 @@
 <div class="container">
   <ngcart-cart></ngcart-cart>
 
-  <button id="route" class="btn btn-primary col-sm-12" ng-click="routePath()">Route</button>
-
+ 
   <div class="col-sm-6">
     <b>Mode of Travel: </b>
     <div class="form-group">
@@ -23,6 +22,8 @@
     <div class="form-group">
         <input id="end_address" places-auto-complete ng-model="destination" component-restrictions="{country:'us'}" class="form-control" placeholder="Enter destination address" type="text" />
     </div>
+
+    <button id="route" class="btn btn-primary col-sm-12" ng-click="routePath()">Route</button>
 
     <ng-map zoom="15" center="{{lat}}, {{lng}}" style="height:90%">
       <directions

@@ -1,4 +1,45 @@
+<style>
+.navbar-form {
+  margin-top: 0px;
+}
+
+.glyphicon {
+  top: 10px;
+}
+</style>
+
+
+<header>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+      <div class="navbar-header">
+        <p class="navbar-brand glyphicon glyphicon-shopping-cart" href="">eLocal</p>
+      </div>
+      <form class= "navbar-form" ng-submit="login()" name="loginForm" role="form" novalidate>
+        <div style="float:left">
+          <formly-form model="loginModel" fields="loginFields" form="loginForm" options="loginFormOptions">
+          </formly-form>
+        </div>
+        <div>
+         <button id="login_submit" style="margin-top:22px" type="submit" ng-disabled="loginForm.$invalid" class="navbar-btn btn-primary submit-button">Log In</button>
+         <button id="login_reset" style="margin-top:22px; /* margin-right:210px */" type="button" class="navbar-btn btn-warning" ng-click="loginFormOptions.resetModel()">Reset</button>
+        </div>
+      </form>
+  </div>
+  </nav>
+</header>
+<div style="padding-top:100px;" ui-view></div>
+
+
+
 <div class="container">
+
+  <div class="col-sm-6">
+
+    <div class="row col-sm-12">
+    </div>
+
+  </div>
 
   <div class="col-sm-6">
 
@@ -12,20 +53,6 @@
       </form>
     </div>
 
-  </div>
-
-  <div class="col-sm-6">
-
-    <div class="row col-sm-12">
-      <h1>Login</h1>
-      <form ng-submit="login()" name="loginForm" role="form" novalidate>
-        <formly-form model="loginModel" fields="loginFields" form="loginForm" options="loginFormOptions">
-          <button id="login_submit" type="submit" ng-disabled="loginForm.$invalid" class="btn btn-primary submit-button">Login</button>
-          <button id="login_reset" type="button" class="btn btn-warning" ng-click="loginFormOptions.resetModel()">Reset</button>
-        </formly-form>
-      </form>
-    </div>
-
     <div class="row col-sm-8">
       <toast></toast>
     </div>
@@ -33,3 +60,13 @@
   </div>
 
 </div>
+
+
+
+
+
+
+
+
+
+

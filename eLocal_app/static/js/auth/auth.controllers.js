@@ -95,7 +95,11 @@
       'radius': 5
     };
     $scope.loginFields = [
+    { 
+      "className": "row",
+      "fieldGroup": [
       {
+        "className": "col-xs-3",
         key: 'username',
         type: 'input',
         templateOptions: {
@@ -105,6 +109,7 @@
         }
       },
       {
+        "className": "col-xs-3",
         key: 'password',
         type: 'input',
         templateOptions: {
@@ -114,6 +119,7 @@
         }
       },
       {
+        "className": "col-xs-3",
         key: 'zipcode',
         type: 'input',
         templateOptions: {
@@ -123,6 +129,7 @@
         }
       },
       {
+        "className": "col-xs-3",
         key: 'radius',
         type: 'select',
         templateOptions: {
@@ -155,6 +162,8 @@
           ]
         }
       }
+      ]
+    }
     ];
 
     function registerZipcode () {

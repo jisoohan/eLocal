@@ -281,13 +281,20 @@
         editProductModal.result.then(function (productEditModel) {
           ProductService.editProduct(product.id, productEditModel).then(
             function (response) {
-              $scope.products[index].name = response.data.name;
-              $scope.products[index].description = response.data.description;
-              $scope.products[index].price = Number(response.data.price);
-              ngToast.success({
-                content: "Product updated",
-                dismissButton: true
-              });
+              if (Number(response.data.price) >= 0.01) {
+                $scope.products[index].name = response.data.name;
+                $scope.products[index].description = response.data.description;
+                $scope.products[index].price = Number(response.data.price);
+                ngToast.success({
+                  content: "Product updated",
+                  dismissButton: true
+                });
+              } else {
+                ngToast.danger({
+                  content: "Invalid price",
+                  dismissButton: true
+                });
+              }
             },
             function (response) {
               ngToast.danger({
@@ -461,11 +468,18 @@
         editProductModal.result.then(function (productEditModel) {
           ProductService.editProduct(product.id, productEditModel).then(
             function (response) {
-              $scope.products[index].price = Number(response.data.price);
-              ngToast.success({
-                content: "Price updated",
-                dismissButton: true
-              });
+              if (Number(response.data.price) >= 0.01) {
+                $scope.products[index].price = Number(response.data.price);
+                ngToast.success({
+                  content: "Price updated",
+                  dismissButton: true
+                });
+              } else {
+                ngToast.danger({
+                  content: "Invalid price",
+                  dismissButton: true
+                });
+              }
             },
             function (response) {
               ngToast.danger({
@@ -535,6 +549,9 @@
         editProductModal.result.then(function (productEditModel) {
           ProductService.editProduct(product.id, productEditModel).then(
             function (response) {
+              if (Number(response.data.price) >= 0.01) {
+
+              }
               $scope.products[index].price = Number(response.data.price);
               ngToast.success({
                 content: "Price updated",

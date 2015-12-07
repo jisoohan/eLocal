@@ -15,14 +15,14 @@
       <div class="navbar-header">
         <p class="navbar-brand glyphicon glyphicon-shopping-cart" href=""><text style="font-size:larger; color:#337ab7; font-weight:700">eLocal</text></p>
       </div>
-      <form class= "navbar-form" ng-submit="login()" name="loginForm" role="form" novalidate>
+      <form class="navbar-form" ng-submit="login()" name="loginForm" role="form" novalidate>
         <div style="float:left">
           <formly-form model="loginModel" fields="loginFields" form="loginForm" options="loginFormOptions">
           </formly-form>
         </div>
         <div>
-         <button id="login_submit" style="margin-top:22px" type="submit" ng-disabled="loginForm.$invalid" class="btn btn-primary submit-button">Log In</button>
-         <button id="login_reset" style="margin-top:22px; " type="button" class="btn btn-warning" ng-click="loginFormOptions.resetModel()">Reset</button>
+         <button id="login_submit" style="margin-top:20px; margin-left:20px" type="submit" ng-disabled="loginForm.$invalid" class="btn btn-primary submit-button">Log In</button>
+         <button id="login_reset" style="margin-top:20px;" type="button" class="btn btn-warning" ng-click="loginFormOptions.resetModel()">Reset</button>
         </div>
       </form>
       <div class="col-sm-4" style="float:right; margin-right:136px">
@@ -92,8 +92,6 @@
         </formly-form>
       </form>
     </div>
-
-
 
   </div>
 

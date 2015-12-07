@@ -5,13 +5,11 @@
 
   .controller('AuthController', AuthController);
 
-  AuthController.$inject = ['$scope', '$window', '$state', 'AuthService', 'ngToast', 'GeoCoder'];
+  AuthController.$inject = ['$scope', '$window', '$state', 'AuthService', 'ngToast'];
 
-  function AuthController ($scope, $window, $state, AuthService, ngToast, GeoCoder) {
+  function AuthController ($scope, $window, $state, AuthService, ngToast) {
 
-    $scope.registerModel = {
-      'radius': 5
-    };
+    $scope.registerModel = {};
     $scope.registerFields = [
       {
         key: 'username',
@@ -46,183 +44,37 @@
         templateOptions: {
           label: 'Merchant'
         }
-      },
-      {
-        key: 'zipcode',
-        type: 'input',
-        templateOptions: {
-          type: 'text',
-          placeholder: 'Zipcode',
-          required: true
-        }
-      },
-      {
-        key: 'radius',
-        type: 'select',
-        templateOptions: {
-          label: 'Radius',
-          options: [
-            {
-              name: "5 miles",
-              value: 5
-            },
-            {
-              name: "10 miles",
-              value: 10
-            },
-            {
-              name: "15 miles",
-              value: 15
-            },
-            {
-              name: "20 miles",
-              value: 20
-            },
-            {
-              name: "25 miles",
-              value: 25
-            },
-            {
-              name: "30 miles",
-              value: 30
-            }
-          ]
-        }
       }
     ];
 
-    $scope.loginModel = {
-      'radius': 5
-    };
+    $scope.loginModel = {};
     $scope.loginFields = [
-    { 
-      "className": "row",
-      "fieldGroup": [
       {
-        "className": "col-xs-3",
-        key: 'username',
-        type: 'input',
-        templateOptions: {
-          type: 'text',
-          placeholder: 'Username',
-          required: true
-        }
-      },
-      {
-        "className": "col-xs-3",
-        key: 'password',
-        type: 'input',
-        templateOptions: {
-          type: 'password',
-          placeholder: 'Password',
-          required: true
-        }
-      },
-      {
-        "className": "col-xs-3",
-        key: 'zipcode',
-        type: 'input',
-        templateOptions: {
-          type: 'text',
-          placeholder: 'Zipcode',
-          required: true
-        }
-      },
-      {
-        "className": "col-xs-3",
-        key: 'radius',
-        type: 'select',
-        templateOptions: {
-          label: 'Radius',
-          options: [
-            {
-              name: "5 miles",
-              value: 5
-            },
-            {
-              name: "10 miles",
-              value: 10
-            },
-            {
-              name: "15 miles",
-              value: 15
-            },
-            {
-              name: "20 miles",
-              value: 20
-            },
-            {
-              name: "25 miles",
-              value: 25
-            },
-            {
-              name: "30 miles",
-              value: 30
+        "className": "row",
+        "fieldGroup": [
+          {
+            "className": "col-xs-6",
+            key: 'username',
+            type: 'input',
+            templateOptions: {
+              type: 'text',
+              placeholder: 'Username',
+              required: true
             }
-          ]
-        }
+          },
+          {
+            "className": "col-xs-6",
+            key: 'password',
+            type: 'input',
+            templateOptions: {
+              type: 'password',
+              placeholder: 'Password',
+              required: true
+            }
+          }
+        ]
       }
-      ]
-    }
     ];
-
-    function registerZipcode () {
-      if ($scope.registerModel.zipcode.length == 5 && $scope.registerModel.zipcode.match(/^[0-9]+$/) != null) {
-        GeoCoder.geocode({address: $scope.registerModel.zipcode}).then(
-          function (response) {
-            var lat = response[0].geometry.location.lat();
-            var lng = response[0].geometry.location.lng();
-            $window.localStorage.zipcode = $scope.registerModel.zipcode;
-            $window.localStorage.lat = lat;
-            $window.localStorage.lng = lng;
-            $window.localStorage.radius = $scope.registerModel.radius;
-            $state.go('index.stores');
-          },
-          function (response) {
-            $scope.registerFormOptions.resetModel();
-            ngToast.danger({
-              content: 'Enter a valid zipcode',
-              dismissButton: true
-            });
-          }
-        );
-      } else {
-        $scope.registerFormOptions.resetModel();
-        ngToast.danger({
-          content: 'Enter a valid zipcode',
-          dismissButton: true
-        });
-      }
-    }
-
-    function loginZipcode () {
-      if ($scope.loginModel.zipcode.length == 5 && $scope.loginModel.zipcode.match(/^[0-9]+$/) != null) {
-        GeoCoder.geocode({address: $scope.loginModel.zipcode}).then(
-          function (response) {
-            var lat = response[0].geometry.location.lat();
-            var lng = response[0].geometry.location.lng();
-            $window.localStorage.zipcode = $scope.loginModel.zipcode;
-            $window.localStorage.lat = lat;
-            $window.localStorage.lng = lng;
-            $window.localStorage.radius = $scope.loginModel.radius;
-            $state.go('index.stores');
-          },
-          function (response) {
-            $scope.loginFormOptions.resetModel();
-            ngToast.danger({
-              content: 'Enter a valid zipcode',
-              dismissButton: true
-            });
-          }
-        );
-      } else {
-        $scope.loginFormOptions.resetModel();
-        ngToast.danger({
-          content: 'Enter a valid zipcode',
-          dismissButton: true
-        });
-      }
-    }
 
     $scope.register = function () {
       if ($scope.registerModel.is_staff == null) {
@@ -236,7 +88,7 @@
       } else {
         AuthService.register($scope.registerModel).then(
           function (response) {
-            registerZipcode();
+            $state.go('index.location');
           },
           function (error) {
             ngToast.danger({
@@ -251,7 +103,7 @@
     $scope.login = function () {
       AuthService.login($scope.loginModel).then(
         function () {
-          loginZipcode();
+          $state.go('index.location');
         },
         function (error) {
           ngToast.danger({

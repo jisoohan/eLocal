@@ -1,0 +1,25 @@
+<div class="container">
+
+  <div class="col-sm-6">
+
+    <div class="row col-sm-12">
+      <h1>Enter Location</h1>
+      <form ng-submit="enterLocation()" name="locationForm" role="form" novalidate>
+        <formly-form model="locationModel" fields="locationFields" form="locationForm" options="locationFormOptions">
+          <button type="submit" ng-disabled="locationForm.$invalid" class="btn btn-primary submit-button">Enter</button>
+          <button type="button" class="btn btn-warning" ng-click="locationFormOptions.resetModel()">Reset</button>
+        </formly-form>
+      </form>
+    </div>
+
+  </div>
+
+  <div class="col-sm-6">
+
+    <div class="row">
+      <toast></toast>
+    </div>
+
+  </div>
+
+</div>

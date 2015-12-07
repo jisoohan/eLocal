@@ -4,6 +4,7 @@
   angular.module('Index')
 
   .controller('NavController', NavController)
+  .controller('LocationController', LocationController)
   .controller('MerchantController', MerchantController)
   .controller('MerchantStoreController', MerchantStoreController)
   .controller('MerchantEditProductController', MerchantEditProductController)
@@ -13,17 +14,21 @@
   .controller('IndexCartController', IndexCartController)
   .controller('EditProductController', EditProductController);
 
-  NavController.$inject = ['$scope', '$window', '$state', 'AuthService', 'ngToast'];
+  NavController.$inject = ['$scope', '$rootScope', '$window', '$state', 'AuthService', 'ngToast'];
 
-  function NavController ($scope, $window, $state, AuthService, ngToast) {
+  function NavController ($scope, $rootScope, $window, $state, AuthService, ngToast) {
+    $scope.username = $window.localStorage.username;
     $scope.zipcode = $window.localStorage.zipcode;
     $scope.radius = $window.localStorage.radius;
-    $scope.username = $window.localStorage.username;
     if ($window.localStorage.is_staff == 'true') {
       $scope.is_staff = true;
     } else {
       $scope.is_staff = false;
     }
+    $rootScope.$on('location.changed', function (event, data) {
+      $scope.zipcode = $window.localStorage.zipcode;
+      $scope.radius = $window.localStorage.radius;
+    });
     $scope.logout = function () {
       AuthService.logout().then(
         function () {
@@ -37,6 +42,94 @@
         }
       );
     };
+  }
+
+  LocationController.$inject = ['$scope', '$rootScope', '$window', '$state', 'ngToast', 'GeoCoder'];
+
+  function LocationController ($scope, $rootScope, $window, $state, ngToast, GeoCoder) {
+    if (!$window.localStorage.token) {
+      $state.go('auth');
+      return;
+    }
+
+    $scope.locationModel = {
+      'radius': 5
+    };
+    $scope.locationFields = [
+      {
+        key: 'zipcode',
+        type: 'input',
+        templateOptions: {
+          type: 'text',
+          placeholder: 'Zipcode',
+          required: true
+        }
+      },
+      {
+        key: 'radius',
+        type: 'select',
+        templateOptions: {
+          label: 'Radius',
+          options: [
+            {
+              name: "5 miles",
+              value: 5
+            },
+            {
+              name: "10 miles",
+              value: 10
+            },
+            {
+              name: "15 miles",
+              value: 15
+            },
+            {
+              name: "20 miles",
+              value: 20
+            },
+            {
+              name: "25 miles",
+              value: 25
+            },
+            {
+              name: "30 miles",
+              value: 30
+            }
+          ]
+        }
+      }
+    ];
+
+    $scope.enterLocation = function () {
+      if ($scope.locationModel.zipcode.length == 5 && $scope.locationModel.zipcode.match(/^[0-9]+$/) != null) {
+        GeoCoder.geocode({address: $scope.locationModel.zipcode}).then(
+          function (response) {
+            var lat = response[0].geometry.location.lat();
+            var lng = response[0].geometry.location.lng();
+            $window.localStorage.zipcode = $scope.locationModel.zipcode;
+            $window.localStorage.lat = lat;
+            $window.localStorage.lng = lng;
+            $window.localStorage.radius = $scope.locationModel.radius;
+            $rootScope.$emit('location.changed', '');
+            $state.go('index.stores');
+          },
+          function (response) {
+            $scope.locationFormOptions.resetModel();
+            ngToast.danger({
+              content: 'Enter a valid zipcode',
+              dismissButton: true
+            });
+          }
+        );
+      } else {
+        $scope.locationFormOptions.resetModel();
+        ngToast.danger({
+          content: 'Enter a valid zipcode',
+          dismissButton: true
+        });
+      }
+    }
+
   }
 
   MerchantController.$inject = ['$scope', '$window', '$state', 'StoreService', 'ngToast'];
@@ -298,6 +391,14 @@
       $state.go('auth');
       return;
     }
+    if (!$window.localStorage.zipcode) {
+      $state.go('index.location');
+      ngToast.warning({
+        content: "Enter a location",
+        dismissButton: true
+      });
+      return;
+    }
     var zipcode = $window.localStorage.zipcode;
     var lat = $window.localStorage.lat;
     var lng = $window.localStorage.lng;
@@ -326,6 +427,18 @@
   ProductsController.$inject = ['$scope', '$window', '$state', '$uibModal', 'ngToast', 'ProductService'];
 
   function ProductsController ($scope, $window, $state, $uibModal, ngToast, ProductService) {
+    if (!$window.localStorage.token) {
+      $state.go('auth');
+      return;
+    }
+    if (!$window.localStorage.zipcode) {
+      $state.go('index.location');
+      ngToast.warning({
+        content: "Enter a location",
+        dismissButton: true
+      });
+      return;
+    }
     var zipcode = $window.localStorage.zipcode;
     var lat = $window.localStorage.lat;
     var lng = $window.localStorage.lng;

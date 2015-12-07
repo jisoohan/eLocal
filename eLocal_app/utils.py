@@ -10,9 +10,6 @@ def json_response(response_dict, status=200):
     return response
 
 def check_distance(origin, destination, radius):
-    print(origin)
-    print(destination)
-    print(radius)
     lat1 = deg2rad(float(origin[0]))
     lon1 = deg2rad(float(origin[1]))
     lat2 = deg2rad(float(destination[0]))

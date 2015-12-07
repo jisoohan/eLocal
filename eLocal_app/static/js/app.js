@@ -43,6 +43,11 @@
         templateUrl: '/static/js/index/views/index.html',
         controller: 'NavController'
       })
+      .state('index.location', {
+        url: 'location',
+        templateUrl: '/static/js/index/views/index.location.html',
+        controller: 'LocationController'
+      })
       .state('index.merchant', {
         url: 'merchant',
         templateUrl: '/static/js/index/views/index.merchant.html',

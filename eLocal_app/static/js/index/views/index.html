@@ -36,9 +36,9 @@
 
 <header>
   <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
+  <div class="container-fluid">
     <div class="navbar-header">
-      <p class="navbar-brand glyphicon glyphicon-shopping-cart" href="">eLocal</p>
+      <p class="navbar-brand glyphicon glyphicon-shopping-cart" href=""><text style="font-size:larger; color:#337ab7; font-weight:700">eLocal</text></p>
     </div>
     <div>
       <ul class="nav navbar-nav">
@@ -47,6 +47,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><p class="navbar-brand" href="">{{username}}</p></li>
+        <li><a ui-sref="index.location">Location</a></li>
         <li><a ui-sref="index.stores">Stores</a></li>
         <li><a ui-sref="index.products">Products</a></li>
         <li><a ui-sref="index.merchant" ng-show="is_staff">Merchant</a></li>
@@ -57,4 +58,4 @@
   </div>
   </nav>
 </header>
-<div style="padding-top:70px;" ui-view></div>
+<div style="padding-top:80px;" ui-view></div>

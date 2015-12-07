@@ -37,8 +37,8 @@ class UITest(unittest.TestCase):
                          2: ["7.80", "3.50", "8.00"]}  
 
         print("\ntest_HomePage\n")
-        #self.driver.get('http://localhost:8000')
-        self.driver.get("http://elocalshops.herokuapp.com")
+        self.driver.get('http://localhost:8000')
+        #self.driver.get("http://elocalshops.herokuapp.com")
 
         print("\ntest_Create_Account\n")
         time.sleep(3)
@@ -53,6 +53,12 @@ class UITest(unittest.TestCase):
         time.sleep(sec)
         inputElement_Merchant = driver.find_element_by_id("registerForm_checkbox_is_staff_3")
         inputElement_Merchant.click()
+        time.sleep(sec)
+        inputElement_ZipCode = driver.find_element_by_id("registerForm_input_zipcode_4")
+        inputElement_ZipCode.send_keys('94704')
+        time.sleep(sec)
+        inputElement_Radius = driver.find_element_by_id("registerForm_select_radius_5")
+        inputElement_Radius.send_keys("1")
         time.sleep(sec)
         submit = driver.find_element_by_id("account_submit")
         submit.submit()
@@ -215,9 +221,9 @@ class UITest(unittest.TestCase):
         input_endAddress.send_keys(Keys.ARROW_DOWN)
         time.sleep(sec)
         input_endAddress.send_keys(Keys.ENTER)
-        time.sleep(5)
+        time.sleep(3)
         driver.find_element_by_id("route").click()
-        time.sleep(10)
+        time.sleep(5)
         driver.find_element_by_id("removeCart").click()
         time.sleep(sec)
 
@@ -243,6 +249,24 @@ class UITest(unittest.TestCase):
              productSearch.send_keys(storeSearches[i])
              time.sleep(1.5)
              productSearch.clear()
+
+        driver.find_element(By.LINK_TEXT, "Merchant").click()
+        time.sleep(sec)
+
+        print("\ntest_Delete_Stores\n")
+        for i in range(len(storeName)):
+            time.sleep(1)
+            driver.find_element(By.LINK_TEXT, storeName[i]+storeName_place[i]).click()
+            time.sleep(1)
+            driver.find_element_by_id("delete_store").click()
+            time.sleep(1)
+
+        time.sleep(2)
+        driver.find_element(By.LINK_TEXT, "Stores").click()
+        time.sleep(2)
+        driver.find_element(By.LINK_TEXT, "Products").click()
+        time.sleep(2)
+
 
         print("\ntest_Logout\n")
         time.sleep(2)

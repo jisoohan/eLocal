@@ -6,9 +6,9 @@
     .factory('AuthService', AuthService)
     .factory('AuthInterceptor', AuthInterceptor);
 
-  AuthService.$inject = ['$http', '$q', '$window', 'API_SERVER'];
+  AuthService.$inject = ['$http', '$q', '$window', 'API_SERVER', 'ngCart'];
 
-  function AuthService ($http, $q, $window, API_SERVER) {
+  function AuthService ($http, $q, $window, API_SERVER, ngCart) {
     var service = {};
 
     service.register = function (data) {
@@ -77,7 +77,6 @@
     service.logout = function () {
       var deferred = $q.defer();
       var url = API_SERVER + 'auth/logout/';
-
       $http.post(url).then(
         function () {
           $window.localStorage.removeItem('token');
@@ -88,6 +87,7 @@
           $window.localStorage.removeItem('lat');
           $window.localStorage.removeItem('lng');
           $window.localStorage.removeItem('radius');
+          ngCart.empty();
           deferred.resolve();
         },
         function (error) {
